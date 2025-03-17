@@ -4,9 +4,11 @@ const options = {
   delimiter: {
     component: ' - ',
   },
+
   code: {
     enabled: false,
   },
+  
   path: {
     enabled: true,
     transform: ({ label, value }) => `${label}${value}`,

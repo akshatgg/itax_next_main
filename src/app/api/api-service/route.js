@@ -273,7 +273,7 @@ const apiDocsData = [
       'The API uses OCR technology to convert the image data into machine-readable text and retrieve the required information, such as the employees name, PAN number, and salary details.',
     endpoint: {
       method: 'post',
-      endpoint: 'https://api.itaxeasy.com/form-16',
+      endpoint:`${BASE_URL}/api/form16`,
     },
     bodyParams: [
       {

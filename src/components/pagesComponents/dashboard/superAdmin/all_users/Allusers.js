@@ -3,7 +3,7 @@ import DashSection from "@/components/pagesComponents/pageLayout/DashSection";
 import userAxios from "@/lib/userAxios";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
+import prisma from "@/lib/db";
 const Allusers = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -13,13 +13,24 @@ const Allusers = () => {
   var digit = ("" + totalUser)[0];
 
   useEffect(() => {
+    const getAllUser = async () => {
+      try {
+        const users = await prisma.user.findMany();
+        console.log(users);
+        
+        return users;
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        throw new Error("Failed to fetch users");
+      }
+    };
+    
     const getAllUsers = async () => {
       try {
         setIsLoading(true);
         setIsError(false);
-        const resp = await userAxios.get(
-          `${process.env.NEXT_PUBLIC_BASE_URL}/user/get-all-users?page=${currentPage}`
-        );
+        const resp = await userAxios.get(`/user/get-all-users?page=${currentPage}`);
+
         setTotalUser(resp.data.data.totalusers);
         setUsers(resp.data.data.users);
 
@@ -30,6 +41,9 @@ const Allusers = () => {
         setIsLoading(false);
       }
     };
+    console.log(getAllUser());
+    
+    getAllUser();
     getAllUsers();
   }, [currentPage, setCurrentPage]);
   return (
