@@ -34,7 +34,7 @@ export default function VerifyOTPForm() {
 
   useEffect(() => {
     setIsOtpKey(otp_key);
-  }, []);
+  }, [otp_key]);
 
   const handleSendOTP = async (data) => {
     try {
@@ -72,9 +72,13 @@ export default function VerifyOTPForm() {
   };
 
   const onOtpVerify = async (data) => {
+    console.log(data);
+    
     try {
       setLoading(true);
       const { otp } = data;
+      console.log(otp);
+      
       // const response = await userAxios.post('/user/verify', {
         const response = await userAxios.post('/api/auth/verify-otp', {
         email,

@@ -15,6 +15,7 @@ function errorHandler(err, req) {
     return new NextResponse(JSON.stringify({ message: err }), {
       status: statusCode,
       headers: { 'Content-Type': 'application/json' },
+      message: err,
     });
   }
 

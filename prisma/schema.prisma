@@ -85,7 +85,7 @@ model Otp {
   createdAt DateTime @default(now())
   otp       String
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   used      Boolean  @default(false)
 }
 
@@ -110,7 +110,7 @@ model BusinessProfile {
   bankIfsc               String?
   bankBranch             String?
   userId                 Int      @unique
-  user                   User     @relation(fields: [userId], references: [id])
+  user                   User     @relation(fields: [userId], references: [id],onDelete: Cascade)
   createdAt              DateTime @default(now())
   updatedAt              DateTime @default(now())
   isAddressVerified      Boolean?
@@ -123,7 +123,7 @@ model BusinessProfile {
 model Cart {
   id                   String             @id @default(uuid())
   userId               Int                @unique
-  user                 User               @relation(fields: [userId], references: [id])
+  user                 User               @relation(fields: [userId], references: [id],onDelete: Cascade)
   registrationServices RegisterServices[]
   registrationStartup  RegisterStartup[]
   services             ApiService[]
@@ -168,7 +168,7 @@ enum SubscriptionsDuration {
 model Subscriptions {
   id                   String                @id @default(uuid())
   userId               Int
-  user                 User                  @relation(fields: [userId], references: [id])
+  user                 User                  @relation(fields: [userId], references: [id],onDelete: Cascade)
   registrationServices RegisterServices[]
   registrationStartup  RegisterStartup[]
   services             ApiService[]
@@ -203,9 +203,9 @@ model Ledger {
   openingBalance Decimal       @default(0.0)
   balance        Decimal       @default(0.0)
   userId         Int
-  user           User          @relation(fields: [userId], references: [id])
+  user           User          @relation(fields: [userId], references: [id],onDelete: Cascade)
   transactions   Transaction[]
-  party          Party?        @relation(fields: [partyId], references: [id])
+  party          Party?        @relation(fields: [partyId], references: [id],onDelete: Cascade)
   partyId        String?
   year           Int           @default(2023)
   month          Int           @default(0)
@@ -219,7 +219,7 @@ model JournalEntry {
   entryDate    DateTime      @default(now())
   description  String
   userId       Int
-  user         User          @relation(fields: [userId], references: [id])
+  user         User          @relation(fields: [userId], references: [id],onDelete: Cascade)
   transactions Transaction[]
 }
 
@@ -237,7 +237,7 @@ model Transaction {
   amount          Decimal
   transactionType TransactionType
   userId          Int
-  user            User            @relation(fields: [userId], references: [id])
+  user            User            @relation(fields: [userId], references: [id],onDelete: Cascade)
 }
 
 enum PartyType {
@@ -263,7 +263,7 @@ model Party {
   invoices          Invoice[]
   items             Item[]
   userId            Int
-  user              User      @relation(fields: [userId], references: [id])
+  user              User      @relation(fields: [userId], references: [id],onDelete: Cascade)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @default(now())
   ledgers           Ledger[]
@@ -275,7 +275,7 @@ model Category {
   id           String @id @default(uuid())
   categoryName String
   userId       Int
-  user         User   @relation(fields: [userId], references: [id])
+  user         User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   items        Item[]
 }
 
@@ -324,7 +324,7 @@ model Item {
   supplier      Party?        @relation(fields: [supplierId], references: [id])
   invoiceItems  InvoiceItem[]
   userId        Int
-  user          User          @relation(fields: [userId], references: [id])
+  user          User          @relation(fields: [userId], references: [id],onDelete: Cascade)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now())
 
@@ -370,10 +370,10 @@ model Invoice {
   modeOfPayment ModeOfPayment
   credit        Boolean
   userId        Int
-  user          User          @relation(fields: [userId], references: [id])
+  user          User          @relation(fields: [userId], references: [id],onDelete: Cascade)
   partyId       String
   gstNumber     String?
-  party         Party         @relation(fields: [partyId], references: [id])
+  party         Party         @relation(fields: [partyId], references: [id],onDelete: Cascade)
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @default(now())
   invoiceItems  InvoiceItem[]
@@ -424,7 +424,7 @@ model Order {
   orderTotal    Decimal
   stateOfSupply String
   userId        Int
-  user          User        @relation(references: [id], fields: [userId])
+  user          User        @relation(references: [id], fields: [userId],onDelete: Cascade)
 }
 
 enum PaymentStatus {
@@ -439,7 +439,7 @@ model Payment {
   razorpay_payment_id String
   status              PaymentStatus @default(created)
   userId              Int
-  user                User          @relation(fields: [userId], references: [id])
+  user                User          @relation(fields: [userId], references: [id],onDelete: Cascade)
   orderId             Int
 }
 
@@ -477,7 +477,7 @@ model Post {
   contentDescription String   @db.LongText()
   category           String
   imageUrl           String
-  user               User     @relation(fields: [userId], references: [id])
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt          DateTime @default(now())
   updatedAt          DateTime @default(now())
 }
@@ -491,7 +491,7 @@ model Account {
   creditBalance Decimal   @default(0.0)
   date          DateTime  @default(now())
   userId        Int
-  user          User      @relation(fields: [userId], references: [id])
+  user          User      @relation(fields: [userId], references: [id],onDelete: Cascade)
   invoices      Invoice[]
 }
 
@@ -568,7 +568,7 @@ enum DocumentType {
 model UploadedDocument {
   id            String           @id @default(uuid())
   userId        Int
-  user          User             @relation(fields: [userId], references: [id])
+  user          User             @relation(fields: [userId], references: [id],onDelete: Cascade)
   fileName      String
   docs          LoanDocument[]
   applicationId String?
@@ -649,7 +649,7 @@ model LoanApplication {
   address          String?
   permanentAddress String
   userId           Int
-  user             User               @relation(fields: [userId], references: [id])
+  user             User               @relation(fields: [userId], references: [id],onDelete: Cascade)
   agentId          String?
   agent            Agent?             @relation(fields: [agentId], references: [id])
   createdAt        DateTime           @default(now())
@@ -676,7 +676,7 @@ model BankDetails {
   bankAccountType   BankAccountType
   loans             LoanApplication[]
   userId            Int
-  user              User              @relation(fields: [userId], references: [id])
+  user              User              @relation(fields: [userId], references: [id],onDelete: Cascade)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @default(now())
 }
@@ -692,7 +692,7 @@ model Insurance {
   maritalStatus String
   gender        UserGender
   userId        Int
-  user          User       @relation(fields: [userId], references: [id])
+  user          User       @relation(fields: [userId], references: [id],onDelete: Cascade)
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @default(now())
 }
@@ -700,9 +700,9 @@ model Insurance {
 model Client {
   id        String   @id @default(uuid())
   userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id],onDelete: Cascade)
   agentId   String
-  agent     Agent    @relation(fields: [agentId], references: [id])
+  agent     Agent    @relation(fields: [agentId], references: [id],onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
@@ -711,7 +711,7 @@ model Agent {
   id        String            @id @default(uuid())
   clients   Client[]
   userId    Int               @unique
-  user      User              @relation(fields: [userId], references: [id])
+  user      User              @relation(fields: [userId], references: [id],onDelete: Cascade)
   loans     LoanApplication[]
   createdAt DateTime          @default(now())
   updatedAt DateTime          @default(now())
@@ -758,7 +758,7 @@ model RegisterStartup {
   aboutService     String?            @db.LongText
   userId           Int
   categories       StartupCategory
-  user             User               @relation(fields: [userId], references: [id])
+  user             User               @relation(fields: [userId], references: [id],onDelete: Cascade)
   RegisterServices RegisterServices[]
   subscriptions    Subscriptions[]
   cart             Cart[]
@@ -769,7 +769,7 @@ model RegisterServices {
   serviceId       Int             @unique
   registerStartup RegisterStartup @relation(fields: [serviceId], references: [id])
   userId          Int
-  user            User            @relation(fields: [userId], references: [id])
+  user            User            @relation(fields: [userId], references: [id],onDelete: Cascade)
 
   aadhaarCard    String
   panCard        String
@@ -799,7 +799,7 @@ model About {
 model Gstr1_4A {
   id                Int      @id @default(autoincrement())
   userId            Int
-  user              User     @relation(fields: [userId], references: [id])
+  user              User     @relation(fields: [userId], references: [id],onDelete: Cascade)
   LegalName         String
   GSTN              String
   pos               String
@@ -826,7 +826,7 @@ model Gstr1_4A {
 model Gstr1_5A {
   id                  Int             @id @default(autoincrement())
   userId              Int
-  user                User            @relation(fields: [userId], references: [id])
+  user                User            @relation(fields: [userId], references: [id],onDelete: Cascade)
   sr_no               Int             @unique
   pos                 String
   invoice_No          String
@@ -853,7 +853,7 @@ model Gstr1_5A_item {
 model Gstr1_6A {
   id                  Int             @id @default(autoincrement())
   userId              Int
-  user                User            @relation(fields: [userId], references: [id])
+  user                User            @relation(fields: [userId], references: [id],onDelete: Cascade)
   sr_no               Int             @unique
   pos                 String
   invoice_no          String
@@ -881,7 +881,7 @@ model Gstr1_6A_item {
 model Gstr1_7B {
   id              Int    @id @default(autoincrement())
   userId          Int
-  user            User   @relation(fields: [userId], references: [id])
+  user            User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   gstn            String
   sr_no           Int    @unique
   pos             String
@@ -899,7 +899,7 @@ model Gstr1_7B {
 model Gstr1_8ABCD {
   id            Int    @id @default(autoincrement())
   userId        Int
-  user          User   @relation(fields: [userId], references: [id])
+  user          User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   gstn          String
   sr_no         Int    @unique
   pos           String
@@ -914,7 +914,7 @@ model Gstr1_8ABCD {
 model Gstr1_9B {
   id                     Int    @id @default(autoincrement())
   userId                 Int
-  user                   User   @relation(fields: [userId], references: [id])
+  user                   User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   gstn                   String
   sr_no                  Int    @unique
   recipient_name         String
@@ -935,7 +935,7 @@ model Gstr1_9B {
 model Gstr1_9B_un {
   id                     Int    @id @default(autoincrement())
   userId                 Int
-  user                   User   @relation(fields: [userId], references: [id])
+  user                   User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   sr_no                  Int    @unique
   type                   String
   debit_credit_note_no   String
@@ -954,7 +954,7 @@ model Gstr1_9B_un {
 model Gstr1_11A2A2 {
   id     Int    @id @default(autoincrement())
   userId Int
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   sr_no  Int    @unique
   pos    String
   supply String
@@ -964,7 +964,7 @@ model Gstr1_11A2A2 {
 model Gstr1_11B1B2 {
   id            Int    @id @default(autoincrement())
   userId        Int
-  user          User   @relation(fields: [userId], references: [id])
+  user          User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   sr_no         Int    @unique
   pos           String
   taxable_value String
@@ -979,7 +979,7 @@ model Gstr1_11B1B2 {
 model gstr1_12HSN {
   id            Int    @id @default(autoincrement())
   userId        Int
-  user          User   @relation(fields: [userId], references: [id])
+  user          User   @relation(fields: [userId], references: [id],onDelete: Cascade)
   sr_no         Int    @unique
   pos           String
   taxable_value String

@@ -10,7 +10,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import OngoingProjects from './OngoingProjects';
 import {
-  BASE_URL,
+  BACKEND_URL,
 
   token,c
 } from './staticData';
@@ -63,7 +63,7 @@ function Home() {
     try {
       setLoading(true);
       const asynFunction = async () => {
-        const homeResponse = await axios.get(`${BASE_URL}/cms/homescreen`);
+        const homeResponse = await axios.get(`${BACKEND_URL}/cms/homescreen`);
         if (homeResponse.data.success) {
           const data = homeResponse.data.data.home;
           setPageData(data);
@@ -74,7 +74,7 @@ function Home() {
         setLoading(false);
       };
       const countVisitors = async () => {
-        const res = await fetch(`${BASE_URL}/visitorCount/create`, {
+        const res = await fetch(`${BACKEND_URL}/visitorCount/create`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -99,7 +99,7 @@ function Home() {
   useEffect(() => {
     const getCmsStats = async () => {
       try {
-        const res = await fetch(`${BASE_URL}/cms/stats`, {
+        const res = await fetch(`${BACKEND_URL}/cms/stats`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

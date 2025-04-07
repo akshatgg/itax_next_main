@@ -8,7 +8,8 @@ const otpVerificationValidation = z.object({
   email: z.string().email(),
   otp_key: z.number(),
   otp: z.string().min(6),
-  type: z.enum(Object.keys(emailTypes)),
+  // type: z.enum(Object.keys(emailTypes).optional()),
+
 });
 
 export async function POST(req) {
@@ -19,12 +20,13 @@ export async function POST(req) {
     console.log('🚀 ~ POST ~ validationRes:', validationRes);
 
     if (!validationRes.success) {
+      
       const { error } = validationRes;
       req.error = error;
       throw new Error(errorMessages.validationError);
     }
 
-    const { email, otp_key, otp, type } = validationRes.data;
+    const { email, otp_key, otp } = validationRes.data;
 
     const isOtp = await db.otp.findFirst({
       where: {
@@ -32,11 +34,12 @@ export async function POST(req) {
       },
     });
     console.log('🚀 ~ POST ~ isOtp:', isOtp);
-
+    
     if (!isOtp) {
       throw new Error('Invalid Otp');
     }
-
+    console.log('🚀 ~ POST ~ isOtp.otp:', isOtp.otp);
+    console.log(typeof isOtp.otp, typeof otp);
     const otpTime = isOtp.createdAt.getTime();
     const tenMinutes = 10 * 60 * 1000;
     const currentTime = Date.now();
@@ -45,7 +48,9 @@ export async function POST(req) {
     if (isOtpExpired) {
       throw new Error('Otp expired');
     }
-
+  
+   
+   
     if (isOtp.otp !== otp) {
       throw new Error('Invalid Otp');
     }
@@ -64,7 +69,7 @@ export async function POST(req) {
       throw new Error('Invalid Otp');
     }
 
-    if (type === 'email') {
+    
       await db.otp.update({
         where: {
           id: otp_key,
@@ -73,7 +78,7 @@ export async function POST(req) {
           used: true,
         },
       });
-    }
+    
 
     return new Response(
       JSON.stringify({
