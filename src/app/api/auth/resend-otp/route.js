@@ -8,7 +8,7 @@ import EmailService, { emailTypes } from '@/lib/mailingService';
 const resendOtpValidation = z.object({
   email: z.string().email(),
   otp_key: z.string().optional(),
-  type: z.enum(Object.keys(emailTypes)),
+  // type: z.enum(Object.keys(emailTypes)),
 });
 
 export async function POST(req) {
@@ -22,7 +22,7 @@ export async function POST(req) {
       throw new Error(errorMessages.validationError);
     }
 
-    const { email, otp_key, type } = validationRes.data;
+    const { email, otp_key} = validationRes.data;
     const user = await db.user.findFirst({ where: { email } });
 
     if (!user) {
@@ -47,7 +47,7 @@ export async function POST(req) {
 
     const emailResult = await EmailService.sendMail(
       email,
-      `${emailTypes[type]}`,
+      `${emailTypes}`,
       `Your one time password is : ${otpValue} | Do not share your otp | This is valid for 10 minutes only.`,
     );
 

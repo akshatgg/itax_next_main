@@ -19,7 +19,7 @@ export async function POST(req) {
     if (!validationRes.success) {
       const { error } = validationRes;
       req.error = error;
-      throw new Error(errorMessages.validationError);
+      throw new Error(errorMessages.validationError); 
     }
 
     const { email, otp_key, otp, newPassword } = validationRes.data;
@@ -39,7 +39,7 @@ export async function POST(req) {
     const currentTime = Date.now();
     const isOtpExpired = currentTime > otpTime + tenMinutes;
 
-    if (isOtpExpired || isOtp.used !== false) {
+    if (isOtpExpired || isOtp.used === true) {
       throw new Error('Otp expired');
     }
 

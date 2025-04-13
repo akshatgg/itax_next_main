@@ -1,11 +1,13 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import ErrorComponent from '@/components/partials/error/ErrorComponent';
 import CreateInvoice from '@/components/pagesComponents/dashboard/accounts/invoice/invoice/CreateInvoice';
+import userAxios from '@/lib/axios'; // Assuming you have this
 
 const initialSearch = { search: '', type: null, status: null };
-export default async function CreateInvoicePage({ businessProfile }) {
+
+export default function CreateInvoicePage({ businessProfile }) {
   const [isLoading, setIsLoading] = useState(false);
   const [modal, setModal] = useState(false);
   const [currentInv, setCurrentInv] = useState(null);
@@ -19,7 +21,7 @@ export default async function CreateInvoicePage({ businessProfile }) {
     try {
       setIsLoading(true);
       const { data, status } = await userAxios.get(
-        `/invoice/invoices?page=${currentPage}&limit=5&type=${search?.type?.value ?? ''}&search=${search.search ?? ''}&status=${search?.status?.value ?? ''}`,
+        `/invoice/invoices?page=${currentPage}&limit=5&type=${search?.type?.value ?? ''}&search=${search.search ?? ''}&status=${search?.status?.value ?? ''}`
       );
 
       if (status === 200) {
@@ -27,19 +29,26 @@ export default async function CreateInvoicePage({ businessProfile }) {
         setPagination(pagination);
         setInvoices(invoices);
       }
-      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
       setErrorMessage(error.message);
+    } finally {
+      setIsLoading(false);
     }
   }, [currentPage, search?.type?.value, search?.search, search?.status?.value]);
 
-  if (errorMessage)
-    <ErrorComponent
-      message={errorMessage}
-      info="Something went wrong."
-      type=""
-    />;
+  useEffect(() => {
+    getInvoices();
+  }, [getInvoices]);
+
+  if (errorMessage) {
+    return (
+      <ErrorComponent
+        message={errorMessage}
+        info="Something went wrong."
+        type=""
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 py-10">

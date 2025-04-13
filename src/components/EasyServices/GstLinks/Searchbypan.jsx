@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useReactToPrint } from "react-to-print";
 import SearchResult_section from "@/components/pagesComponents/pageLayout/SearchResult_section.js";
 import userAxios from "@/lib/userAxios";
-import gstStateCodes from "@/utils/gstStateCodes";
+import gstStateCodes from "@/utils/gstStateCodes"; 
 export default function Searchbypan() {
 	const {token} = useAuth();
     const navigate = useRouter();

@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer';
 
-export const emailTypes = {
+export const  emailTypes = {
   email: 'Email verification otp',
   newpassword: 'Password reset otp',
 };

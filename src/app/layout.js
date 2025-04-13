@@ -34,6 +34,6 @@ export default function RootLayout({ children }) {
           </body>
         </html>
       </StoreProvider>
-    </ReduxProvider>
+    </ReduxProvider>    
   );
 }

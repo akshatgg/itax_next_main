@@ -7,7 +7,7 @@ export default function page() {
       <FormBrand />
       <LoginForm />
     </div>
-  );
+  );  
 }
 
 export async function generateMetadata({ params }) {
