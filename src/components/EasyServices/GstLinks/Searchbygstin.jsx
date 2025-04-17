@@ -2,7 +2,7 @@
 import React, { useRef, useState, useContext } from "react";
 // import { StoreContext } from "../../../store/store-context";
 import axios from "axios";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import useAuth  from '../../../hooks/useAuth';
 import { PDF_DOC } from "../../../store/actions";
 import FormComponent from "../Components/FormComponent";
@@ -56,8 +56,15 @@ export default function Searchbygstin() {
 	const handleSubmit = async (e, inputValue) => {
 		e.preventDefault();
 		try {
-			const response = await userAxios.get(
-				`${BASE_URL}/gst/search/gstin/${inputValue}`
+			const response = await axios.post(
+				`${BACKEND_URL}/gst/search/gstin/${inputValue}`,
+				{ gstin: inputValue },  // Send gstin in the body
+              {
+                  headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json"
+                  }
+              }
 			);
 			console.log(response)
 			setShowData(response.data.data.data);

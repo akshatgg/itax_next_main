@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 import useAuth  from "../../../hooks/useAuth";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import axios from "axios";
 import { useReactToPrint } from "react-to-print";
 import SearchResult_section from "@/components/pagesComponents/pageLayout/SearchResult_section.js";
@@ -30,16 +30,17 @@ export default function Trackgstreturn() {
 
 		await axios
 			.post(
-				`${BASE_URL}/gst/return/track`,
+				`${BACKEND_URL}/gst/return/track`,
 				{
 					gstin: gstinRef.current.value,
 					financialYear: yearRef.current.value,
 				},
-				{
+                {
                     headers: {
-                        Authorization: 'Bearer ' + token,
-                      },
-				}
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                  }
 			)
 			.then(function (response) {
 				//  console.log(response.data.data);

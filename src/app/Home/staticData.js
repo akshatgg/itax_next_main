@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+export const  BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 export const token = process.env.NEXT_PUBLIC_WEB_TOKEN;
 export const BLAZ_URL = process.env.NEXT_PUBLIC_BLAZ_URL;
 export const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;

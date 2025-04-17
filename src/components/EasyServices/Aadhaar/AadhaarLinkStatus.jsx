@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { panRegex, aadharRegex } from "../../../components/regexPatterns";
 import axios from "axios";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import { useReactToPrint } from "react-to-print";
 import SearchResult_section from "@/components/pagesComponents/pageLayout/SearchResult_section.js";
 import useAuth  from '../../../hooks/useAuth';
@@ -23,12 +23,14 @@ const AadhaarLinkStatus = () => {
     console.log(data);
     setLoading(true);
     try {
-      const res = await axios.get(`${BASE_URL}/pan/pan-aadhaar-link-status/?`, {
+      const res = await axios.post(`${BACKEND_URL}/pan/pan-aadhaar-link-status/`, 
+        { pan: data.pan, aadhaar: data.aadhaar },
+        {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        params: { pan: data.pan, aadhaar: data.aadhaar },
+       
       });
       setSuccess(true);
       setData(res.data.data.message);

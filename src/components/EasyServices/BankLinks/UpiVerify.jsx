@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState } from "react";
 import axios from "axios";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import useAuth  from '../../../hooks/useAuth';
 import { toast } from "react-toastify";
 import { useReactToPrint } from "react-to-print";
@@ -23,13 +23,19 @@ const UpiVerify = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(`${BASE_URL}/bank/upi-verify`, {
+      const response = await axios.get(`${BACKEND_URL}/bank/upi-verify`, 
+         {
+          virtual_payment_address: upiRef.current.value,
+          name: nameRef.current.value,
+        },
+        {
         params: {
           virtual_payment_address: upiRef.current.value,
           name: nameRef.current.value,
         },
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
         },
       });
       console.log(response.data.data.account_exists);

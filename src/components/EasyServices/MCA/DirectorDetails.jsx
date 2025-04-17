@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useRef } from "react";
 import axios from "axios";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import useAuth from '../../../hooks/useAuth';
 import FormComponent from "../Components/FormComponent.jsx";
 import ResultComponent from "../Components/ResultComponent.jsx";
@@ -64,7 +64,7 @@ const DirectorDetails = () => {
 
     try {
       const response = await axios.get(
-        `${BASE_URL}/mca/director-details?din=${inputValue}`,
+        `${BACKEND_URL}/mca/director-details?din=${inputValue}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

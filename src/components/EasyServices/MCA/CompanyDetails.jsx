@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState, useContext } from "react";
 import axios from "axios";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import useAuth from '../../../hooks/useAuth';
 const LARAVEL_ITAX_URL = process.env.NEXT_PUBLIC_LARAVEL_ITAX_URL;
 import { StoreContext } from "../../../store/store-context";
@@ -120,7 +120,7 @@ const CompanyDetails = () => {
     setLoading(true);
 
     await axios
-      .get(`${BASE_URL}/mca/company-details?cin=${inputValue}`, {
+      .get(`${BACKEND_URL}/mca/company-details?cin=${inputValue}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

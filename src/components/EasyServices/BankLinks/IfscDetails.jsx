@@ -11,7 +11,7 @@ import { useReactToPrint } from "react-to-print";
 import SearchResult_section from "@/components/pagesComponents/pageLayout/SearchResult_section.js";
 import { toast } from "react-toastify";
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import useAuth  from '../../../hooks/useAuth';
 
 const IfscDetails = () => {
@@ -75,11 +75,13 @@ const IfscDetails = () => {
     setLoading(true);
 
     try {
-      const response = await axios.get(
-        `${BASE_URL}/bank/details?ifsc=${inputValue}`,
+      const response = await axios.post(
+        `${BACKEND_URL}/bank/details?ifsc=${inputValue}`,
+        { ifsc: inputValue },
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );

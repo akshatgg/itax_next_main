@@ -2,7 +2,7 @@
 import React, { useRef, useState } from "react";
 import axios from "axios";
 // import useAuth from "@/hooks/useAuth";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import useAuth  from '../../../hooks/useAuth';
 const MOM_ITAX_URL = process.env.NEXT_PUBLIC_MOM_ITAX_URL;
 import ResultComponent from "../Components/ResultComponent";
@@ -36,14 +36,15 @@ export default function CheckPanAadhaarStatus() {
     try {
       if (Object.keys(newErrors).length === 0) {
         console.log("Form submitted successfully");
-        const response = await axios.get(
-          `${BASE_URL}/pan/pan-aadhaar-link-status/`,
+        const response = await axios.post(
+          `${BACKEND_URL}/pan/pan-aadhaar-link-status/`,
+           {
+            pan: panRef.current.value,
+            aadhaar: aadhaarRef.current.value,
+          },
           {
-            params: {
-              pan: panRef.current.value,
-              aadhaar: aadhaarRef.current.value,
-            },
             headers: {
+              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           }

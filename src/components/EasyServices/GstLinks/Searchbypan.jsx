@@ -1,7 +1,7 @@
 "use client";
 import React, { useRef, useState, useContext, useEffect } from "react";
 import axios from "axios";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import useAuth  from '../../../hooks/useAuth';
 const MOM_ITAX_URL = process.env.NEXT_PUBLIC_MOM_ITAX_URL;
 import { RiFileDownloadFill } from "react-icons/ri";
@@ -11,7 +11,7 @@ import ResultComponent from "../Components/ResultComponent";
 import { useRouter } from "next/navigation";
 import { useReactToPrint } from "react-to-print";
 import SearchResult_section from "@/components/pagesComponents/pageLayout/SearchResult_section.js";
-import userAxios from "@/lib/userAxios";
+
 import gstStateCodes from "@/utils/gstStateCodes"; 
 export default function Searchbypan() {
 	const {token} = useAuth();
@@ -78,9 +78,17 @@ export default function Searchbypan() {
 
 		// console.log(enteredPAN, enteredStateCode);
 
-		await userAxios
-			.get(
-				`${BASE_URL}/gst/search/gstin-by-pan?pan=${enteredPAN}&gst_state_code=${+enteredStateCode}`)
+		await axios
+			.post(
+				`${BACKEND_URL}/gst/search/gstin-by-pan?pan=${enteredPAN}&gst_state_code=${+enteredStateCode}`,
+				{ pan: enteredPAN, gst_state_code: enteredStateCode },
+				{
+					headers: {
+						Authorization: `Bearer ${token}`,
+						'Content-Type': 'application/json'
+					}
+				}
+			)
 			.then(function (response) {
 				 setShowData(response.data.data[0].data);
 				setShowHide(true);
