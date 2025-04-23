@@ -1,7 +1,7 @@
 "use client";
 import React, { useContext, useRef, useState } from "react";
 import axios from "axios";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 import useAuth from '../../../hooks/useAuth';
 const LARAVEL_ITAX_URL = process.env.NEXT_PUBLIC_LARAVEL_ITAX_URL;
 
@@ -34,7 +34,7 @@ const PIncodebyCity = () => {
     // console.log(cityRef.current.value);
     await axios
       .get(
-        `${BASE_URL}/pincode/pincode-by-city?city=${cityRef.current.value}`,
+        `${BACKEND_URL}/pincode/pincode-by-city?city=${cityRef.current.value}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

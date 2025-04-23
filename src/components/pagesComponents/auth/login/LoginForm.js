@@ -8,7 +8,7 @@ import regex from '@/utils/regex';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 
 const formClassName = {
   Label: 'text-sm font-medium',
@@ -25,8 +25,13 @@ export default function LoginForm() {
     try {
       if (email && password) {
         setLoading(true);
-        // const { data } = await userAxios.post('https://api.itaxeasy.com/users/login', {
-          const response = await userAxios.post('/api/auth/login', { email, password });
+        const response = await userbackAxios.post('/user/login', {
+
+          email,
+          password,
+
+        });
+          // const response = await userAxios.post('/api/auth/login', { email, password });
           const { data } = response; // Extract data separately
           console.log(data);
         

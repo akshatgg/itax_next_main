@@ -11,7 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'next/navigation';
 import * as Yup from 'yup';
 import regex from '@/utils/regex';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 
 const formClassName = {
   Label: 'text-sm font-medium',
@@ -68,8 +68,8 @@ export default function SignupForm() {
 
     try {
       setLoading(true);
-      // const { data } = await userAxios.post('/user/sign-up', {
-        const response = await userAxios.post('/api/auth/signup', {
+      const response = await userbackAxios.post('/user/sign-up', {
+        // const response = await userAxios.post('/api/auth/signup', {
         firstName,
         lastName,
         gender,
@@ -84,7 +84,7 @@ export default function SignupForm() {
     
 console.log("ddddddddddddddddddd",data);
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         router.push(
           '/verify-otp?email=' +
             FormData.email +

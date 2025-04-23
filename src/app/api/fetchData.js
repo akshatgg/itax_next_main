@@ -1,6 +1,9 @@
 import db from '@/lib/db';
 import { getUserOnServer } from '@/lib/getServerSideToken';
 
+
+
+
 // fetches cart items
 export const getCartItems = async () => {
   try {
@@ -20,18 +23,29 @@ export const getCartItems = async () => {
 };
 
 // fetch api services based on category
-export const fetchApiServices = async (category) => {
+// This would be in your @/app/api/fetchData.js file
+export async function fetchApiServices(path) {
   try {
-    let apiServices = [];
-    const config = {
-      where: category !== 'all_apis' ? { category } : {},
-    };
-    apiServices = await db.apiService.findMany(config);
-    return apiServices;
+    // If path is already a complete URL (contains the BACK_URL), use it directly
+    // Otherwise, this might be a category ID from an older call
+    const apiUrl = path.includes('http') 
+      ? path 
+      : `${process.env.BACK_URL}/apis/${path}`;
+    
+    const response = await fetch(apiUrl, {
+      cache: 'no-store', // or appropriate caching strategy
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Error fetching API services: ${response.statusText}`);
+    }
+    
+    return await response.json();
   } catch (error) {
-    console.log('Error: ', error);
+    console.error('Failed to fetch API services:', error);
+    return []; // Return empty array or handle error appropriately
   }
-};
+}
 
 //fetch api data from id
 export const fetchApiData = async (apiId) => {
@@ -122,3 +136,5 @@ export const getInterestAccruedOnNationalList = async (listNumber, year) => {
     console.log(error);
   }
 };
+
+
