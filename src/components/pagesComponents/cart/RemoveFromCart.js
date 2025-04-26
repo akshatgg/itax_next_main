@@ -12,21 +12,27 @@ const RemoveFromCart = ({ item, refresh, type = type }) => {
     try {
       setIsLoading(true);
       
-      // Determine the endpoint based on the item type
-      const endpoint = type === 'startup' 
-        ? `${process.env.NEXT_PUBLIC_BACK_URL}/cartStartup/` 
-        : `${process.env.NEXT_PUBLIC_BACK_URL}/cart/`;
+      // Determine the endpoint and payload based on the item type
+      let endpoint, payload;
+      
+      if (type === 'startup') {
+        endpoint = `${process.env.NEXT_PUBLIC_BACK_URL}/cartStartup/`;
+        payload = { id: item.id };
+      } else {
+        endpoint = `${process.env.NEXT_PUBLIC_BACK_URL}/cart/`;
+        payload = { serviceId: item.id };
+      }
       
       const { data, status } = await axios.delete(
         endpoint,
         {
-          data: { serviceId: item.id },
+          data: payload,
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-
+  
       if (status === 200) {
         toast.success(data.message || 'Item removed from cart');
         // Ensure refresh is called properly
