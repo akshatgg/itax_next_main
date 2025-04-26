@@ -1,33 +1,48 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useRouter } from 'next/navigation';
-// import { useRouter } from 'next/router';
-// import Loader from '@/components/partials/loading/Loader';
-// import LoadingComponent from '@/components/partials/loading/LoadingComponent';
 import Image from 'next/image';
-import api from '@/lib/userNextAxios';
+import axios from 'axios';
+import UseAuth from '../../../hooks/useAuth';
 
-const RemoveFromCart = ({ item, refresh, type = 'service' }) => {
-  const router = useRouter();
+const RemoveFromCart = ({ item, refresh, type = type }) => {
+  const { token } = UseAuth(); 
   const [isLoading, setIsLoading] = useState(false);
 
   const handlerRemoveFromCart = async () => {
     try {
       setIsLoading(true);
-
-      const { data } = await api.put('api/cart/delete', {
-        ...(type === 'service' && { serviceIds: [item.id] }),
-        ...(type === 'registerStartup' && { registerStartupIds: [item.id] }),
-        ...(type === 'registerService' && { registerServiceIds: [item.id] }),
-      });
-
-      if (data.status === 200) {
-        toast.success(data.message);
-        await refresh();
+      
+      // Determine the endpoint and payload based on the item type
+      let endpoint, payload;
+      
+      if (type === 'startup') {
+        endpoint = `${process.env.NEXT_PUBLIC_BACK_URL}/cartStartup/`;
+        payload = { id: item.id };
+      } else {
+        endpoint = `${process.env.NEXT_PUBLIC_BACK_URL}/cart/`;
+        payload = { serviceId: item.id };
+      }
+      
+      const { data, status } = await axios.delete(
+        endpoint,
+        {
+          data: payload,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      if (status === 200) {
+        toast.success(data.message || 'Item removed from cart');
+        // Ensure refresh is called properly
+        if (typeof refresh === 'function') {
+          await refresh();
+        }
       }
     } catch (error) {
       toast.error('Failed to remove item from cart');
-      console.log('🚀 ~ handlerRemoveFromCart ~ error:', error);
+      console.error('Error removing item from cart:', error);
     } finally {
       setIsLoading(false);
     }
