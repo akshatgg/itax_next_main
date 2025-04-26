@@ -14,6 +14,7 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import userAxios from '@/lib/userAxios';
 import userAxiosNext from '@/lib/userNextAxios';
+import userbackAxios from '@/lib/userbackAxios';
 
 export default function Navbar(props) {
   const { token, currentUser } = useAuth();
@@ -22,34 +23,39 @@ export default function Navbar(props) {
   const [cartCount, setCartCount] = useState(0);
   const [state, dispatch] = useContext(StoreContext);
 
-  const fetchCartData = useCallback(async () => {
+ const fetchCartData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await userAxiosNext.get(`/api/cart/get`);
-      console.log(response);
-
-      const { data, status } = response;
-
-      if (status === 200 && data?.data) {
-        const cartCount =
-          data.data[0].services.length +
-          data.data[0].registrationStartup.length +
-          data.data[0].registrationServices.length;
-        setCartCount(cartCount);
-      }
-
+      
+      // Fetch regular cart items
+      const serviceResponse = await userbackAxios.get('/cart/');
+      const serviceCount = serviceResponse.data?.services?.length || 0;
+      
+      // Fetch startup cart items
+      const startupResponse = await userbackAxios.get('/cartStartup/');
+      const startupCount = startupResponse.data?.itemCount || 0;
+      
+      // Sum the counts
+      const totalCount = serviceCount + startupCount;
+      
+      // Update cart count
+      setCartCount(totalCount);
+      
+      console.log('Service items:', serviceCount);
+      console.log('Startup items:', startupCount);
+      console.log('Total cart items:', totalCount);
+      
       setIsLoading(false);
     } catch (error) {
-      // console.error('Error fetching cart data:', error);
+      console.error('Error fetching cart data:', error);
       setIsLoading(false);
     }
   }, []);
-
-  // console.log({ state });
+  
+  // Fetch cart data when component mounts or when cart is updated
   useEffect(() => {
     fetchCartData();
   }, [fetchCartData, state.cartUpdateCount]);
-
   return (
     <div
       className={`
