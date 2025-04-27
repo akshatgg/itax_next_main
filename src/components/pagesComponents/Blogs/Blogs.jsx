@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import { blogCategories } from './staticData';
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACK_URL;
 
 const Blogs = () => {
   const [apires, setApiRes] = useState([]);
@@ -23,6 +23,8 @@ const Blogs = () => {
           .get(`${BASE_URL}/blog/posts?page=${page}&limit=${2}`)
           .then(function (response) {
             console.log(response);
+            console.log(response.data.data.posts);
+            
             setApiRes(response.data.data.posts);
             setTotalPages(response.data.data.pages || 1);
             setLoading(false);
@@ -46,12 +48,13 @@ const Blogs = () => {
           <div className="w-full md:w-2/3">
             {loading ? (
               <div className="fixed w-full md:2/3 bg-white flex items-center justify-center">
-                <Image
-                  src="/loading.svg"
-                  alt="loading..."
-                  width={100}
-                  height={100}
-                />
+            <Image
+  className="rounded-t-md object-cover"
+  src={Blogs.imageUrl || '/fallback-image.jpg'} // Add a fallback image
+  alt="Blog Image"
+  width={800}
+  height={600}
+/>
               </div>
             ) : (
               <section className="w-full flex flex-col items-center px-3">
