@@ -1,144 +1,185 @@
-# ITaxEasy API Backend Setup
+# Front End
+To install this repo on vs code
 
-This repository contains the backend API for the ITaxEasy platform built with Node.js and TypeScript.
+step:-
 
-## Prerequisites
+1. Install vs. code community version.
 
-- Git
-- Node.js (see version requirements below)
-- npm/yarn/pnpm
+2. Select "Node Js"
 
-## Installation Steps
-
-### 1. Clone the Repository
+3. Clone the repository
 
 ```bash
-git clone https://github.com/itax-easy/node-api.git
-cd node-api
-```
 
-### 2. Special Node.js Version Requirements
-
-This project requires specific Node.js version handling during installation:
-
-1. **First, switch to Node.js 16.x** (required for initial dependency installation):
-   ```bash
-   # Using nvm (Node Version Manager)
-   nvm install 16
-   nvm use 16
-   
-   # Or install Node.js 16.x directly from nodejs.org
-   ```
-
-2. **Install dependencies using Node.js 16.x**:
-   ```bash
-   npm install
-   ```
-
-3. **Install Sharp library with optional dependencies**:
-   ```bash
-   npm install --include=optional sharp
-   ```
-   > **Important**: The Sharp library requires this specific installation command to ensure all necessary platform-specific dependencies are properly installed.
-
-4. **After installation, switch back to your preferred Node.js version**:
-   ```bash
-   # Using nvm
-   nvm use 18    # or your preferred version
-   ```
-
-### 3. Environment Setup
-
-Create a `.env` file in the root directory and add the necessary environment variables:
+git clone git@github.com:itax-easy/itax-easy-next.git
 
 ```
-PORT=8080
-MONGO_URI=your_mongodb_connection_string
-# Add other required environment variables
+
+  
+
+5. Install packages
+
+```bash
+# Using npm
+npm install
+
+# Using yarn
+yarn install
+
+# Using pnpm
+pnpm install
+
+# Using bun
+bun install
+```
+Dependencies
+
+```bash
+       "@react-pdf/renderer": "^3.3.8",
+        "ag-grid-community": "^31.0.1",
+        "axios": "^1.6.5",
+        "chart.js": "^4.4.1",
+        "cookies-next": "^4.1.0",
+        "events": "^3.3.0",
+        "exceljs": "^4.4.0",
+        "formik": "^2.2.9",
+        "framer-motion": "^10.16.5",
+        "gst-states": "^2.1.0",
+        "html-to-image": "^1.11.11",
+        "image-to-pdf": "^2.0.0",
+        "jspdf": "^2.5.1",
+        "lodash": "^4.17.21",
+        "next": "14.0.4",
+        "pdf-lib": "^1.17.1",
+        "pspdfkit": "^2023.1.4",
+        "react": "^18",
+        "react-chartjs-2": "^5.2.0",
+        "react-dom": "^18",
+        "react-dropzone": "^14.2.3",
+        "react-fast-marquee": "^1.6.2",
+        "react-hook-form": "^7.49.3",
+        "react-icons": "^4.12.0",
+        "react-intersection-observer": "^9.4.3",
+        "react-markdown": "^8.0.7",
+        "react-razorpay": "^1.2.0",
+        "react-select": "^5.8.0",
+        "react-to-print": "^2.14.15",
+        "react-toastify": "^9.1.3",
+        "react-uuid": "^2.0.0",
+        "styled-components": "^6.1.8",
+        "swiper": "^9.1.0",
+        "tailwindcss-scoped-groups": "^2.0.0",
+        "typewriter-effect": "^2.21.0",
+        "uid": "^2.0.2",
+        "uuid": "^9.0.1",
+        "yarn": "^1.22.19",
+        "yup": "^1.1.1"
 ```
 
-### 4. Running the Application
-
-#### Development Mode
+6. run the development server
 
 ```bash
 npm run dev
+
+# or
+
+yarn dev
+
+# or
+
+pnpm dev
+
+# or
+
+bun de
 ```
 
-#### Production Mode
+  
 
-```bash
-npm run build
-npm start
-```
+7. Open [http://localhost:3001](http://localhost:3001) with your browser to see the result.
 
-## Todos
-- [ ] Multiple Document Upload
-- [ ] Mailing List
-- [ ] Phone/Mobile Numbers List
+  
 
-## Download and Run
-```bash
-# Clone the repository
-git clone https://github.com/itax-easy/node-api.git
+### Completed Tasks in Front
 
-# Change directory
-cd node-api
+  
 
-# Install dependencies with Node.js 16
-nvm use 16
-npm install
-npm install --include=optional sharp
+- [x] 1 Our Products
+    - [x] E-Library
 
-# Run the application
-npm run start
-```
+- [x] 2 Easy Services
+    - [x] Easy GST Links
+    - [x] Easy IncomeTax Links
+    - [x] Easy Bank Links
+    - [x] Easy MCA
+    - [x] Easy Aadhaar Links
+    - [x] Easy Converter
+    - [x] Post Office  
 
-## Current Working APIs
-All sandbox APIs before GSTR2 are currently functioning.
+- [x] 3  Financial Calculators
+	- [x] Bank Calculators
+	- [x] Income Tax Calculators
+	- [x] GST Calculators
+	- [x] Investment Calculators
+	- [x] Loan Calculators
+	- [x] Insurance Calculators
 
-## Troubleshooting Common Issues
+- [x] 4  Blog
 
-### Sharp Library Issues
+- [x] 5  Register a Startup
 
-If you encounter errors related to the Sharp library:
+- [x] 6  APIs
 
-1. Ensure you've installed it with the optional dependencies:
-   ```bash
-   npm install --include=optional sharp
-   ```
+- [x] 7  Downloads
 
-2. If issues persist, try platform-specific installation:
-   ```bash
-   npm install --os=linux --cpu=x64 sharp
-   ```
+### Completed Tasks in Dashboard ( normal & admin user )
 
-3. Make sure system dependencies are installed:
-   ```bash
-   # On Ubuntu/Debian
-   sudo apt-get update
-   sudo apt-get install -y build-essential libvips-dev
-   ```
+- [ ] Dashboard
+- [ ] Easy GST Return
+- [ ] ITR
+    - [ ] Upload Form-16
+    - [ ] File Manually
+- [ ] Easy Investment 
+    - [ ] Insurance
+- [ ] Accounts
+    - [ ] Accounts
+    - [x] Invoice
+- [ ] Finance
+    - [ ] Loan
+    - [ ] Payment
+    - [ ] Working Capital
+- [ ] Transactions
+- [ ] Reports
+    - [ ] Project Report
+- [ ] Bill Payment
+    - [ ] Electricity Bill
+    - [ ] Mobile Recharge
+    - [ ] Gas Bill
+- [ ] Settings
+    - [ ] User Account
+    - [ ] Business profile
 
-### Memory Issues
+### Completed Tasks in Dashboard ( Super Admin )
 
-If the application crashes with "Killed" message:
+- [ ] Dashboard
+- [ ] users/admins
+- [ ] Easy GST Return
+- [ ] Easy ITR
+- [ ] Easy Investment
+- [ ] Invoice
+- [ ] Accounts
+- [ ] Finance
+- [ ] Transactions
+- [ ] Reports
+- [ ] Bill Payment
+- [ ] Settings
 
-1. Increase Node.js memory limit:
-   ```bash
-   export NODE_OPTIONS="--max-old-space-size=8192"
-   ```
 
-2. Check system resources and consider upgrading your server if needed.
 
-## API Documentation
 
-API documentation is available at `/api-docs` when running the server locally.
+# Backend
+- Nodejs Typescript [api.itaxeasy.com](api.itaxeasy.com)
 
-## Deployment
 
-This project is hosted on GoDaddy at [api.itaxeasy.com](https://api.itaxeasy.com).
-
-## License
-
-[Include your license information here]
+### hosted on 
+ 1 GoDaddy 
