@@ -13,8 +13,8 @@ This repository contains the backend API for the ITaxEasy platform built with No
 ### 1. Clone the Repository
 
 ```bash
-git clone git@github.com:itax-easy/Node_API.git
-cd Node_API
+git clone https://github.com/itax-easy/node-api.git
+cd node-api
 ```
 
 ### 2. Special Node.js Version Requirements
@@ -72,6 +72,31 @@ npm run build
 npm start
 ```
 
+## Todos
+- [ ] Multiple Document Upload
+- [ ] Mailing List
+- [ ] Phone/Mobile Numbers List
+
+## Download and Run
+```bash
+# Clone the repository
+git clone https://github.com/itax-easy/node-api.git
+
+# Change directory
+cd node-api
+
+# Install dependencies with Node.js 16
+nvm use 16
+npm install
+npm install --include=optional sharp
+
+# Run the application
+npm run start
+```
+
+## Current Working APIs
+All sandbox APIs before GSTR2 are currently functioning.
+
 ## Troubleshooting Common Issues
 
 ### Sharp Library Issues
@@ -112,7 +137,7 @@ API documentation is available at `/api-docs` when running the server locally.
 
 ## Deployment
 
-This project is hosted on GoDaddy at [api.itaxeasy.com](https://backend.itaxeasy.com).
+This project is hosted on GoDaddy at [api.itaxeasy.com](https://api.itaxeasy.com).
 
 ## License
 
