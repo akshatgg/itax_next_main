@@ -1,5 +1,5 @@
 'use client';
-
+import Chatbot from '@/components/chatbot/index.jsx';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { _ } from 'ag-grid-community';
@@ -430,6 +430,7 @@ function Home() {
               </Card>
             </div>
           </div>
+          <Chatbot/>
         </div>
       )}
     </>
