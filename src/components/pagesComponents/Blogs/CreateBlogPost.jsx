@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import axios from 'axios';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 import useAuth from '../../../../../hooks/useAuth';
+import userbackAxios from '@/lib/userbackAxios';
 const CreateBlogPost = () => {
   const {token} = useAuth();
   const titleRef = useRef('');
@@ -18,7 +19,7 @@ const CreateBlogPost = () => {
       imageUrlRef.current.value,
     );
     try {
-      const response = await axios.post(
+      const response = await userbackAxios.post(
         `${BASE_URL}/blog/posts`,
         {
           title: titleRef.current.value,

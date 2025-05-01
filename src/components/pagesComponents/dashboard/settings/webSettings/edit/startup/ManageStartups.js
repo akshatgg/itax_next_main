@@ -10,7 +10,7 @@ import Modal from '@/components/ui/Modal';
 import { toast } from 'react-toastify';
 import Loader from '@/components/partials/loading/Loader';
 import Button from '@/components/ui/Button';
-import userAxiosNext from '@/lib/userNextAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import ReactSelect from 'react-select';
 import { startupCategoryOptions } from './staticData';
 
@@ -35,7 +35,7 @@ export default function ManageStartups() {
   const getAllStartups = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { status, data } = await userAxios.get(`/startup/getAll`);
+      const { status, data } = await userbackAxios.get(`/startup/getAll`);
       if (status === 200) {
         setStartupsList(data.AllStartup);
       }

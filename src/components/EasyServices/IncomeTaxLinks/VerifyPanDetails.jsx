@@ -126,7 +126,7 @@ export default function VerifyPanDetails() {
     const details = [
         {
             label: "Aadhaar Seeding Status",
-            value: showdata.aadhaar_seeding_status === "Y" ? "Yes" : "No",
+            value: showdata.aadhaar_seeding_status === "y" ? "Yes" : "No",
         },
         { label: "Category", value: showdata.category },
       

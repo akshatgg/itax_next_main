@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
+import axios from 'axios';
 import { formatINRCurrency } from '@/utils/utilityFunctions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -57,29 +58,65 @@ function RegisterStartUpDetails({ params }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [serviceData, setServiceData] = useState(null);
-
   const [showAbout, setShowAbout] = useState(true);
   const [startupData, setStartupData] = useState({});
+  const [isInCart, setIsInCart] = useState(false);
 
   const getStartupData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(
+      const { data, status } = await userbackAxios.get(
         `/Startup/getOne/${+params.serviceId}`,
       );
+      console.log("Startup data:", data);
+      console.log("Status:", status);
+      
       if (status === 200 && data) {
         setStartupData(data);
       }
     } catch (error) {
       console.log(error.message);
+      setIsError(true);
     } finally {
       setIsLoading(false);
     }
   }, [params.serviceId]);
 
+  const checkIfInCart = useCallback(async () => {
+    try {
+      if (!token || !startupData?.id) return;
+      
+      setIsLoading(true);
+      const { data } = await axios.get(
+        `${process.env.NEXT_PUBLIC_BACK_URL}/cartStartup/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      if (data?.data && Array.isArray(data.data)) {
+        // Check if item exists in cart
+        const itemExists = data.data.some(cartItem => 
+          cartItem.id === startupData.id || cartItem.startupId === startupData.id
+        );
+        setIsInCart(itemExists);
+        console.log(`Item ${startupData.id} in cart: ${itemExists}`);
+      } else {
+        setIsInCart(false);
+      }
+    } catch (error) {
+      console.error("Error checking cart status:", error);
+      setIsInCart(false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token, startupData]);
+
   const getServiceData = async () => {
     try {
-      const { status, data } = await userAxios.get(`/registration`);
+      const { status, data } = await userbackAxios.get(`/registration`);
       if (status === 200) {
         const stuff = data?.data[0];
         if (stuff) {
@@ -104,12 +141,13 @@ function RegisterStartUpDetails({ params }) {
       const formData = new FormData();
 
       formData.append('serviceId', startupData.id);
-
+      formData.append('userId', currentUser?.id);
       Object.keys(body).forEach((key) => formData.append(key, body[key][0]));
 
-      const { status, data } = await userAxios.post('/registration', formData, {
+      const { status, data } = await userbackAxios.post(`/registration`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
         },
       });
       if (status === 201) {
@@ -125,13 +163,27 @@ function RegisterStartUpDetails({ params }) {
     }
   };
 
+  // Handle cart status change
+  const handleCartStatusChange = (cartStatus) => {
+    console.log("Cart status changed to:", cartStatus);
+    setIsInCart(cartStatus);
+  };
+
   useEffect(() => {
     getStartupData();
   }, [getStartupData]);
 
   useEffect(() => {
-    if(token && currentUser) getServiceData();
+    if (token && currentUser) {
+      getServiceData();
+    }
   }, [token, currentUser]);
+
+  useEffect(() => {
+    if (token && startupData?.id) {
+      checkIfInCart();
+    }
+  }, [token, startupData, checkIfInCart]);
 
   return (
     <>
@@ -144,7 +196,7 @@ function RegisterStartUpDetails({ params }) {
           <div className="flex flex-col lg:w-4/12 gap-3 mt-4 text-center">
             <Image
               src={startupData?.image}
-              alt="ESI"
+              alt={startupData?.title || "Service image"}
               width={200}
               height={200}
               className="mx-auto"
@@ -154,7 +206,13 @@ function RegisterStartUpDetails({ params }) {
               Price <span>{formatINRCurrency(startupData?.priceWithGst)}</span>
               <span className="text-xs"> Incl. GST</span>
             </div>
-            {!isLoading && <AddToCart item={startupData} />}
+            {!isLoading && startupData && (
+              <AddToCart 
+                item={startupData} 
+                alreadyInCart={isInCart}
+                onCartStatusChange={handleCartStatusChange}
+              />
+            )}
           </div>
           <div className="w-full p-5">
             <h3 className="text-2xl font-semibold text-center border-b mx-auto max-w-3xl">
@@ -276,8 +334,8 @@ function RegisterStartUpDetails({ params }) {
                 ) : (
                   <div className="mt-5 text-base leading-8 lg:ml-5 flex justify-center items-center">
                     <h3 className="my-4 text-xl font-medium">
-                      We have successfully recieved your documents! Our Team
-                      will contact your furthur
+                      We have successfully received your documents! Our Team
+                      will contact you further
                     </h3>
                   </div>
                 )}

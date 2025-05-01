@@ -1,5 +1,5 @@
 'use client';
-
+import Chatbot from '@/components/chatbot/index.jsx';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { _ } from 'ag-grid-community';
@@ -17,6 +17,7 @@ import {
 import Hero from './Hero';
 import OurServices from './OurServices';
 import { Icon } from '@iconify/react';
+import userbackAxios from '@/lib/userbackAxios';
 
 
 
@@ -63,7 +64,7 @@ function Home() {
     try {
       setLoading(true);
       const asynFunction = async () => {
-        const homeResponse = await axios.get(`${BACKEND_URL}/cms/homescreen`);
+        const homeResponse = await userbackAxios.get(`${BACKEND_URL}/cms/homescreen`);
         if (homeResponse.data.success) {
           const data = homeResponse.data.data.home;
           setPageData(data);
@@ -430,6 +431,7 @@ function Home() {
               </Card>
             </div>
           </div>
+          <Chatbot/>
         </div>
       )}
     </>

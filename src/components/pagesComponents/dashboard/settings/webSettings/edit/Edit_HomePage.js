@@ -11,7 +11,7 @@ import Link from 'next/link';
 //     setEditLanding(!editlanding);
 //   };
 //   const SubmitUpdate = () => {
-//     userAxios
+//     userbackAxios
 //       .post('/cms/main-heading-content', {
 //         upper: {
 //           mainHeading: getValues('mainheading'),
@@ -161,7 +161,7 @@ import Link from 'next/link';
 //   };
 
 //   const SubmitUpdate = () => {
-//     userAxios
+//     userbackAxios
 //       .post('/cms/ongoingprojects', {
 //         ongoingPro: ogPro,
 //       })
@@ -421,7 +421,7 @@ import Link from 'next/link';
 //   };
 
 //   const SubmitUpdate = () => {
-//     userAxios
+//     userbackAxios
 //       .post('/cms/navcards', {
 //         navcards: nvcards,
 //       })
@@ -597,7 +597,7 @@ import Link from 'next/link';
 //   };
 //   const SubmitCorpUpdate = () => {
 //     console.log('called corp fuction');
-//     userAxios
+//     userbackAxios
 //       .post('/cms/corporateprojects', {
 //         corporatePro: corPro,
 //       })
@@ -737,7 +737,7 @@ export default function Edit_HomePage() {
   // };
 
   // useEffect(() => {
-  //   userAxios
+  //   userbackAxios
   //     .get(`/cms/homescreen`)
   //     .then(function (response) {
   //       setUpper(response.data.data.home.upper);

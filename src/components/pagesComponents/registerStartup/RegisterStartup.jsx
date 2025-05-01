@@ -7,7 +7,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import userAxios from '@/lib/userAxios';
 import { toast } from 'react-toastify';
+import axios from 'axios';
+
 import Loader from '@/components/partials/loading/Loader';
+
 
 export default function RegisterStartup({ params }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,16 +19,15 @@ export default function RegisterStartup({ params }) {
   const getStartupData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get('/Startup/getAll');
-      // CHECK: all startups are showing without authentication,
-      console.log(data)
-      if (
-        status === 200 &&
-        data &&
-        data.AllStartup &&
-        data.AllStartup.length > 0
-      ) {
-        setStartupData(data.AllStartup);
+      const { data, status } = await axios.get(`${process.env.NEXT_PUBLIC_BACK_URL}/services`);
+      console.log("data", data);
+      console.log("data data", data.data);
+      console.log("status", data.status);
+      
+      
+      if (status === 200 && data) {
+        // The data is directly in the data array, not in data.data.AllStartup
+        setStartupData(data.data);
       }
     } catch (error) {
       toast.error('Error getting services data');

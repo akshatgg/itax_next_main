@@ -4,7 +4,7 @@ import { H4, H5 } from '@/components/pagesComponents/pageLayout/Headings';
 import Section from '@/components/pagesComponents/pageLayout/Section';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { Icon } from '@iconify/react';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
@@ -27,7 +27,7 @@ function Landing({ upper }) {
   const SubmitUpdate = async (upper) => {
     try {
       setIsLoading(true);
-      const { status } = await userAxios.post('/cms/main-heading-content', {
+      const { status } = await userbackAxios.post('/cms/main-heading-content', {
         upper,
       });
       if (status === 200) {
@@ -161,7 +161,7 @@ function EditLanding({}) {
 
   useEffect(() => {
     setLoading(true);
-    userAxios
+    userbackAxios
       .get(`/cms/homescreen`)
       .then(function (response) {
         setUpper(response.data.data.home.upper);

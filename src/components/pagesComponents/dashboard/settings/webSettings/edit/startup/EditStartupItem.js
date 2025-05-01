@@ -1,4 +1,4 @@
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { Icon } from '@iconify/react';
 import { toast } from 'react-toastify';
 import { startupCategoryOptions } from './staticData';
@@ -14,7 +14,7 @@ export default function Item_edit({
     try {
       if (window.confirm('Are you sure you want to delete?')) {
         setLoading(true);
-        const { status } = await userAxios.delete(`/startup/delete/${id}`);
+        const { status } = await userbackAxios.delete(`/startup/delete/${id}`);
         if (status === 200) {
           toast.success('Item deleted');
           refresh();
