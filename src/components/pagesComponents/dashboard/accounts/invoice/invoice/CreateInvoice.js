@@ -2,7 +2,7 @@
 
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import gstStateCodes from '@/utils/gstStateCodes';
@@ -119,9 +119,9 @@ export default function CreateInvoice({
       };
       let resp;
       if (!currentInvoice) {
-        resp = await userAxios.post('/invoice/invoices', data);
+        resp = await userbackAxios.post('/invoice/invoices', data);
       } else {
-        resp = await userAxios.put(
+        resp = await userbackAxios.put(
           `/invoice/invoices/${currentInvoice.id}`,
           data,
         );
@@ -145,7 +145,7 @@ export default function CreateInvoice({
   const getParties = async () => {
     try {
       setIsLoading(true);
-      const pariesResponse = await userAxios.get('/invoice/parties');
+      const pariesResponse = await userbackAxios.get('/invoice/parties');
       setPartiesData(pariesResponse.data);
     } catch (error) {
       console.log(error);
@@ -156,7 +156,7 @@ export default function CreateInvoice({
 
   const getItems = async () => {
     try {
-      const itemsResponse = await userAxios.get('/invoice/items');
+      const itemsResponse = await userbackAxios.get('/invoice/items');
       setItemsData(itemsResponse.data);
     } catch (error) {
       console.log(error);

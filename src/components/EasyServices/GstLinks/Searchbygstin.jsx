@@ -10,7 +10,7 @@ import ResultComponent from "../Components/ResultComponent";
 import { useRouter } from "next/navigation";
 import { useReactToPrint } from "react-to-print";
 import SearchResult_section from "@/components/pagesComponents/pageLayout/SearchResult_section.js";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 
 export default function Searchbygstin() {
 	const {token} = useAuth();

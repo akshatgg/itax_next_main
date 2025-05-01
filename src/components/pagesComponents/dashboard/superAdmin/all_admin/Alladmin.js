@@ -50,7 +50,7 @@ const Alladmin = () => {
   //   try {
   //     if (window.confirm('Are you sure you want to delete')) {
   //       setIsLoading(true);
-  //       const { status } = await userAxios.delete(`/user/delete-user/${id}`);
+  //       const { status } = await userbackAxios.delete(`/user/delete-user/${id}`);
   //       if (status === 200) {
   //         toast.success('User deleted successfully');
   //       }

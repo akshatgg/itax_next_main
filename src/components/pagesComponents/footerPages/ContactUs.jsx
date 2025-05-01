@@ -1,7 +1,7 @@
 'use client';
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { toast } from 'react-toastify';
 export default function ContactUs() {
   const {
@@ -15,7 +15,7 @@ export default function ContactUs() {
     console.log(formData);
     try {
       setLoading(true);
-      const response = await userAxios.post('/contactUs/create', {
+      const response = await userbackAxios.post('/contactUs/create', {
         ...formData,
         // phoneNumber: '8400258085',
       });

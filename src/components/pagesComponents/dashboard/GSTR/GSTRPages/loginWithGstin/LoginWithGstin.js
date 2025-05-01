@@ -1,6 +1,6 @@
 "use client"
 import { useForm } from "react-hook-form"
-import userAxios from "@/lib/userAxios"
+import userbackAxios from "@/lib/userbackAxios"
 import { useState } from "react";
 import {toast} from "react-toastify"
 import { getCookie,setCookie } from "cookies-next"
@@ -80,7 +80,7 @@ export default function LoginWithGstin() {
         if (gstin && username) {
             try {
                 setIsLoading(true)
-                const resp = await userAxios.post("/gst/tax-payer/generate-otp", {
+                const resp = await userbackAxios.post("/gst/tax-payer/generate-otp", {
                         gstin:gstin,
                         username:username
                     })
@@ -109,7 +109,7 @@ export default function LoginWithGstin() {
         if (gstin && username && otp) {
             try {
                 setIsLoading(true)
-                const resp = await userAxios.post("/gst/tax-payer/verify-otp", {
+                const resp = await userbackAxios.post("/gst/tax-payer/verify-otp", {
                         gstin:gstin,
                         username:username,
                         otp:otp

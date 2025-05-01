@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { I } from '@/components/iconify/I';
 import Link from 'next/link';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { toast } from 'react-toastify';
 
 export default function Footer() {
@@ -15,7 +15,7 @@ export default function Footer() {
   const getSocials = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get('/cms/footer');
+      const { data, status } = await userbackAxios.get('/cms/footer');
       if (status === 200 && data) {
         // Set socials to an empty object if API doesn't return socials
         setSocials(data.data?.socials || {});

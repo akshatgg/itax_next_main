@@ -3,7 +3,7 @@
 import InvoiceDashboardNavItem from './InvoiceDashboardNavItem.jsx';
 import OverviewDashboard from './OverviewDashboard.jsx';
 import OverviewTable from './OverviewTable.jsx';
-import userAxios from '@/lib/userAxios.js';
+import userbackAxios from '@/lib/userbackAxios.js';
 import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image.js';
 import moment from 'moment';
@@ -30,7 +30,7 @@ export default function InvoiceDashboard_index({ businessProfile }) {
   const getInvoices = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(
+      const { data, status } = await userbackAxios.get(
         `/invoice/invoices?page=${currentPage}&limit=5&type=${search?.type?.value ?? ''}&search=${search.search ?? ''}&status=${search?.status?.value ?? ''}`,
       );
 

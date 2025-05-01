@@ -49,7 +49,7 @@ export default function VerifyOTPForm() {
 
       if (email) {
         const { data } = await userbackAxios.post('/user/resendotp', {
-          // const { data } = await userAxios.post('/api/auth/resend-otp', {
+          // const { data } = await userbackAxios.post('/api/auth/resend-otp', {
           email,
           type: 'VERIFICATION',
         });
@@ -80,7 +80,7 @@ export default function VerifyOTPForm() {
       console.log(otp);
       
       const response = await userbackAxios.post('/user/verify', {
-        // const response = await userAxios.post('/api/auth/verify-otp', {
+        // const response = await userbackAxios.post('/api/auth/verify-otp', {
         email,
         otp_key: otpKey,
         otp,

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 // import BackButton from '../../../BackButton';
 import { usePathname, useRouter } from 'next/navigation';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { startTransition, useEffect, useState } from 'react';
 
 export default function CreateItem({ data, id }) {
@@ -46,11 +46,11 @@ export default function CreateItem({ data, id }) {
   const [isLoading, setIsLoading] = useState(false);
 
   async function createItem(data) {
-    return await userAxios.post('/invoice/items', JSON.stringify(data));
+    return await userbackAxios.post('/invoice/items', JSON.stringify(data));
   }
 
   async function updateItem(data) {
-    return await userAxios.put(`/invoice/items/${id}`, JSON.stringify(data));
+    return await userbackAxios.put(`/invoice/items/${id}`, JSON.stringify(data));
   }
 
   const onSubmit = async (formData) => {

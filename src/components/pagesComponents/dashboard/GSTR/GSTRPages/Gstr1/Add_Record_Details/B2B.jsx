@@ -1,5 +1,5 @@
 "use client";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import regex from "@/utils/regex";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
@@ -38,7 +38,7 @@ const B2B = ({ businessProfile }) => {
         const splits = value.slice(0, 2);
         setPOSData(splits);
 
-        await userAxios
+        await userbackAxios
             .get(`/gst/search/gstin/${value}`)
             .then(function (response) {
                 setTaxPType(response.data.data.data.dty);
@@ -55,7 +55,7 @@ const B2B = ({ businessProfile }) => {
     };
 
     useEffect(() => {
-        userAxios
+        userbackAxios
             .get(`/gstr1/4a-getall`)
             .then(function (response) {
                 console.log(response.data.data);
@@ -67,7 +67,7 @@ const B2B = ({ businessProfile }) => {
     }, []);
 
     const handleB2bSubmit = async () => {
-        await userAxios
+        await userbackAxios
             .post(`/gstr1/4a-create`, {
                 LegalName: legalName,
                 GSTN: getValues("gstr"),
@@ -97,7 +97,7 @@ const B2B = ({ businessProfile }) => {
     };
     const handleB2bUpdate = async (id) => {
         // console.log("editupdate", id);
-        await userAxios
+        await userbackAxios
             .post(`/gstr1/4a-update/${id}`, {
                 LegalName: legalName,
                 GSTN: getValues("gstr"),
@@ -126,7 +126,7 @@ const B2B = ({ businessProfile }) => {
             });
     };
     const deleteRecord = async (id) => {
-        await userAxios
+        await userbackAxios
             .delete(`/gstr1/ID/${id}`)
             .then(function (response) {
                 console.log(response.data);

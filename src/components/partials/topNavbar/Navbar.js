@@ -12,9 +12,9 @@ import BillShillLink from '@/components/BillShillLink.jsx';
 import Image from 'next/image.js';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import userAxios from '@/lib/userAxios';
-import userAxiosNext from '@/lib/userNextAxios';
 import userbackAxios from '@/lib/userbackAxios';
+import userbackAxiosNext from '@/lib/userNextAxios';
+
 
 export default function Navbar(props) {
   const { token, currentUser } = useAuth();

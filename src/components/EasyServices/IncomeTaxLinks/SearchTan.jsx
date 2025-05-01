@@ -12,7 +12,7 @@ import ResultComponent from "../Components/ResultComponent.jsx";
 import { useRouter } from "next/navigation";
 import { useReactToPrint } from "react-to-print";
 import SearchResult_section from "@/components/pagesComponents/pageLayout/SearchResult_section.js";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 
 export default function SearchTan() {
     const navigate = useRouter();
@@ -64,7 +64,7 @@ export default function SearchTan() {
 		setLoading(true);
 
 		try {
-			const response = await userAxios.get(
+			const response = await userbackAxios.get(
 				`${BASE_URL}/tan/search?tan=${inputValue}`
 			);
 

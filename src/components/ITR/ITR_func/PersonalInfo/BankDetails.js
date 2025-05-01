@@ -7,7 +7,7 @@ import { RxCross1 } from "react-icons/rx/index";
 import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { ifscRegex } from "../../../regexPatterns";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import { InputStyles } from "@/app/styles/InputStyles";
 
 export default function BankInfo({ setSection }) {
@@ -57,7 +57,7 @@ export default function BankInfo({ setSection }) {
         const url = "https://mom.itaxeasy.com/api/bank/get-details";
         const ifscCode = ifsc.current.value;
 
-        const res = await userAxios.post(url, JSON.stringify({ ifsc: ifscCode }));
+        const res = await userbackAxios.post(url, JSON.stringify({ ifsc: ifscCode }));
         const jsonData = await res.json();
         setBankName(jsonData?.data?.BANK);
     };

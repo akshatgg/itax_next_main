@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useForm } from "react-hook-form";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 
 const Saven_B2C = () => {
     const [activetav, setActiveTab] = useState(1);
@@ -17,7 +17,7 @@ const Saven_B2C = () => {
         setActiveTab(e);
     };
     const handle7B2CSubmit = (data) => {
-        userAxios
+        userbackAxios
             .post(`/gstr1/7a-create`, {
                 gstn: "123400",
                 pos: "1234",
