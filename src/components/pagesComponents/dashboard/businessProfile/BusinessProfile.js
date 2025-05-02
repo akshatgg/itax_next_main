@@ -7,7 +7,7 @@ import { Icon } from "@iconify/react";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 import axios from "axios";
 
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 
 function BusinessProfile_Form(props) {
   const { register, watch, editable } = props;
@@ -179,7 +179,7 @@ export default function BusinessProfile() {
   };
 
   useEffect(() => {
-    userAxios
+    userbackAxios
       .get(`/business/profile`)
       .then(function (response) {
         console.log(response.data.data.profile);
@@ -215,7 +215,7 @@ export default function BusinessProfile() {
   };
   const handleSaveEdit = (data) => {
     // const updateProfile = async()=>{
-    //     const resp = await userAxios.put(`/business/profile/${"51"}`, data, {
+    //     const resp = await userbackAxios.put(`/business/profile/${"51"}`, data, {
     //         headers: {
     //             Authorization: `Bearer ${token}`,
     //             "Content-Type": "application/json",
@@ -227,7 +227,7 @@ export default function BusinessProfile() {
   };
 
   const handleCreateBusinessProfile = () => {
-    userAxios
+    userbackAxios
       .post(`/business`, {
         businessName: panDetils.tradeNam,
         gstin: panDetils.gstin,
@@ -257,7 +257,7 @@ export default function BusinessProfile() {
     let statecode = getValues("statecode");
     if (statecode.length === 2) {
       setLoading(true);
-      userAxios
+      userbackAxios
         .get(
           `/gst/search/gstin-by-pan?pan=${panno}&gst_state_code=${statecode}`
         )

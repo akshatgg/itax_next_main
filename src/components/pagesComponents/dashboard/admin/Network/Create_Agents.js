@@ -4,7 +4,7 @@ import DashSection from "@/components/pagesComponents/pageLayout/DashSection";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import { useRouter } from "next/navigation";
 import VerifyIndicator from "@/components/indicators/VerifyIndicator";
 
@@ -34,7 +34,7 @@ export default function Create_Agents() {
         setError(false)
         setSuccess(false)
         try {
-            const resp = await userAxios.post("/user/sign-up-agent", {
+            const resp = await userbackAxios.post("/user/sign-up-agent", {
                 email: data.email,
                 firstName: data.firstName,
                 lastName: data.lastName,

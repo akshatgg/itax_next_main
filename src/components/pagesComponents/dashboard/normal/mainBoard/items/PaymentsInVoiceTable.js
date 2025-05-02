@@ -2,7 +2,7 @@
 
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import ReactTable from '@/components/ui/ReactTable';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { useCallback, useEffect, useState } from 'react';
 import { getPaymentsTableHeaders } from './staticData';
 import { toast } from 'react-toastify';
@@ -29,7 +29,7 @@ const PaymentsInvoiceTable = () => {
     return
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(
+      const { data, status } = await userbackAxios.get(
         `${currentPage}&order=desc`,
       );
       if (status === 200 && data && data.data) {

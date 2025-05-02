@@ -11,7 +11,7 @@ import Button, { BTN_SIZES } from '@/components/ui/Button';
 import { FaEye } from 'react-icons/fa';
 import { MdEdit, MdDelete } from 'react-icons/md';
 import { toast } from 'react-toastify';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import Image from 'next/image';
 import Input from '@/components/ui/Input';
 import { IoMdDownload } from 'react-icons/io';
@@ -37,7 +37,7 @@ function OverviewTable({
     try {
       if (window.confirm('Are you sure ?')) {
         setDeleteLoading(true);
-        const response = await userAxios.delete(`/invoice/invoices/${id}`);
+        const response = await userbackAxios.delete(`/invoice/invoices/${id}`);
         if (response.status === 200) {
           await refresh();
           toast.success(response.data.message);

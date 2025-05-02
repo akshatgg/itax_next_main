@@ -1,5 +1,5 @@
 'use client';
-
+import Chatbot from '@/components/chatbot/index.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
@@ -15,6 +15,7 @@ import { BACKEND_URL, token, c } from './staticData';
 import Hero from './Hero';
 import OurServices from './OurServices';
 import { Icon } from '@iconify/react';
+import userbackAxios from '@/lib/userbackAxios';
 
 function Home() {
   const [pageData, setPageData] = useState();
@@ -59,7 +60,7 @@ function Home() {
     try {
       setLoading(true);
       const asynFunction = async () => {
-        const homeResponse = await axios.get(`${BACKEND_URL}/cms/homescreen`);
+        const homeResponse = await userbackAxios.get(`${BACKEND_URL}/cms/homescreen`);
         if (homeResponse.data.success) {
           const data = homeResponse.data.data.home;
           setPageData(data);
@@ -612,6 +613,7 @@ function Home() {
 
           <div className="w-20 mx-auto h-0 border-t-[6px] border-primary border-dotted my-20" />
 
+<<<<<<< HEAD
           <div className="max-w-7xl lg:px-8 mx-auto py-16">
       {/* Heading */}
       <motion.h3
@@ -690,6 +692,39 @@ function Home() {
         </motion.div>
       </div>
     </div>
+=======
+          <div className="max-w-7xl lg:px-8 mx-auto">
+            <h3 className="text-center text-slate-900 text-3xl md:text-4xl font-extrabold">
+              User Insights
+            </h3>
+            <div className="flex flex-wrap gap-10 my-16 mx-auto justify-center sm:justify-between ">
+              <Card text={`${visitors || 0}+`} color="rgb(0, 85, 212)">
+                Total Visitors
+              </Card>
+              <Card
+                text={`${allUsers.totalUsers || 0}+`}
+                color="rgb(0, 85, 212)"
+              >
+                Total Active User
+              </Card>
+              <Card
+                text={`${allUsers.totalPhoneNumbers || 0}+`}
+                logo="logo"
+                color="rgb(0, 85, 212)"
+              >
+                Total Phone Contacts
+              </Card>
+              <Card
+                text={`${allUsers.totalEmails || 0}+`}
+                logo="logo"
+                color="rgb(0, 85, 212)"
+              >
+                Total Mailing Addresses
+              </Card>
+            </div>
+          </div>
+          <Chatbot/>
+>>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
         </div>
       )}
     </>

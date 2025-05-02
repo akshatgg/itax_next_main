@@ -5,7 +5,7 @@ const formatDate = (timestamp) =>
     month: '2-digit',
     day: '2-digit',
   });
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
@@ -27,7 +27,7 @@ export default function Page() {
         setLoading(true);
         setError({ error: null });
         setCertainInvoice(null);
-        const resp = await userAxios.get(`/invoice/invoices/${id}`);
+        const resp = await userbackAxios.get(`/invoice/invoices/${id}`);
         setCertainInvoice(resp.data);
       } catch (error) {
         console.log(error);
@@ -43,7 +43,7 @@ export default function Page() {
     try {
       setLoadingDelete(true);
       setError({ error: null });
-      const resp = await userAxios.delete(`/invoice/invoices/${id}`);
+      const resp = await userbackAxios.delete(`/invoice/invoices/${id}`);
       console.log(resp);
       if (resp.status === 200) {
         toast.success('Invoice Deleted');

@@ -1,5 +1,5 @@
 "use client";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -18,7 +18,7 @@ const Five_A_B2C = () => {
     };
 
     //   useEffect(() => {
-    //     userAxios
+    //     userbackAxios
     //         .get(`/gstr1/4a-getall`)
     //         .then(function (response) {
     //             console.log(response.data.data[0]);
@@ -29,7 +29,7 @@ const Five_A_B2C = () => {
     //         });
     // }, [activetav]);
     useEffect(() => {
-        userAxios
+        userbackAxios
             .get(`/gstr1/5a-getall`)
             .then(function (response) {
                 console.log(response.data.data);
@@ -41,7 +41,7 @@ const Five_A_B2C = () => {
     }, []);
 
     const handle5B2CSubmit = (data) => {
-        userAxios
+        userbackAxios
             .post(`/gstr1/5a-create`, {
                 pos: getValues("pos"),
                 invoice_No: getValues("invoiceno"),
@@ -86,7 +86,7 @@ const Five_A_B2C = () => {
     };
     const handleB2bUpdate = async (id) => {
         // console.log("editupdate", id);
-        await userAxios
+        await userbackAxios
             .post(`/gstr1/4a-update/${id}`, {
                 LegalName: legalName,
                 GSTN: getValues("gstr"),
@@ -115,7 +115,7 @@ const Five_A_B2C = () => {
             });
     };
     const deleteRecord = async (id) => {
-        await userAxios
+        await userbackAxios
             .delete(`/gstr1/ID/${id}`)
             .then(function (response) {
                 console.log(response.data);

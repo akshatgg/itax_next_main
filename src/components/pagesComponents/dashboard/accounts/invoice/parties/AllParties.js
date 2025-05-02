@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { useState, useEffect } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { toast } from 'react-toastify';
 
 const itemsData = {
@@ -40,7 +40,7 @@ export default function AllParties(props) {
       setIsLoading(true);
       setIsError(false);
 
-      const response = await userAxios.get('/invoice/parties', {
+      const response = await userbackAxios.get('/invoice/parties', {
         params: { types: type },
       });
       setAllParties(response.data);
@@ -59,7 +59,7 @@ export default function AllParties(props) {
 
   const handleDeleteParty = async (id) => {
     try {
-      const resp = await userAxios.delete(`/invoice/parties/${id}`);
+      const resp = await userbackAxios.delete(`/invoice/parties/${id}`);
       if (resp.data.success) {
         fetchPartiesData();
         toast.success('Party Deleted');
@@ -250,7 +250,7 @@ export default function AllParties(props) {
 // import Link from 'next/link';
 // import { Icon } from '@iconify/react';
 // import { useState, useEffect } from 'react';
-// import userAxios from '@/lib/userAxios';
+// import userbackAxios from '@/lib/userbackAxios';
 // import { toast } from 'react-toastify';
 
 // const itemsData = {
@@ -287,7 +287,7 @@ export default function AllParties(props) {
 //       setIsLoading(true);
 //       setIsError(false);
 
-//       const response = await userAxios.get('/invoice/parties', {
+//       const response = await userbackAxios.get('/invoice/parties', {
 //         params: { types: type },
 //       });
 //       setAllParties(response.data);
@@ -306,7 +306,7 @@ export default function AllParties(props) {
 
 //   const handleDeleteParty = async (id) => {
 //     try {
-//       const resp = await userAxios.delete(`/invoice/parties/${id}`);
+//       const resp = await userbackAxios.delete(`/invoice/parties/${id}`);
 //       if (resp.data.success) {
 //         fetchPartiesData();
 //         toast.success('Party Deleted');

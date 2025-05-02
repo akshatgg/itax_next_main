@@ -7,7 +7,7 @@ import GST from "./GST";
 import OtherDetails from "./OtherDetails";
 import FinalDetails from "./FinalDetails";
 import { useEffect, useState } from "react";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
@@ -58,7 +58,7 @@ export default function EditSaleForm({PreviewsInvoiceData}) {
                 credit: formData.credit==="true"?true:false,
                 status:  modeOfPayment==="cash" || modeOfPayment==="bank" || modeOfPayment==="upi"  || modeOfPayment==="credit" ? "paid" : "unpaid"// paid , unpaid ,overdue
             }
-            const resp = await userAxios.post("/invoice/invoices", formInvoiceData);
+            const resp = await userbackAxios.post("/invoice/invoices", formInvoiceData);
             console.log(resp);
             if (resp.status === 201) {
                 toast.success("Invoice Created");

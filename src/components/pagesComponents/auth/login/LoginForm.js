@@ -31,7 +31,11 @@ export default function LoginForm() {
           password,
 
         });
+<<<<<<< HEAD
           // const response = await userAxios.post('/api/auth/login', { email, password });
+=======
+          // const response = await userbackAxios.post('/api/auth/login', { email, password });
+>>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
           const { data } = response; // Extract data separately
           console.log(data);
         

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { blogCategories } from './staticData';
 import Image from 'next/image';
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACK_URL;
 
 export default function BlogIndividualPage({ params }) {
   const pathURL = params.slug[0];

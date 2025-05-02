@@ -12,7 +12,7 @@ import {
 } from './staticData';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { zodResolver } from '@hookform/resolvers/zod';
 // import VerifyUser from './VerifyUser';
 import Modal from '@/components/ui/Modal';
@@ -40,7 +40,7 @@ const CreatePayments = ({ currentRow, onClose, onRefresh }) => {
     return;
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.post('', formData);
+      const { data, status } = await userbackAxios.post('', formData);
       if (status === 200) {
         const {
           data: { user, otp_key },
@@ -62,7 +62,7 @@ const CreatePayments = ({ currentRow, onClose, onRefresh }) => {
     return;
     try {
       setIsLoading(true);
-      const { status } = await userAxios.put(`${currentRow.id}`, body);
+      const { status } = await userbackAxios.put(`${currentRow.id}`, body);
       if (status === 200) {
         toast.success('Successfully updated user');
         onRefresh();

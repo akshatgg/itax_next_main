@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import ErrorComponent from '@/components/partials/error/ErrorComponent';
 import CreateInvoice from '@/components/pagesComponents/dashboard/accounts/invoice/invoice/CreateInvoice';
-import userAxios from '@/lib/axios'; // Assuming you have this
+import userbackAxios from '@/lib/axios'; // Assuming you have this
 
 const initialSearch = { search: '', type: null, status: null };
 
@@ -20,7 +20,7 @@ export default function CreateInvoicePage({ businessProfile }) {
   const getInvoices = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(
+      const { data, status } = await userbackAxios.get(
         `/invoice/invoices?page=${currentPage}&limit=5&type=${search?.type?.value ?? ''}&search=${search.search ?? ''}&status=${search?.status?.value ?? ''}`
       );
 

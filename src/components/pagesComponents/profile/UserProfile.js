@@ -6,8 +6,8 @@
 // import { Icon } from '@iconify/react';
 // import Image from 'next/image';
 import Button from '@/components/ui/Button';
-import userAxios from '@/lib/userAxios';
-import userAxiosNext from '@/lib/userNextAxios';
+import userbackAxios from '@/lib/userbackAxios';
+import userbackAxiosNext from '@/lib/userNextAxios';
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import UserProfileCard from './UserProfileCard';
@@ -95,7 +95,7 @@ const UserProfile = () => {
   const getUserDetails = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(`/user/profile`);
+      const { data, status } = await userbackAxios.get(`/user/profile`);
 
       if (status === 200 && data && data.data && data.data.user) {
         reset(parseNonNullObject(data.data.user));
@@ -114,7 +114,7 @@ const UserProfile = () => {
       try {
         setLoading(true);
         const existingValues = getValues();
-        const response = await userAxios.get(`/pan/get-pan-details?pan=${pan}`);
+        const response = await userbackAxios.get(`/pan/get-pan-details?pan=${pan}`);
         setLoading(false);
         const data = response?.data?.data;
 

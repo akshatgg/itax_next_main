@@ -1,6 +1,6 @@
 import { IoMdDownload } from "react-icons/io";
 import ExcelJS from "exceljs";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import { useEffect, useState } from "react";
 const formatDate = (timestamp) =>
     new Date(timestamp).toLocaleString("en-US", {
@@ -211,7 +211,7 @@ const B2B_invoices = () => {
         URL.revokeObjectURL(downloadUrl);
     };
     // useEffect(() => {
-    //     userAxios
+    //     userbackAxios
     //         .get(
     //             `/gst/search/gstin-by-pan?pan=${panno}&gst_state_code=${statecode}`,
     //         )

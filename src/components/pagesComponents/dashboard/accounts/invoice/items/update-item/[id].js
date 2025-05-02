@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import CreateItem from '@/components/CreateItem'; // Adjust the import path as needed
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -15,7 +15,7 @@ const UpdateItemPage = ({ params }) => {
   useEffect(() => {
     const fetchItem = async () => {
       try {
-        const response = await userAxios.get(`/invoice/items/${id}`);
+        const response = await userbackAxios.get(`/invoice/items/${id}`);
         console.log('Fetched Item Data:', response.data.item); // Check data structure
         setItemData(response.data.item);
         setIsLoading(false);
