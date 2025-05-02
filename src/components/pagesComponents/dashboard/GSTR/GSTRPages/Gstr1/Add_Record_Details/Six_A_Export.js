@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useForm } from "react-hook-form";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 
 const Six_A_Export = () => {
     const [activetav, setActiveTab] = useState(1);
@@ -18,7 +18,7 @@ const Six_A_Export = () => {
     };
 
     const handle6ASubmit = (data) => {
-        userAxios
+        userbackAxios
             .post(`/gstr1/6a-create`, {
                 sr_no: "sr_no",
                 pos: "123",

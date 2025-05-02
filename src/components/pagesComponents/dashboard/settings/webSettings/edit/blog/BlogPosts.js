@@ -12,7 +12,7 @@ import FlexContainer from '@/components/pagesComponents/pageLayout/FlexContainer
 import CreateBlogPost from './CreateBlogPost';
 import Modal from '@/components/ui/Modal';
 import { toast } from 'react-toastify';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import Loader from '@/components/partials/loading/Loader';
 import ReactSelect from 'react-select';
 
@@ -27,7 +27,7 @@ export default function BlogPosts() {
   const getPosts = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(
+      const { data, status } = await userbackAxios.get(
         `/blog/posts?page=${currentPage}&limit=${limit.value}`,
       );
       if (status === 200) {
@@ -53,7 +53,7 @@ export default function BlogPosts() {
   const onDelete = async (id) => {
     try {
       setIsLoading(true);
-      const { status } = await userAxios.delete(`/blog/posts/${id}`);
+      const { status } = await userbackAxios.delete(`/blog/posts/${id}`);
       if (status === 200) {
         refresh();
         toast.success('Successfully deleted');

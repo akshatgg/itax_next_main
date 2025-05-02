@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import PageContainer from '../pageLayout/PageContainer.jsx';
-import userAxios from '@/lib/userAxios.js';
+import userbackAxios from '@/lib/userbackAxios.js';
 
 // import Select from 'react-select';
 // import { colourOptions } from './docs/data';
@@ -53,7 +53,7 @@ const Career = () => {
       formData.append('mobile', body.mobile);
       formData.append('cv', body.cv[0]);
 
-      const { data, status, message } = await userAxios.post(
+      const { data, status, message } = await userbackAxios.post(
         '/career/create',
         formData,
         {

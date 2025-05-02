@@ -4,7 +4,7 @@ import { H4 } from '@/components/pagesComponents/pageLayout/Headings';
 import Section from '@/components/pagesComponents/pageLayout/Section';
 // import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { Icon } from '@iconify/react';
 import { toast } from 'react-toastify';
 import Image from 'next/image';
@@ -55,7 +55,7 @@ function NavCards({ navCard, loading, setLoading, getNavCards }) {
   const SubmitUpdate = async () => {
     try {
       setLoading(true);
-      const { status } = await userAxios.post('/cms/navcards', {
+      const { status } = await userbackAxios.post('/cms/navcards', {
         navcards: nvcards,
       });
       if (status === 200) {
@@ -334,7 +334,7 @@ function EditNavcards() {
 
   const getNavCards = () => {
     setLoading(true);
-    userAxios
+    userbackAxios
       .get(`/cms/homescreen`)
       .then(function (response) {
         if (response.data.data.home.navcards) {

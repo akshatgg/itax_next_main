@@ -64,7 +64,7 @@ export default async function Items() {
 // import Link from 'next/link';
 // import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 // import { useEffect, useState } from 'react';
-// import userAxios from '@/lib/userAxios';
+// import userbackAxios from '@/lib/userbackAxios';
 // import { toast } from 'react-toastify';
 
 // export default function Items() {
@@ -78,7 +78,7 @@ export default async function Items() {
 //       setIsLoading(true);
 //       setIsError(false);
 
-//       const response = await userAxios.get('/invoice/items');
+//       const response = await userbackAxios.get('/invoice/items');
 //       setRespData(response.data);
 
 //       setIsLoading(false);
@@ -95,7 +95,7 @@ export default async function Items() {
 
 //   const handleDelete = async (id) => {
 //     try {
-//       const response = await userAxios.delete('/invoice/items/' + id);
+//       const response = await userbackAxios.delete('/invoice/items/' + id);
 //       if (response.data.success) {
 //         toast.success(`Item Deleted : ${response.data.item?.itemName}`);
 //         fetchItemsData();

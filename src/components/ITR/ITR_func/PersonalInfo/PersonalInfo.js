@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { panRegex, aadharRegex } from "../../../regexPatterns";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import { InputStyles } from "@/app/styles/InputStyles";
 export default function PresonalInfo({ setSection,userProfile }) {
     const { token } = useAuth();
@@ -70,7 +70,7 @@ export default function PresonalInfo({ setSection,userProfile }) {
         }
 
         try {
-            const res = await userAxios.get("/pan/get-pan-details?pan=" +formik.values.pan,);
+            const res = await userbackAxios.get("/pan/get-pan-details?pan=" +formik.values.pan,);
             const {data: { status, full_name, aadhaar_seeding_status },} = await res.data;
 
             //setting if PAN is valid -
@@ -98,7 +98,7 @@ export default function PresonalInfo({ setSection,userProfile }) {
         if (!token) {
             return toast("Login to fetch Aadhar details", { type: "error" });
         }
-        const res = await userAxios.get("pan/verify_aadhar?aadhar=" +formik.values.aadhaar,);
+        const res = await userbackAxios.get("pan/verify_aadhar?aadhar=" +formik.values.aadhaar,);
         const { data } = await res.data;
 
         //setting if aadhar is valid -

@@ -6,10 +6,10 @@ import { toast } from 'react-toastify';
 import Image from 'next/image';
 import { v4 } from 'uuid';
 import useAuth from '@/hooks/useAuth';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { useRouter } from 'next/navigation';
 import { generateQueryFromObject } from '@/utils/utilityFunctions';
-import userAxiosNext from '@/lib/userNextAxios';
+import userbackAxiosNext from '@/lib/userNextAxios';
 
 const PayNowHandler = ({
   totalAmount,
@@ -45,7 +45,7 @@ const PayNowHandler = ({
 
   const createSubs = async () => {
     try {
-      const { status, data } = await userAxiosNext.post('/api/subscriptions', {
+      const { status, data } = await userbackAxiosNext.post('/api/subscriptions', {
         serviceIds: services.map((service) => service.id),
         registerStartupIds: registrationStartup.map((service) => service.id),
         registerServiceIds: registrationServices.map((service) => service.id),
@@ -61,7 +61,7 @@ const PayNowHandler = ({
 
   const payHandler = async (txnid) => {
     try {
-      const { data, status } = await userAxios.post(
+      const { data, status } = await userbackAxios.post(
         `/payment/initiate_payment`,
         paymentDetails(txnid),
       );
@@ -85,7 +85,7 @@ const PayNowHandler = ({
             });
 
             if (status === 'success') {
-              const updated = await userAxiosNext.put('/api/subscriptions', {
+              const updated = await userbackAxiosNext.put('/api/subscriptions', {
                 status,
                 txnid,
                 pid,

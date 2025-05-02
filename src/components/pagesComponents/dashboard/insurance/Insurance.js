@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import ReactTable from '@/components/ui/ReactTable';
@@ -43,7 +43,7 @@ const Insurance = () => {
   const getApplications = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await userAxios.get(
+      const response = await userbackAxios.get(
         `/insurance/getAll?page=${isPage}&limit=${limit.value}&order='asc'`,
       );
       if (response && response?.data) {
@@ -65,7 +65,7 @@ const Insurance = () => {
     try {
       if (window.confirm('Are you sure you want to delete')) {
         setIsLoading(true);
-        const { status } = await userAxios.delete(`/insurance/delete/${id}`);
+        const { status } = await userbackAxios.delete(`/insurance/delete/${id}`);
         if (status) {
           toast.success('Application deleted successfully!');
           getApplications();

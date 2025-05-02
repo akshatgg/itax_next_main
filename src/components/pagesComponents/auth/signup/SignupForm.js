@@ -69,7 +69,11 @@ export default function SignupForm() {
     try {
       setLoading(true);
       const response = await userbackAxios.post('/user/sign-up', {
+<<<<<<< HEAD
         // const response = await userAxios.post('/api/auth/signup', {
+=======
+        // const response = await userbackAxios.post('/api/auth/signup', {
+>>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
         firstName,
         lastName,
         gender,

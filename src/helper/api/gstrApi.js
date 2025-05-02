@@ -1,7 +1,7 @@
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 
 export const getTrackGstReturn = async ({ gstin, financialYear }) => {
-  const resp = await userAxios.post(`/gst/return/track`, {
+  const resp = await userbackAxios.post(`/gst/return/track`, {
     gstin,
     financialYear,
   });

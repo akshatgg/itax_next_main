@@ -1,6 +1,6 @@
 "use client";
 
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import showCurrency from "@/helper/showCurrency";
@@ -182,7 +182,7 @@ export default function ItemsInTheInvoice(props) {
     const getItems = async () => {
         try {
             setLoading_Items(true);
-            const itemsResponse = await userAxios.get("/invoice/items");
+            const itemsResponse = await userbackAxios.get("/invoice/items");
             setItemsData(itemsResponse.data);
         } catch (error) {
             setError_Items(error);

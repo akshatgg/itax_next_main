@@ -12,9 +12,9 @@ import BillShillLink from '@/components/BillShillLink.jsx';
 import Image from 'next/image.js';
 import { useSelector } from 'react-redux';
 import axios from 'axios';
-import userAxios from '@/lib/userAxios';
-import userAxiosNext from '@/lib/userNextAxios';
 import userbackAxios from '@/lib/userbackAxios';
+import userbackAxiosNext from '@/lib/userNextAxios';
+
 
 export default function Navbar(props) {
   const { token, currentUser } = useAuth();
@@ -69,7 +69,10 @@ export default function Navbar(props) {
             ${props.className}
             `}
     >
-      <nav className=" max-w-7xl m-auto text-xs sticky top-0 min-h-10  z-50 py-1 px-5 flex items-center  flex-wrap">
+
+
+      <nav className="max-w-7xl  m-auto text-xs sticky top-0 min-h-10  z-50 py-1 px-5 flex items-center  flex-wrap">
+
         <div>
           <Link
             href="/"
@@ -85,9 +88,9 @@ export default function Navbar(props) {
           </Link>
         </div>
 
-        <ul className=" h-12 ml-auto hidden lg:flex items-center justify-between font-bold text-xs">
+        <ul className="h-12 ml-auto hidden lg:flex items-center justify-between font-bold text-xs gap-3 ">
           <li className="mx-2 cursor-pointer text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 group relative">
-            <div className="flex items-center py-5">
+            <div className="flex items-center py-5 ">
               <span className="group-hover:hidden">{bottomArrow}</span>
               <span className="hidden group-hover:block">{rightArrow}</span>
               Our Products
@@ -99,7 +102,7 @@ export default function Navbar(props) {
                   href={element.url}
                   className={
                     element.upcoming
-                      ? 'pointer-events-none py-3 mx-2 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between'
+                      ? ' pointer-events-none py-3 mx-2 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between '
                       : 'py-3 mx-2 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between'
                   }
                 >
@@ -253,7 +256,7 @@ export default function Navbar(props) {
               <UserInfo />
             </div>
           ) : (
-            <Link href="/login" className=" btn-primary">
+            <Link href="/login" className=" font-medium bg-blue-600 text-sm text-white px-8 py-2 rounded-full hover:bg-blue-500 ">
               Login
             </Link>
           )}
@@ -451,6 +454,8 @@ export default function Navbar(props) {
           </li>
         </ul>
       </div>
+
+      
     </div>
   );
 }

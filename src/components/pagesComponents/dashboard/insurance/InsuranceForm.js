@@ -9,7 +9,7 @@ import {
 import Button, { BTN_SIZES } from '@/components/ui/Button';
 import { toast } from 'react-toastify';
 import { zodResolver } from '@hookform/resolvers/zod';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import moment from 'moment';
 
 const InsuranceForm = ({ data, onClose, refresh }) => {
@@ -34,7 +34,7 @@ const InsuranceForm = ({ data, onClose, refresh }) => {
 
       if (data) {
         // IF DATA IS PASSED, UPDATE API SHOULD BE CALLED
-        const { status } = await userAxios.put(
+        const { status } = await userbackAxios.put(
           `/insurance/update/${data.id}`,
           body,
         );
@@ -42,7 +42,7 @@ const InsuranceForm = ({ data, onClose, refresh }) => {
           isSuccess = true;
         }
       } else {
-        const { status } = await userAxios.post(`/insurance/apply`, body);
+        const { status } = await userbackAxios.post(`/insurance/apply`, body);
         if (status === 201) {
           isSuccess = true;
         }

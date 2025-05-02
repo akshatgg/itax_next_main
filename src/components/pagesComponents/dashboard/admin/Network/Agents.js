@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from "react"
 import DashSection from "@/components/pagesComponents/pageLayout/DashSection";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import Link from "next/link";
 
 export default function Agents() {
@@ -14,7 +14,7 @@ export default function Agents() {
         setError(false)
         setAgentsRespData(false)
         try {
-            const resp = await userAxios.get(`/user/get-all-users?page=${p}`)
+            const resp = await userbackAxios.get(`/user/get-all-users?page=${p}`)
             setAgentsRespData(resp)
         } catch (error) {
             setError(error)

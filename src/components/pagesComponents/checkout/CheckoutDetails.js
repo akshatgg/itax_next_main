@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Title, PaymentButton } from '@/components/Checkout/checkoutStyles';
 import { toast } from 'react-toastify';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import PayNowHandler from './PayNowHandler';
 
 const PaymentPageWrapper = ({ children }) => (
@@ -34,7 +34,7 @@ export default function CheckoutDetails({ cartItems = {} }) {
   const getUserDetails = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(`/user/profile`);
+      const { data, status } = await userbackAxios.get(`/user/profile`);
       if (status === 200 && data && data.data && data.data.user) {
         const { firstName, lastName, email, gst } = data.data.user;
         setUserDetails({ firstName, lastName, email, gst });

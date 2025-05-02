@@ -2,7 +2,7 @@
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { toast } from 'react-toastify';
 import BackButton from '../../../BackButton'; // Import BackButton if you have it
 import { createPartySchema } from '../invoice/createPartySchema';
@@ -47,7 +47,7 @@ export default function CreateParty() {
       // Fetch the party details if in edit mode
       const fetchPartyDetails = async () => {
         try {
-          const response = await userAxios.get(`/invoice/parties/${partyId}`);
+          const response = await userbackAxios.get(`/invoice/parties/${partyId}`);
           const party = response.data.party;
           // Populate the form with the party details
           Object.keys(party).forEach((key) => setValue(key, party[key]));
@@ -83,7 +83,7 @@ export default function CreateParty() {
 
       if (partyId) {
         // Update the existing party
-        response = await userAxios.put(
+        response = await userbackAxios.put(
           `/invoice/parties/${partyId}`,
           JsonData, // No need to stringify the data here
           {
@@ -94,7 +94,7 @@ export default function CreateParty() {
         );
       } else {
         // Create a new party
-        response = await userAxios.post(
+        response = await userbackAxios.post(
           '/invoice/parties',
           JsonData, // No need to stringify the data here
           {

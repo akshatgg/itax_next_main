@@ -6,6 +6,8 @@ import { useReactToPrint } from 'react-to-print';
 import SearchResult_section from '@/components/pagesComponents/pageLayout/SearchResult_section.js';
 import Image from 'next/image';
 import { formatINRCurrency } from '@/utils/utilityFunctions';
+import CalculatorsComponent from './CalculatorsComponent';
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const CapitalGainCal = () => {
@@ -242,6 +244,7 @@ const CapitalGainCal = () => {
         </li>
       )}
     </SearchResult_section>
+    
   );
 };
 

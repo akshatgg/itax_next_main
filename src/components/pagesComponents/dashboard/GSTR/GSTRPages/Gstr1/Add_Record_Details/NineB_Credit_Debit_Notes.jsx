@@ -1,6 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 const NineB_Credit_Debit_Notes = () => {
     const {
         register,
@@ -9,7 +9,7 @@ const NineB_Credit_Debit_Notes = () => {
         formState: { errors },
     } = useForm();
     const handle9BSubmit = (data) => {
-        userAxios
+        userbackAxios
             .post(`/gstr1/9create`, {
                 gstn: "dfdsfds",
                 recipient_name: "sudhir_nandane",

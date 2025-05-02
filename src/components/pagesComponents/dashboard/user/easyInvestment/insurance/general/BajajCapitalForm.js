@@ -1,5 +1,5 @@
 "use client";
-import userAxios from "@/lib/userAxios";
+import userbackAxios from "@/lib/userbackAxios";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -28,7 +28,7 @@ export default function BajajCapitalForm() {
 
 
   useEffect(() => {
-    userAxios
+    userbackAxios
       .get(`/user/profile`)
       .then(function (response) {
         console.log(response.data.data.user);
@@ -53,7 +53,7 @@ export default function BajajCapitalForm() {
 
     try {
       setLoading(true);
-      const response = await userAxios.post("/insourance/apply", {
+      const response = await userbackAxios.post("/insourance/apply", {
         name: name,
         address:address,
         gender:gender,

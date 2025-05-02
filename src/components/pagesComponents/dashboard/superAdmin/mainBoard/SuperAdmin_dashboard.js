@@ -8,7 +8,7 @@ import Link from 'next/link';
 
 import axios from 'axios';
 import Financial_Details from './items/Financial_Details';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 
 const tableClassName = {
   headTH:
@@ -27,7 +27,7 @@ export default function SuperAdmin_Dashboard() {
       try {
         setIsLoading(true);
         setIsError(false);
-        const resp = await userAxios.get(
+        const resp = await userbackAxios.get(
           `${process.env.NEXT_PUBLIC_BASE_URL}/user/get-all-users?page=${currentPage}`,
           {
             headers: {

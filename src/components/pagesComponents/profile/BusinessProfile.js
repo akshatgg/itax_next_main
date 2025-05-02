@@ -1,4 +1,4 @@
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { useForm } from 'react-hook-form';
 import React, { useCallback, useEffect, useState } from 'react';
 import BProfileCard from './BProfileCard';
@@ -50,7 +50,7 @@ const BusinessProfile = () => {
   const getGstProfileByGstin = useCallback(async (gstin) => {
     try {
       setIsLoadingGstDetails(true);
-      const { data, status } = await userAxios.get(
+      const { data, status } = await userbackAxios.get(
         `/gst/search/gstin/${gstin}`,
       );
 
@@ -74,7 +74,7 @@ const BusinessProfile = () => {
   const getBusinessProfile = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(`/business/profile`);
+      const { data, status } = await userbackAxios.get(`/business/profile`);
       const profile = data?.data?.profile;
 
       if (status === 200 && profile) {
@@ -120,7 +120,7 @@ const BusinessProfile = () => {
   const formSubmitHandler = async (body) => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.post(`/business`, body);
+      const { data, status } = await userbackAxios.post(`/business`, body);
 
       if (status === 200 && data) {
         toast.success(data.message);

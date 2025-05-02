@@ -4,7 +4,7 @@ import { H4 } from '@/components/pagesComponents/pageLayout/Headings';
 import Section from '@/components/pagesComponents/pageLayout/Section';
 import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { Icon } from '@iconify/react';
 import Button from '@/components/ui/Button';
 import Image from 'next/image';
@@ -111,7 +111,7 @@ function EditCards() {
   const submitHandler = async ({ data: cards }) => {
     try {
       setLoading(true);
-      const { status } = await userAxios.post('/cms/cards', { cards });
+      const { status } = await userbackAxios.post('/cms/cards', { cards });
       if (status === 200) {
         reset({ data: cards });
         setLoading(false);
@@ -127,7 +127,7 @@ function EditCards() {
 
   useEffect(() => {
     setLoading(true);
-    userAxios
+    userbackAxios
       .get(`/cms/homescreen`)
       .then(function (response) {
         setCards(response.data.data.home.cards || []);

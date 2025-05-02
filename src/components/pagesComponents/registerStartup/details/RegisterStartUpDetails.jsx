@@ -3,7 +3,10 @@
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
 import userbackAxios from '@/lib/userbackAxios';
+<<<<<<< HEAD
+=======
 import axios from 'axios';
+>>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
 import { formatINRCurrency } from '@/utils/utilityFunctions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -11,7 +14,7 @@ import { z } from 'zod';
 import { toast } from 'react-toastify';
 import AddToCart from './AddtoCart';
 import useAuth from '@/hooks/useAuth';
-
+import axios from 'axios';
 const validateFile = (file) => {
   if (!file) return false;
 
@@ -68,11 +71,18 @@ function RegisterStartUpDetails({ params }) {
       const { data, status } = await userbackAxios.get(
         `/Startup/getOne/${+params.serviceId}`,
       );
+<<<<<<< HEAD
+      console.log(data);
+=======
       console.log("Startup data:", data);
       console.log("Status:", status);
+>>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
       
       if (status === 200 && data) {
         setStartupData(data);
+        console.log(setStartupData);
+        
+
       }
     } catch (error) {
       console.log(error.message);

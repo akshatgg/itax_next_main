@@ -2,7 +2,7 @@
 
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import ReactTable from '@/components/ui/ReactTable';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { useCallback, useEffect, useState } from 'react';
 import { getSaleTableHeaders } from './staticData';
 import { toast } from 'react-toastify';
@@ -28,7 +28,7 @@ const SaleInvoiceTable = () => {
   const getAllUsers = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(
+      const { data, status } = await userbackAxios.get(
         `/user/get-all-admins?page=${currentPage}&order=desc`,
       );
       if (status === 200 && data && data.data) {
@@ -50,7 +50,7 @@ const SaleInvoiceTable = () => {
   //   try {
   //     if (window.confirm('Are you sure you want to delete')) {
   //       setIsLoading(true);
-  //       const { status } = await userAxios.delete(`/user/delete-user/${id}`);
+  //       const { status } = await userbackAxios.delete(`/user/delete-user/${id}`);
   //       if (status === 200) {
   //         toast.success('User deleted successfully');
   //       }

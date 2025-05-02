@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   blogSchema,
@@ -37,10 +37,10 @@ const CreateBlogPost = ({ refresh, onClose, data }) => {
       const config = { headers: { 'content-type': 'multipart/form-data' } };
       let isSuccess;
       if (data) {
-        const { status } = await userAxios.put(URL, formData, config);
+        const { status } = await userbackAxios.put(URL, formData, config);
         isSuccess = status;
       } else {
-        const { status } = await userAxios.post(URL, formData, config);
+        const { status } = await userbackAxios.post(URL, formData, config);
         isSuccess = status;
       }
 

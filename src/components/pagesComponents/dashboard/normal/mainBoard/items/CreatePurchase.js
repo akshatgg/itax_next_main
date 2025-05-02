@@ -12,7 +12,7 @@ import {
 } from './staticData';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { zodResolver } from '@hookform/resolvers/zod';
 // import VerifyUser from './VerifyUser';
 import Modal from '@/components/ui/Modal';
@@ -38,7 +38,7 @@ const CreatePurchase = ({ currentRow, onClose, onRefresh }) => {
     return
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.post(
+      const { data, status } = await userbackAxios.post(
         '',
         formData,
       );
@@ -63,7 +63,7 @@ const CreatePurchase = ({ currentRow, onClose, onRefresh }) => {
     return
     try {
       setIsLoading(true);
-      const { status } = await userAxios.put(
+      const { status } = await userbackAxios.put(
         `${currentRow.id}`,
         body,
       );

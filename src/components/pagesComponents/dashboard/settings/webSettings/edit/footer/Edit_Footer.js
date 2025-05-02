@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import Section, { SECTION_SIZES } from '@/components/ui/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import Image from 'next/image';
 
 export default function Edit_Footer() {
@@ -29,7 +29,7 @@ export default function Edit_Footer() {
   const getSocials = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get('/cms/footer');
+      const { data, status } = await userbackAxios.get('/cms/footer');
       if (status === 200 && data) {
         toast.success(data.message);
         setSocials(data.data?.socials);
@@ -52,7 +52,7 @@ export default function Edit_Footer() {
   const onSubmit = async (data) => {
     try {
       setIsLoading(true);
-      const { status } = await userAxios.put('/cms/footer', data);
+      const { status } = await userbackAxios.put('/cms/footer', data);
       if (status === 200) {
         await getSocials();
         setIsEdit(false);

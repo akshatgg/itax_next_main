@@ -2,13 +2,13 @@
 
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import Link from 'next/link';
-// import userAxios from "@/lib/userAxios";
+// import userbackAxios from "@/lib/userbackAxios";
 // import { useEffect, useState } from "react";
 
 const Insureance_Admin = () => {
   // const [data, setData] = useState([]);
   // useEffect(() => {
-  //   userAxios
+  //   userbackAxios
   //     .get(`${process.env.NEXT_PUBLIC_BASE_URL}/insourance/getAll`)
   //     .then(function (response) {
   //       // console.log("repdfjklkads", response.data.applications);

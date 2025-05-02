@@ -1,6 +1,6 @@
 'use client';
 
-import userAxiosNext from '@/lib/userNextAxios';
+import userbackAxiosNext from '@/lib/userNextAxios';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { data } from './staticFile';
@@ -11,7 +11,7 @@ const Upload = ({ url, name }) => {
   const populate = async () => {
     try {
       setIsLoading(true);
-      await userAxiosNext.put(`${url}`, data[name]);
+      await userbackAxiosNext.put(`${url}`, data[name]);
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);

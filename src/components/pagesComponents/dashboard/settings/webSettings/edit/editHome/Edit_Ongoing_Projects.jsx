@@ -4,7 +4,7 @@ import { H4 } from '@/components/pagesComponents/pageLayout/Headings';
 import Section from '@/components/pagesComponents/pageLayout/Section';
 // import { useForm } from 'react-hook-form';
 import { useState, useEffect } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { Icon } from '@iconify/react';
 import Button from '@/components/ui/Button';
 import { toast } from 'react-toastify';
@@ -52,7 +52,7 @@ function Ongoing_Edit({ ongoingPro, loading, setLoading, refreshOngoing }) {
   const SubmitUpdate = async () => {
     try {
       setLoading(true);
-      const { status } = await userAxios.post('/cms/ongoingprojects', {
+      const { status } = await userbackAxios.post('/cms/ongoingprojects', {
         ongoingPro: ogPro,
       });
 
@@ -159,7 +159,7 @@ function EditOngoingProjects() {
   const refreshOngoing = async () => {
     try {
       setLoading(true);
-      const { data, status } = await userAxios.get(`/cms/homescreen`);
+      const { data, status } = await userbackAxios.get(`/cms/homescreen`);
       if (status === 200) {
         setOngoingPro(data.data.home.ongoingPro);
       }

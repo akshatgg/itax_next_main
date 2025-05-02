@@ -4,7 +4,7 @@
 // import { Icon } from '@iconify/react';
 // // import BackButton from '../../../BackButton';
 // import { useState, useEffect } from 'react';
-// import userAxios from '@/lib/userAxios';
+// import userbackAxios from '@/lib/userbackAxios';
 // import { toast } from 'react-toastify';
 
 // const itemsData = {
@@ -40,7 +40,7 @@
 //       setIsLoading(true);
 //       setIsError(false);
 
-//       const response = await userAxios.get('/invoice/parties');
+//       const response = await userbackAxios.get('/invoice/parties');
 //       setAllParties(response.data);
 
 //       setIsLoading(false);
@@ -57,7 +57,7 @@
 
 //   const handleDeleteParty = async (id) => {
 //     try {
-//       const resp = await userAxios.delete(`/invoice/parties/${id}`);
+//       const resp = await userbackAxios.delete(`/invoice/parties/${id}`);
 //       //   console.log(resp);
 //       if (resp.data.success) {
 //         fetchPartiesData();

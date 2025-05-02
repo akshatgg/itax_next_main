@@ -1,6 +1,6 @@
 'use client';
 import Sales from '@/components/pagesComponents/dashboard/accounts/invoice/sales/Sales';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { useEffect, useState } from 'react';
 export default function Page() {
   const [respAllInvoice, setRespAllInvoice] = useState(null);
@@ -11,13 +11,13 @@ export default function Page() {
       try {
         setLoading(true);
         setError({ error: null });
-        const resp = await userAxios.get('/invoice/invoices');
+        const resp = await userbackAxios.get('/invoice/invoices');
         const salesInvoice = resp.data.invoices.filter((invoice) => {
           return invoice.type === 'sales';
         });
         const updatedSalesInvoice = await Promise.all(
           salesInvoice.map(async (invoice) => {
-            const response = await userAxios.get(
+            const response = await userbackAxios.get(
               'invoice/parties/' + invoice.partyId,
             );
             if (response.data.success)

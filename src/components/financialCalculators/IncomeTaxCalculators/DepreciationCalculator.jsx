@@ -6,12 +6,16 @@ import * as Yup from 'yup';
 import { useReactToPrint } from 'react-to-print';
 import SearchResult_section from '@/components/pagesComponents/pageLayout/SearchResult_section.js';
 import { formatINRCurrency } from '@/utils/utilityFunctions';
+import CalculatorsComponent from './CalculatorsComponent.jsx';
 import 'chart.js/auto';
+
 const DepreciationCal = () => {
   const [showDepRate, setShowDepRate] = useState('');
   const [showCostOfAsset, setShowCostOfAsset] = useState('');
   const [loading, setLoading] = useState(false);
+
   const [dataForChart, setDataForChart] = useState([]);
+
   const pdf_ref = useRef();
   const lineRef = useRef();
 
@@ -105,6 +109,65 @@ const DepreciationCal = () => {
     ],
   };
 
+  const formConfig = {
+    fields: [
+      {
+        name: 'purchasePrice',
+        label: 'Purchase Price',
+        type: 'number',
+        placeholder: 'Enter Purchase Price',
+        suffix: '₹',
+      },
+      {
+        name: 'scrapValue',
+        label: 'Scrap Value',
+        type: 'number',
+        placeholder: 'Enter Scrap Value',
+        suffix: '₹',
+      },
+      {
+        name: 'estimatedUsefulLife',
+        label: 'Estimated Useful Life',
+        type: 'number',
+        placeholder: 'Enter Useful Life (years)',
+        suffix: 'Y',
+      },
+    ],
+    buttons: [
+      {
+        label: 'Calculate',
+        type: 'submit',
+        disabled: false,
+        className: '',
+      },
+      {
+        label: 'Clear',
+        action: () => handleClear(),
+        type: 'button',
+        disabled: false,
+        className: 'bg-red-500 hover:bg-red-600',
+      },
+    ],
+    specialButtons: [
+      {
+        label: 'Print',
+        type: 'button',
+        loading: false,
+        show: !!showCostOfAsset,
+        onClick: () => generatePDF(),
+        className: '',
+      },
+      {
+        label: 'Download',
+        type: 'button',
+        loading: false,
+        show: !!showCostOfAsset,
+        onClick: () => console.log('Download Clicked'),
+        className: 'bg-green-500 hover:bg-green-600',
+      },
+    ],
+  };
+
   return (
     <Formik
       initialValues={{
@@ -128,10 +191,10 @@ const DepreciationCal = () => {
       })}
       onSubmit={(values) => handleSubmit(values)}
     >
-      <SearchResult_section title="Depreciation Calculator">
-        <li className="p-4">
+      {/* <SearchResult_section title="Depreciation Calculator">
+        <li className="p-4  ">
           <Form>
-            <div className="space-y-4">
+            <div className="space-y-4 ">
               <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 ">
                 <div>
                   <label
@@ -254,40 +317,146 @@ const DepreciationCal = () => {
               </div>
             </div>
           </Form>
+          
+
         </li>
         {showCostOfAsset && !loading && (
-          <li className="lg:col-span-2 bg-gray-200 p-4" ref={pdf_ref}>
+          <li className="lg:col-span-2 p-4 " ref={pdf_ref}>
             <div className=" grid grid-cols-1 md:grid-cols-2 gap-2">
-              <div className="bg-white p-2 w-full md:col-span-2">
-                <Chart ref={lineRef} type="line" data={data} />
-              </div>
-              <div className="bg-white p-4 m-2">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5 ">
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl shadow-lg p-6 m-4 border border-gray-200">
+                <h5 className="text-gray-900 text-md leading-tight font-medium mb-5">
                   Depreciation Percentage
                 </h5>
-                <h3 className="mx-6 text-2xl">
-                  <span className="text-xl">{`${(
-                    showDepRate * 100
-                  ).toLocaleString('en', {
-                    maximumFractionDigits: 2,
-                  })} %`}</span>
-                </h3>
+                <h5
+                  className="mx-6 text-xs"
+                  style={{ color: showCostOfAsset < 0 ? 'red' : 'green' }}
+                >
+                  <span className="text-sm">
+                    {`${(showDepRate * 100).toLocaleString('en', {
+                      maximumFractionDigits: 2,
+                    })} %`}
+                  </span>
+                </h5>
               </div>
 
-              <div className="bg-white p-4 m-2">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5 ">
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl shadow-lg p-6 m-4 border border-gray-200">
+                <h5 className="text-gray-900 text-md leading-tight font-medium mb-5">
                   Cost Of Asset
                 </h5>
-                <h3 className="text-2xl mx-6">
-                  <span className="text-xl">
+                <h5
+                  className="mx-6 text-xs"
+                  style={{ color: showCostOfAsset < 0 ? 'red' : 'green' }}
+                >
+                  <span className="text-sm">
                     {formatINRCurrency(showCostOfAsset)}
                   </span>
-                </h3>
+                </h5>
+              </div>
+
+              <div className=" p-2 w-full md:col-span-2">
+                <Chart ref={lineRef} type="line" data={data} />
               </div>
             </div>
           </li>
         )}
-      </SearchResult_section>
+      </SearchResult_section> */}
+      {/* <SearchResult_section title="Depreciation Calculator">
+        <CalculatorsComponent
+          formConfig={formConfig}
+          handleSubmit={handleSubmit}
+        />
+
+        {showCostOfAsset && !loading && (
+          <li ref={pdf_ref} >
+            <div>
+              <div>
+                <h5>Depreciation Percentage</h5>
+                <h5 style={{ color: showCostOfAsset < 0 ? 'red' : 'green' }}>
+                  {`${(showDepRate * 100).toLocaleString('en', {
+                    maximumFractionDigits: 2,
+                  })} %`}
+                </h5>
+              </div>
+
+              <div>
+                <h5>Cost Of Asset</h5>
+                <h5 style={{ color: showCostOfAsset < 0 ? 'red' : 'green' }}>
+                  {formatINRCurrency(showCostOfAsset)}
+                </h5>
+              </div>
+
+              <div>
+                <h5>Yearly Depreciation Representation</h5>
+                <div>
+                  <Chart ref={lineRef} type="line" data={data} />
+                </div>
+              </div>
+            </div>
+          </li>
+        )}
+      </SearchResult_section> */}
+
+      <section className="p-4   ">
+        {/* Main Layout: Form on the Left, Content on the Right */}
+        <div className="grid grid-cols-10 gap-4 ">
+          {/* Left Section: Form (30% Width) */}
+          <div className="col-span-10 lg:col-span-3  rounded-lg p-4 shadow-md">
+            <h3 className="text-lg font-semibold mb-4">
+              DepreciationCalculator
+            </h3>
+            <CalculatorsComponent
+              formConfig={formConfig}
+              handleSubmit={handleSubmit}
+            />
+          </div>
+
+          {/* Right Section: Cards and Chart (70% Width) */}
+          <div className="col-span-10 lg:col-span-7 grid grid-rows-[auto_1fr] gap-4 ">
+            {/* Top Row: Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4  ">
+              {/* Card 1 */}
+              <div className=" rounded-lg p-4 shadow-md flex flex-col justify-center items-center w-full">
+                <h5 className="text-sm font-medium text-center">
+                  Depreciation Percentage
+                </h5>
+                <p
+                  className={`text-base font-bold mt-2 ${
+                    showCostOfAsset < 0 ? 'text-red-400' : 'text-green-400'
+                  }`}
+                >
+                  {`${(showDepRate * 100).toLocaleString('en', {
+                    maximumFractionDigits: 2,
+                  })} %`}
+                </p>
+              </div>
+
+              {/* Card 2 */}
+              <div className=" rounded-lg p-4 shadow-md flex flex-col justify-center items-center ">
+                <h5 className="text-sm font-medium  text-center">
+                  Cost Of Asset
+                </h5>
+                <p
+                  className={`text-base font-bold mt-2 ${
+                    showCostOfAsset < 0 ? 'text-red-400' : 'text-green-400'
+                  }`}
+                >
+                  {formatINRCurrency(showCostOfAsset)}
+                </p>
+              </div>
+            </div>
+
+            {/* Bottom Row: Chart */}
+            <div className=" rounded-lg p-6 shadow-md  ">
+              <h5 className="text-base font-medium  mb-4 text-center">
+                Yearly Depreciation Representation
+              </h5>
+              <div className=" ">
+                <Chart ref={lineRef} type="line" data={data} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </Formik>
   );
 };

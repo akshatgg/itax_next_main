@@ -12,7 +12,7 @@ import {
 } from './staticData';
 import Image from 'next/image';
 import { toast } from 'react-toastify';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { zodResolver } from '@hookform/resolvers/zod';
 import VerifyUser from './VerifyUser';
 import Modal from '@/components/ui/Modal';
@@ -37,7 +37,7 @@ const CreateAdmin = ({ currentRow, onClose, onRefresh }) => {
   async function submitHandler(formData) {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.post(
+      const { data, status } = await userbackAxios.post(
         '/user/sign-up-admin',
         formData,
       );
@@ -61,7 +61,7 @@ const CreateAdmin = ({ currentRow, onClose, onRefresh }) => {
   async function submitEditHandler(body) {
     try {
       setIsLoading(true);
-      const { status } = await userAxios.put(
+      const { status } = await userbackAxios.put(
         `/user/sign-up-admin/${currentRow.id}`,
         body,
       );

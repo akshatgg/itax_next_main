@@ -3,7 +3,7 @@
 import React, { useTransition } from 'react';
 import { formatDate } from '@/utils/utilityFunctions';
 import Link from 'next/link';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 
@@ -63,7 +63,7 @@ const ItemsTable = ({ itemsData }) => {
 
   const handleDelete = async (id) => {
     try {
-      const response = await userAxios.delete('/invoice/items/' + id);
+      const response = await userbackAxios.delete('/invoice/items/' + id);
       if (response.data.success) {
         toast.success(`Item Deleted : ${response.data.item?.itemName}`);
       }

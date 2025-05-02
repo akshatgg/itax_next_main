@@ -4,14 +4,14 @@ import { getCookie } from 'cookies-next';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 // Calls node backend api from client.
-const userAxios = axios.create({
+const userbackAxios = axios.create({
   baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-userAxios.interceptors.request.use(
+userbackAxios.interceptors.request.use(
   (config) => {
     const cookieToken = getCookie('token');
     if (cookieToken) {
@@ -27,4 +27,4 @@ userAxios.interceptors.request.use(
   },
 );
 
-export default userAxios;
+export default userbackAxios;

@@ -1,6 +1,6 @@
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import regex from '@/utils/regex';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
@@ -36,7 +36,7 @@ const VerifyUser = ({ email, otp_key, onClose }) => {
   const submitHandler = async (body) => {
     try {
       setIsLoading(true);
-      const { status } = await userAxios.post('/user/verify', {
+      const { status } = await userbackAxios.post('/user/verify', {
         ...body,
         email,
         otp_key,
