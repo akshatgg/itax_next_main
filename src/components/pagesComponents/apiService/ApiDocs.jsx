@@ -1,36 +1,150 @@
-import { GrVmMaintenance } from 'react-icons/gr';
-import AddToCart from './AddToCart';
-import { fetchApiData, isServiceInCart } from '@/app/api/fetchData';
-import { Suspense } from 'react';
-import Loader from '@/components/partials/loading/Loader';
+"use client";
 
-export default async function ApiDocs({ params }) {
-  const { apiId } = params;
-  const apiData = await fetchApiData(apiId);
-  const alreadyInCart = await isServiceInCart(apiId);
+import { useState, useEffect, useContext } from "react";
+import { usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { GrVmMaintenance } from "react-icons/gr";
+import { API_CART } from "../../../store/actions";
+import { StoreContext } from "../../../store/store-context";
+import UseAuth from '../../../hooks/useAuth';
+import { apiDocsData } from "./staticData";
+import axios from "axios";
+import AddToCart from "./AddToCart"; // Adjust path as needed
+
+export default function ApiDocs() {
+  const pathname = usePathname();
+  const apiName = pathname.split('/').pop(); // Extract API name from pathname
+  const router = useRouter();
+  const { token } = UseAuth();
+
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [alreadyInCart, setAlreadyInCart] = useState(false);
+  const [state, dispatch] = useContext(StoreContext);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const apiData = apiDocsData.find((item) => {
+      const title = item.title.replace(/ /g, "").toLowerCase();
+      if (title === apiName) {
+        return item;
+      }
+      return false;
+    });
+    console.log("API Data:", apiData); // Debugging line
+    console.log("API Name:", apiName); // Debugging line
+    
+    if (apiData !== undefined) {
+      setData(apiData);
+      if (token) {
+        checkIfInCart();
+      }
+    } else {
+      router.push("/404", {
+        replace: true,
+      });
+    }
+    
+  }, [apiName, router, token]);
+
+  // Handle cart status change from AddToCart component
+  const handleCartStatusChange = (isInCart) => {
+    console.log("Cart status changed to:", isInCart);
+    setAlreadyInCart(isInCart);
+  };
+
+  // Check if the current API is in user's cart
+  const checkIfInCart = async () => {
+    if (!token || !data?.id) return;
+
+    try {
+      setIsLoading(true);
+
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_BACK_URL}/cart`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      console.log("Cart response:", response.data); // Debug
+
+      // Handle both possible response structures
+      const cartItems = response.data?.services || response.data?.data || [];
+
+      // Check if the current item exists in the cart
+      const isInCart = cartItems.some(item =>
+        item?.id === data.id || item?.serviceId === data.id || data.id === item?.serviceId
+      );
+      
+      setAlreadyInCart(isInCart);
+      console.log("Is in cart:", isInCart, "for item ID:", data.id);
+
+    } catch (error) {
+      console.error("Error checking cart:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (data && token) {
+      checkIfInCart();
+    }
+  }, [data, token]);
+
+  // Debug function to test if the data exists and has expected structure
+  const debugData = () => {
+    console.log("Current data:", data);
+    if (data) {
+      console.log("ID exists:", !!data.id);
+      console.log("ID type:", typeof data.id);
+      console.log("ID value:", data.id);
+      console.log("Already in cart:", alreadyInCart);
+    }
+  };
 
   return (
     <>
-      <Suspense fallback={<Loader />}>
+      {data ? (
         <div className="max-w-5xl mx-auto my-10">
-          <h1 className="text-center font-semibold text-2xl">
-            {apiData.title}
-          </h1>
+          <h1 className="text-center font-semibold text-2xl">{data.title}</h1>
           <div className="mt-8">
-            <h5 className="heading-5">Overview</h5>
-            <p className="description mt-2">{apiData.overview}</p>
+            <h5 className="font-medium text-xl">Overview</h5>
+            <p className="text-sm mt-2">{data.overview}</p>
           </div>
           <div className="flex p-3 mt-5 bg-[#f0f0f1] rounded font-semibold justify-between items-center">
             <div className="flex text-2xl ">
-              <h1 className="heading-4">Price :</h1>
-              <div className="ml-2 heading-4">₹ {apiData.price} monthly</div>
+              <h2>Price :</h2>
+              <div className="ml-2">₹ {data.price} monthly</div>
             </div>
-            <div>
-              <AddToCart item={apiData} alreadyInCart={alreadyInCart} />
+            <div className="flex gap-2">
+              {/* Using the AddToCart component with callback */}
+              <AddToCart 
+                item={data} 
+                alreadyInCart={alreadyInCart}
+                onCartStatusChange={handleCartStatusChange}
+              />
+              
+              {/* Debug button - remove in production */}
+              {token && (
+                <button 
+                  onClick={debugData} 
+                  className="px-4 py-2 bg-gray-200 rounded"
+                >
+                  Debug
+                </button>
+              )}
             </div>
           </div>
+          
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mt-4">
+              {error}
+            </div>
+          )}
+          
           <div className="mt-8">
-            <h5 className="heading-5">Endpoint</h5>
+            <h5 className="font-medium text-xl">Endpoint</h5>
             <table className="border-collapse w-full mt-2 text-sm">
               <thead>
                 <tr className="text-left bg-zinc-200">
@@ -41,19 +155,17 @@ export default async function ApiDocs({ params }) {
               <tbody>
                 <tr className="text-left">
                   <td className="border px-5 py-2 uppercase">
-                    {apiData.endpoint.method}
+                    {data.endpoint.method}
                   </td>
-                  <td className="border px-5 py-2">
-                    {apiData.endpoint.endpoint}
-                  </td>
+                  <td className="border px-5 py-2">{data.endpoint.endpoint}</td>
                 </tr>
               </tbody>
             </table>
           </div>
           <div>
-            {!apiData.upcoming ? (
+            {!data.upcoming ? (
               <>
-                {apiData.headers && (
+                {data.headers && (
                   <div className="mt-8">
                     <h5 className="font-medium text-xl">Headers</h5>
                     <table className="table-auto border w-full mt-2 text-sm">
@@ -66,11 +178,8 @@ export default async function ApiDocs({ params }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {apiData.headers.map((element, i) => (
-                          <tr
-                            key={i}
-                            className="text-left odd:bg-white even:bg-zinc-100"
-                          >
+                        {data.headers.map((element, index) => (
+                          <tr key={index} className="text-left odd:bg-white even:bg-zinc-100">
                             <td className="px-3 py-5 border">{element.name}</td>
                             <td className="px-3 py-5 border">{element.type}</td>
                             <td className="px-3 py-5 border">
@@ -85,7 +194,7 @@ export default async function ApiDocs({ params }) {
                     </table>
                   </div>
                 )}
-                {apiData.queryParams && (
+                {data.queryParams && (
                   <div className="mt-8">
                     <h5 className="font-medium text-xl">Query Parameters</h5>
                     <table className="table-auto border w-full mt-2 text-sm">
@@ -98,11 +207,8 @@ export default async function ApiDocs({ params }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {apiData.queryParams.map((element, i) => (
-                          <tr
-                            key={i}
-                            className="text-left odd:bg-white even:bg-zinc-100"
-                          >
+                        {data.queryParams.map((element, index) => (
+                          <tr key={index} className="text-left odd:bg-white even:bg-zinc-100">
                             <td className="px-3 py-5 border">{element.name}</td>
                             <td className="px-3 py-5 border">{element.type}</td>
                             <td className="px-3 py-5 border">
@@ -117,9 +223,9 @@ export default async function ApiDocs({ params }) {
                     </table>
                   </div>
                 )}
-                {apiData.bodyParams && (
+                {data.bodyParams && (
                   <div className="mt-8">
-                    <h5 className="heading-5">Body Parameters</h5>
+                    <h5 className="font-medium text-xl">Body Parameters</h5>
                     <table className="table-auto border w-full mt-2 text-sm">
                       <thead>
                         <tr className="text-left bg-zinc-200">
@@ -130,9 +236,9 @@ export default async function ApiDocs({ params }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {apiData.bodyParams.map((element) => (
+                        {data.bodyParams.map((element, index) => (
                           <tr
-                            key={element.name}
+                            key={index}
                             className="text-left odd:bg-white even:bg-zinc-100"
                           >
                             <td className="px-3 py-5 border">{element.name}</td>
@@ -150,7 +256,7 @@ export default async function ApiDocs({ params }) {
                   </div>
                 )}
                 <div className="mt-8">
-                  <h5 className="heading-5">Response Body</h5>
+                  <h5 className="font-medium text-xl">Response Body</h5>
                   <table className="table-auto border w-full mt-2 text-sm">
                     <thead>
                       <tr className="text-left bg-zinc-200">
@@ -161,11 +267,8 @@ export default async function ApiDocs({ params }) {
                       </tr>
                     </thead>
                     <tbody>
-                      {apiData.response.map((element, i) => (
-                        <tr
-                          key={i}
-                          className="text-left odd:bg-white even:bg-zinc-100"
-                        >
+                      {data.response.map((element, index) => (
+                        <tr key={index} className="text-left odd:bg-white even:bg-zinc-100">
                           <td className="px-3 py-5 border">{element.name}</td>
                           <td className="px-3 py-5 border">{element.type}</td>
                           <td className="px-3 py-5 border">
@@ -180,7 +283,7 @@ export default async function ApiDocs({ params }) {
                   </table>
                 </div>
                 <code className="block bg-zinc-100 rounded-md px-8 py-5 mt-5 overflow-x-auto">
-                  <pre className="whitespace-pre">{apiData.responseJSON}</pre>
+                  <pre className="whitespace-pre">{data.responseJSON}</pre>
                 </code>
               </>
             ) : (
@@ -192,7 +295,11 @@ export default async function ApiDocs({ params }) {
             )}
           </div>
         </div>
-      </Suspense>
+      ) : (
+        <div className="h-screen flex items-center justify-center">
+          <span className="font-semibold">Loading..</span>
+        </div>
+      )}
     </>
   );
 }

@@ -6,7 +6,7 @@ import api from '@/lib/userNextAxios';
 import { toast } from 'react-toastify';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 
 const formClassName = {
   Label: 'text-sm font-medium',
@@ -48,8 +48,8 @@ export default function VerifyOTPForm() {
       // }, 60000);
 
       if (email) {
-        // const { data } = await userAxios.post('/user/resendotp', {
-          const { data } = await userAxios.post('/api/auth/resend-otp', {
+        const { data } = await userbackAxios.post('/user/resendotp', {
+          // const { data } = await userAxios.post('/api/auth/resend-otp', {
           email,
           type: 'VERIFICATION',
         });
@@ -79,8 +79,8 @@ export default function VerifyOTPForm() {
       const { otp } = data;
       console.log(otp);
       
-      // const response = await userAxios.post('/user/verify', {
-        const response = await userAxios.post('/api/auth/verify-otp', {
+      const response = await userbackAxios.post('/user/verify', {
+        // const response = await userAxios.post('/api/auth/verify-otp', {
         email,
         otp_key: otpKey,
         otp,

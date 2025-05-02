@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useCallback, useEffect, useState } from 'react';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { formatINRCurrency } from '@/utils/utilityFunctions';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { toast } from 'react-toastify';
 import AddToCart from './AddtoCart';
 import useAuth from '@/hooks/useAuth';
-
+import axios from 'axios';
 const validateFile = (file) => {
   if (!file) return false;
 
@@ -64,11 +64,16 @@ function RegisterStartUpDetails({ params }) {
   const getStartupData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(
+      const { data, status } = await userbackAxios.get(
         `/Startup/getOne/${+params.serviceId}`,
       );
+      console.log(data);
+      
       if (status === 200 && data) {
         setStartupData(data);
+        console.log(setStartupData);
+        
+
       }
     } catch (error) {
       console.log(error.message);
@@ -79,7 +84,7 @@ function RegisterStartUpDetails({ params }) {
 
   const getServiceData = async () => {
     try {
-      const { status, data } = await userAxios.get(`/registration`);
+      const { status, data } = await userbackAxios.get(`/registration`);
       if (status === 200) {
         const stuff = data?.data[0];
         if (stuff) {
@@ -104,12 +109,13 @@ function RegisterStartUpDetails({ params }) {
       const formData = new FormData();
 
       formData.append('serviceId', startupData.id);
-
+      formData.append('userId', currentUser?.id);
       Object.keys(body).forEach((key) => formData.append(key, body[key][0]));
 
-      const { status, data } = await userAxios.post('/registration', formData, {
+      const { status, data } = await userbackAxios.post(`/registration`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
         },
       });
       if (status === 201) {

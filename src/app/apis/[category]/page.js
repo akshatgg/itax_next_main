@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 function ApiCategoryPage({ params }) {
   const { category } = params;
 
-  return <Apis category={category} />;
+  return <Apis/>;
 }
 
 export default ApiCategoryPage;
