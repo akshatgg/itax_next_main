@@ -406,11 +406,7 @@ export const apiDocsData = [
   {
     upcoming: false,
     title: "Admin SignUp",
-<<<<<<< HEAD
-    id: "admin_signup",
-=======
     id: "adminsignup",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Authentication",
     overview:
       "API allows administrators to log in to a system by sending a request with their credentials and receiving a response with authentication status and a session token.",
@@ -535,11 +531,7 @@ export const apiDocsData = [
     upcoming: false,
     price: 500.00,
     title: "Form-16",
-<<<<<<< HEAD
-    id: "form16",
-=======
     id: "form-16",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Extraction_E-KYC",
     overview:
       "The API uses OCR technology to convert the image data into machine-readable text and retrieve the required information, such as the employees name, PAN number, and salary details.",
@@ -890,11 +882,7 @@ export const apiDocsData = [
     price: 500.00,
     upcoming: false,
     title: "Admin Login",
-<<<<<<< HEAD
-    id: "admin_login",
-=======
     id: "adminlogin",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Authentication",
     overview:
       "API allows administrators to create a new account by sending a request with their information and receiving a response with status and authentication credentials.",
@@ -1536,11 +1524,7 @@ export const apiDocsData = [
     upcoming: false,
     price: 500.00,
     title: "IFSC Details",
-<<<<<<< HEAD
-    id: "ifsc_details",
-=======
     id: "ifscdetails",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Bank",
     overview:
       "The IFSC (Indian Financial System Code) Details API is used to retrieve information about a particular bank branch in India, including the banks name, address, contact details, and IFSC code, using the IFSC code as the key identifier.",
@@ -1704,11 +1688,7 @@ export const apiDocsData = [
     upcoming: false,
     price: 500.00,
     title: "Verify Accounts",
-<<<<<<< HEAD
-    id: "verify_accounts",
-=======
     id: "verifyaccounts",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Bank",
     overview:
       "API provides a simple way to verify the authenticity of a users account information, typically by sending a confirmation code to their email or phone number.",
@@ -1750,11 +1730,7 @@ export const apiDocsData = [
     upcoming: false,
     price: 500.00,
     title: "PIN Code Info",
-<<<<<<< HEAD
-    id: "pin_code_info",
-=======
     id: "pincodeinfo",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Post_Office",
     overview:
       "API provides access to information about postal codes, including location, state, district, and geographical coordinates.",
@@ -1825,11 +1801,7 @@ export const apiDocsData = [
     upcoming: false,
     price: 500.00,
     title: "PIN Code by City",
-<<<<<<< HEAD
-    id: "pin_code_by_city",
-=======
     id: "pincodebycity",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Post_Office",
     overview:
       "Pin code API provides a solution for retrieving postal codes (known as PIN codes) based on a given city name.",
@@ -1914,11 +1886,7 @@ export const apiDocsData = [
     upcoming: true,
     price: 500.00,
     title: "PDF Merge",
-<<<<<<< HEAD
-    id: "pdf_merge",
-=======
     id: "pdfmerge",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Image_PDF",
     overview:
       "PDF Merge APIs provide solutions for combining multiple PDF files into a single document.",
@@ -1934,11 +1902,7 @@ export const apiDocsData = [
     upcoming: true,
     price: 500.00,
     title: "IMG to PDF",
-<<<<<<< HEAD
-    id: "img_to_pdf",
-=======
     id: "imgtopdf",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Image_PDF",
     overview:
       "Image to PDF APIs convert images to PDF format, supporting various image formats with customization options for the resulting PDF.",
@@ -1955,11 +1919,7 @@ export const apiDocsData = [
     price: 500.00,
     title: "Compress",
     category: "Image_PDF",
-<<<<<<< HEAD
-    id: "compress_pdf",
-=======
     id: "compress",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     overview:
       "API offers a simple UI for compressing JPEG, PNG, GIF, and SVG images with bulk compression option.",
     endpoint: {
@@ -1974,11 +1934,7 @@ export const apiDocsData = [
     upcoming: true,
     price: 500.00,
     title: "Login with Google",
-<<<<<<< HEAD
-    id: "login_google",
-=======
     id: "loginwithgoogle",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "Authentication",
     overview:
       "API allows users to log in to a system using their Google credentials, enabling a secure and streamlined authentication process.",
@@ -1993,11 +1949,7 @@ export const apiDocsData = [
   {
     upcoming: false,
     title: "HSN Code API",
-<<<<<<< HEAD
-    id: "hsn_code",
-=======
     id: "hsncodeapi",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "GST",
     overview:
       "API allows user to fetch all HSN Codes via a GET request and sends as a JSON object in response to the request",
@@ -2080,11 +2032,7 @@ export const apiDocsData = [
   {
     upcoming: false,
     title: "SAC Code API",
-<<<<<<< HEAD
-    id: "sac_code",
-=======
     id: "saccodeapi",
->>>>>>> 07739d6978fafae4d7cadc8cdeccb6c09eb2559a
     category: "GST",
     overview:
       "API allows user to fetch all SAC Codes via a GET request and sends as a JSON object in response to the request",
