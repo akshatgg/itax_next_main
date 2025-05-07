@@ -10,6 +10,7 @@ export function middleware(request) {
   const isPrivateRoute = privateRoutes.some((route) => path.startsWith(route));
   
   if (!token && isPrivateRoute) {
+    
     return NextResponse.redirect(new URL('/login', request.url));
   }
 }
