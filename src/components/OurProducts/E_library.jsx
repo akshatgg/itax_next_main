@@ -1,5 +1,5 @@
 "use client";
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+const BASE_URL = process.env.NEXT_PUBLIC_BACK_URL;
 import axios from "axios";
 import { toPng } from "html-to-image";
 import jsPDF from "jspdf";
@@ -28,10 +28,12 @@ const E_library = () => {
         setData(response.data.allLibrary);
         setFilteredData(response.data.allLibrary);
       })
+      
       .catch(function (error) {
         console.log(error);
       });
-  }, []);
+      console.log(data);
+  }, [data]);
 
   const filterRef=useRef();
   const conponentPDF = useRef();
