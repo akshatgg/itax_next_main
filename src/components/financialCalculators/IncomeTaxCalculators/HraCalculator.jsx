@@ -1,205 +1,238 @@
-'use client';
-import React, { useState } from 'react';
-import { jsPDF } from 'jspdf';
-import { FaCity, FaRupeeSign, FaPrint, FaFileDownload, FaUndo, FaCalculator } from 'react-icons/fa';
+"use client"
 
-function App() {
-  const [basic, setBasic] = useState('');
-  const [hra, setHra] = useState('');
-  const [rent, setRent] = useState('');
-  const [isMetro, setIsMetro] = useState(false);
-  const [da, setDa] = useState('');
-  const [otherAllowances, setOtherAllowances] = useState('');
-  const [result, setResult] = useState(null);
+import { useState, useEffect } from "react"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
+import CalculatorLayout from "../components/CalculatorLayout"
+import { InputField } from "../components/InputField"
+import { CalculatorResultCard } from "../components/CalculatorResultCard"
+
+const HRACalculator = () => {
+  const [basic, setBasic] = useState("50000")
+  const [hra, setHra] = useState("20000")
+  const [rent, setRent] = useState("15000")
+  const [isMetro, setIsMetro] = useState(false)
+  const [da, setDa] = useState("5000")
+  const [otherAllowances, setOtherAllowances] = useState("0")
+  const [results, setResults] = useState(null)
+  const [chartData, setChartData] = useState([])
 
   const calculateHRA = () => {
-    const basicSalary = parseFloat(basic);
-    const hraReceived = parseFloat(hra);
-    const rentPaid = parseFloat(rent);
-    const dearnessAllowance = parseFloat(da);
-    const salary = basicSalary + dearnessAllowance;
+    const basicSalary = Number.parseFloat(basic)
+    const hraReceived = Number.parseFloat(hra)
+    const rentPaid = Number.parseFloat(rent)
+    const dearnessAllowance = Number.parseFloat(da)
 
-    const metroAllowance = isMetro ? 0.5 * salary : 0.4 * salary;
-    const excessRent = rentPaid - 0.1 * salary;
-    const hraExempt = Math.min(hraReceived, metroAllowance, excessRent);
+    if (isNaN(basicSalary) || isNaN(hraReceived) || isNaN(rentPaid) || isNaN(dearnessAllowance)) {
+      return
+    }
 
-    setResult(hraExempt.toFixed(2));
-  };
+    const salary = basicSalary + dearnessAllowance
+    const metroAllowance = isMetro ? 0.5 * salary : 0.4 * salary
+    const excessRent = rentPaid - 0.1 * salary
+    const hraExempt = Math.min(hraReceived, metroAllowance, excessRent)
 
-  const handlePrint = () => {
-    window.print();
-  };
+    // Generate chart data
+    const newChartData = [
+      { category: "Basic Salary", value: basicSalary },
+      { category: "HRA Received", value: hraReceived },
+      { category: "Rent Paid", value: rentPaid },
+      { category: "HRA Exempt", value: hraExempt }
+    ]
 
-  const handleDownload = () => {
-    const doc = new jsPDF();
-    doc.setFontSize(16);
-    doc.text("HRA Calculation Details", 10, 20);
-    doc.setFontSize(12);
-    doc.text(`Basic Salary: ₹${basic}`, 10, 35);
-    doc.text(`HRA Received: ₹${hra}`, 10, 45);
-    doc.text(`Rent Paid: ₹${rent}`, 10, 55);
-    doc.text(`DA: ₹${da}`, 10, 65);
-    doc.text(`Metro City: ${isMetro ? 'Yes' : 'No'}`, 10, 75);
-    doc.text(`HRA Exemption: ₹${result}`, 10, 90);
-    doc.save('HRA_Calculation_Result.pdf');
-  };
+    setResults({
+      basicSalary,
+      hraReceived,
+      rentPaid,
+      dearnessAllowance,
+      isMetro,
+      hraExempt,
+      metroAllowance
+    })
 
-  const clearFields = () => {
-    setBasic('');
-    setHra('');
-    setRent('');
-    setIsMetro(false);
-    setDa('');
-    setOtherAllowances('');
-    setResult(null);
-  };
+    setChartData(newChartData)
+  }
+
+  useEffect(() => {
+    calculateHRA()
+  }, [])
+
+  const handleReset = () => {
+    setBasic("50000")
+    setHra("20000")
+    setRent("15000")
+    setIsMetro(false)
+    setDa("5000")
+    setOtherAllowances("0")
+    calculateHRA()
+  }
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl transform transition-transform duration-300 hover:shadow-2xl">
-        <div className="p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-blue-800 mb-2 flex items-center justify-center gap-3">
-              <FaCalculator className="text-purple-600" />
-              HRA Calculator
-            </h1>
-            <p className="text-gray-600">Calculate your House Rent Allowance exemption quickly</p>
+    <CalculatorLayout
+      title="HRA Calculator"
+      description="Calculate your House Rent Allowance exemption"
+      resultComponent={
+        results && (
+          <CalculatorResultCard
+            results={[
+              { label: "Basic Salary", value: formatCurrency(results.basicSalary) },
+              { label: "HRA Received", value: formatCurrency(results.hraReceived) },
+              { label: "Rent Paid", value: formatCurrency(results.rentPaid) },
+              { label: "Dearness Allowance", value: formatCurrency(results.dearnessAllowance) },
+              { label: "Metro City", value: results.isMetro ? "Yes" : "No" },
+              { label: "HRA Exemption", value: formatCurrency(results.hraExempt), isHighlighted: true },
+            ]}
+          />
+        )
+      }
+      chartComponent={
+        chartData.length > 0 && (
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="category" />
+                <YAxis tickFormatter={(value) => `$${value}`} />
+                <Tooltip
+                  formatter={(value) => [`$${Number(value).toFixed(2)}`, undefined]}
+                />
+                <Legend />
+                <Line type="monotone" dataKey="value" name="Amount" stroke="#8884d8" activeDot={{ r: 8 }} />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
+        )
+      }
+    >
+      <div className="grid gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="basic"
+            label="Basic Salary"
+            value={basic}
+            onChange={setBasic}
+            type="number"
+            prefix="$"
+            min={0}
+            tooltip="Total basic salary amount"
+          />
+          <InputField
+            id="hra"
+            label="HRA Received"
+            value={hra}
+            onChange={setHra}
+            type="number"
+            prefix="$"
+            min={0}
+            tooltip="House Rent Allowance received"
+          />
+        </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {/* Input Fields */}
-            <div className="space-y-5">
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <FaRupeeSign className="inline mr-2 text-green-500" />
-                  Basic Salary
-                </label>
-                <input
-                  type="number"
-                  value={basic}
-                  onChange={(e) => setBasic(e.target.value)}
-                  className="w-full p-3 border-2 border-blue-100 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all"
-                  placeholder="Enter basic salary"
-                />
-              </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="rent"
+            label="Rent Paid"
+            value={rent}
+            onChange={setRent}
+            type="number"
+            prefix="$"
+            min={0}
+            tooltip="Total rent paid during the year"
+          />
+          <InputField
+            id="da"
+            label="Dearness Allowance"
+            value={da}
+            onChange={setDa}
+            type="number"
+            prefix="$"
+            min={0}
+            tooltip="Dearness allowance amount"
+          />
+        </div>
 
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <FaRupeeSign className="inline mr-2 text-orange-500" />
-                  HRA Received
-                </label>
-                <input
-                  type="number"
-                  value={hra}
-                  onChange={(e) => setHra(e.target.value)}
-                  className="w-full p-3 border-2 border-blue-100 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all"
-                  placeholder="Enter HRA received"
-                />
-              </div>
-
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <FaRupeeSign className="inline mr-2 text-red-500" />
-                  Rent Paid
-                </label>
-                <input
-                  type="number"
-                  value={rent}
-                  onChange={(e) => setRent(e.target.value)}
-                  className="w-full p-3 border-2 border-blue-100 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all"
-                  placeholder="Enter rent paid"
-                />
-              </div>
-            </div>
-
-            <div className="space-y-5">
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <FaRupeeSign className="inline mr-2 text-yellow-500" />
-                  Dearness Allowance (DA)
-                </label>
-                <input
-                  type="number"
-                  value={da}
-                  onChange={(e) => setDa(e.target.value)}
-                  className="w-full p-3 border-2 border-blue-100 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all"
-                  placeholder="Enter DA amount"
-                />
-              </div>
-
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <FaRupeeSign className="inline mr-2 text-pink-500" />
-                  Other Allowances
-                </label>
-                <input
-                  type="number"
-                  value={otherAllowances}
-                  onChange={(e) => setOtherAllowances(e.target.value)}
-                  className="w-full p-3 border-2 border-blue-100 rounded-xl focus:border-blue-400 focus:ring-2 focus:ring-blue-200 transition-all"
-                  placeholder="Enter other allowances"
-                />
-              </div>
-
-              <div className="pt-4">
-                <label className="flex items-center space-x-3 bg-blue-50 p-4 rounded-xl cursor-pointer hover:bg-blue-100 transition-colors">
-                  <input
-                    type="checkbox"
-                    checked={isMetro}
-                    onChange={(e) => setIsMetro(e.target.checked)}
-                    className="form-checkbox h-5 w-5 text-purple-600 rounded focus:ring-purple-500"
-                  />
-                  <span className="flex items-center">
-                    <FaCity className="mr-2 text-purple-600" />
-                    Living in Metro City
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
-
-          {/* Result Section */}
-          {result !== null && (
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-2xl p-6 mb-8 shadow-lg">
-              <div className="text-center">
-                <p className="text-sm uppercase tracking-wider mb-2 opacity-90">Tax Exempt HRA</p>
-                <p className="text-4xl font-bold">
-                  ₹{result}
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Action Buttons */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <button
-              onClick={calculateHRA}
-              className="p-4 bg-green-500 hover:bg-green-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-all"
-            >
-              <FaCalculator className="text-xl" />
-              Calculate
-            </button>
-            
-            <button
-              onClick={handleDownload}
-              className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-all text-sm"
-            >
-              <FaFileDownload className="text-lg" />
-              Download PDF
-            </button>
-            
-            <button
-              onClick={clearFields}
-              className="p-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 transition-all text-sm"
-            >
-              <FaUndo className="text-lg" />
-              Reset
-            </button>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="otherAllowances"
+            label="Other Allowances"
+            value={otherAllowances}
+            onChange={setOtherAllowances}
+            type="number"
+            prefix="$"
+            min={0}
+            tooltip="Other additional allowances"
+          />
+          <div className="flex items-center space-x-3 bg-blue-50 p-4 rounded-xl">
+            <input
+              type="checkbox"
+              id="isMetro"
+              checked={isMetro}
+              onChange={(e) => setIsMetro(e.target.checked)}
+              className="form-checkbox h-5 w-5 text-primary rounded focus:ring-primary"
+            />
+            <label htmlFor="isMetro" className="text-gray-700">
+              Living in Metro City
+            </label>
           </div>
         </div>
+
+        <hr className="my-4" />
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset
+          </button>
+          <button
+            onClick={calculateHRA}
+            className="px-4 py-2 bg-primary text-white rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect width="16" height="16" x="4" y="4" rx="2" />
+              <path d="M8 10h8" />
+              <path d="M8 14h8" />
+              <path d="M12 8v8" />
+            </svg>
+            Calculate
+          </button>
+        </div>
       </div>
-    </div>
-  );
+    </CalculatorLayout>
+  )
 }
 
-export default App;
+export default HRACalculator

@@ -1,344 +1,239 @@
-'use client';
-import React, { useRef, useState } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
-import uuid from 'react-uuid';
-import { useReactToPrint } from 'react-to-print';
-import SearchResult_section from '@/components/pagesComponents/pageLayout/SearchResult_section.js';
-import { formatINRCurrency } from '@/utils/utilityFunctions';
+"use client"
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { useState, useEffect } from "react"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
+import CalculatorLayout from "../components/CalculatorLayout"
+import { InputField } from "../components/InputField"
+import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
-const PersonalCal = () => {
-  const loanamountlRef = useRef('');
-  const roiRef = useRef('');
-  const loanTenureRef = useRef('');
-  const [showdata, setShowData] = useState('');
-  const [loading, setLoading] = useState('');
-  const [showTableMonthData, setShowTableMonthData] = useState([]);
-  const [showStat, setShowStat] = useState(false);
-  const [showgraph, setshowgraph] = useState(false);
-  const pdf_ref = useRef();
+const PersonalLoanCalculator = () => {
+  const [loanAmount, setLoanAmount] = useState("100000")
+  const [interestRate, setInterestRate] = useState("10")
+  const [loanTenure, setLoanTenure] = useState("5")
+  const [results, setResults] = useState(null)
+  const [chartData, setChartData] = useState([])
 
-  const handleClear = () => {
-    loanamountlRef.current.value = '';
-    roiRef.current.value = '';
-    loanTenureRef.current.value = '';
-    setShowData('');
-    setShowTableMonthData([]);
-    setShowStat(false);
-  };
+  const calculateLoanDetails = () => {
+    const principal = Number.parseFloat(loanAmount)
+    const rate = Number.parseFloat(interestRate) / 100
+    const tenure = Number.parseFloat(loanTenure)
 
-  const generatePDF = useReactToPrint({
-    content: () => pdf_ref.current,
-    documentTitle: 'Personal Loan',
-  });
-
-  function calculateMonthlyEmiPayment(loanAmount, rate, loanTenure, emi) {
-    const monthlyCalculation = [];
-    let totalLoanAmount = loanAmount;
-
-    for (let i = 0; i < loanTenure * 12; i++) {
-      const towardsInterest = (totalLoanAmount * rate) / (100 * 12);
-      const towardsLoan = emi - towardsInterest;
-      totalLoanAmount -= towardsLoan;
-
-      monthlyCalculation.push({
-        month: i + 1,
-        emi: Math.round(emi),
-        towards_loan: Math.round(emi - towardsInterest),
-        towards_interest: Math.round(towardsInterest),
-        outstanding_loan: Math.round(totalLoanAmount),
-      });
+    if (isNaN(principal) || isNaN(rate) || isNaN(tenure) || principal <= 0 || rate <= 0 || tenure <= 0) {
+      return
     }
-    return monthlyCalculation;
+
+    // Monthly interest rate
+    const monthlyRate = rate / 12
+    const totalMonths = tenure * 12
+
+    // EMI Calculation
+    const emi = principal * monthlyRate * Math.pow(1 + monthlyRate, totalMonths) / 
+                (Math.pow(1 + monthlyRate, totalMonths) - 1)
+
+    const totalAmount = emi * totalMonths
+    const totalInterest = totalAmount - principal
+
+    // Generate chart data
+    const newChartData = []
+    let remainingBalance = principal
+
+    for (let year = 0; year <= tenure; year++) {
+      const monthsToDate = year * 12
+      const balanceAtYear = principal * Math.pow(1 + monthlyRate, monthsToDate)
+      const interestPaidToDate = balanceAtYear - principal
+      const principalPaidToDate = totalAmount - interestPaidToDate
+
+      newChartData.push({
+        year,
+        principal: principal,
+        remainingBalance: Math.max(0, balanceAtYear - principalPaidToDate),
+        interestPaid: interestPaidToDate,
+        principalPaid: principalPaidToDate
+      })
+    }
+
+    setResults({
+      principal,
+      rate: rate * 100,
+      tenure,
+      emi: Math.round(emi),
+      totalInterest: Math.round(totalInterest),
+      totalAmount: Math.round(totalAmount)
+    })
+
+    setChartData(newChartData)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    let rate = +roiRef.current.value / (100 * 12);
-    let loanTenure = +loanTenureRef.current.value * 12;
-    let loanAmount = +loanamountlRef.current.value;
-    const emi =
-      (loanAmount * rate * Math.pow(1 + rate, loanTenure)) /
-      (Math.pow(1 + rate, loanTenure) - 1);
-    const totalAmount = emi * loanTenure;
-    const monthlyPayment = calculateMonthlyEmiPayment(
-      loanAmount,
-      rate,
-      loanTenure,
-      emi,
-    );
-    
-    const result = {
-      emi: Math.round(emi),
-      loanAmount: loanAmount,
-      totalInterest: Math.round(totalAmount - loanAmount),
-      totalAmount: Math.round(totalAmount),
-      monthlyPayment: monthlyPayment,
-    };
+  useEffect(() => {
+    calculateLoanDetails()
+  }, [])
 
-    let openingBalance = loanAmount;
-    const MonthData = [];
-    const emiF = Math.round(emi);
+  const handleReset = () => {
+    setLoanAmount("100000")
+    setInterestRate("10")
+    setLoanTenure("5")
+    calculateLoanDetails()
+  }
 
-    for (let i = 0; i < loanTenure; i++) {
-      let interest = Math.floor(openingBalance * (+roiRef.current.value / 100 / 12));
-      let principal = emiF - interest;
-      let closingBalance = openingBalance - principal;
-      MonthData.push({
-        srNo: i + 1,
-        openingBalance: openingBalance,
-        payment: emiF,
-        interest: interest,
-        principal: principal,
-        remainingLoan: closingBalance > 0 ? closingBalance : 0,
-      });
-      openingBalance = closingBalance;
-    }
-
-    setShowData(result);
-    setShowTableMonthData(MonthData);
-    setShowStat(true);
-    setLoading(false);
-  };
-
-  const data = {
-    labels: ['Loan Amount', 'EMI', 'Total Interest'],
-    datasets: [
-      {
-        data: [showdata.loanAmount, showdata.emi, showdata.totalInterest],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value)
+  }
 
   return (
-    <SearchResult_section title="Personal Loan Calculator">
-      <li className="p-4">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 ">
-            <div className="mb-3 xl:w-75 mx-2">
-              <label className="form-label inline-block mb-2 text-gray-700">
-                Loan Amount
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="text"
-                  className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded-l transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                  placeholder="Loan Amount"
-                  ref={loanamountlRef}
+    <CalculatorLayout
+      title="Personal Loan Calculator"
+      description="Calculate your personal loan EMI, total interest, and loan progression."
+      resultComponent={
+        results && (
+          <CalculatorResultCard
+            results={[
+              { label: "Loan Amount", value: formatCurrency(results.principal) },
+              { label: "Interest Rate", value: `${results.rate}%` },
+              { label: "Loan Tenure", value: `${results.tenure} years` },
+              { label: "Monthly EMI", value: formatCurrency(results.emi), isHighlighted: true },
+              { label: "Total Interest", value: formatCurrency(results.totalInterest), isHighlighted: true },
+              { label: "Total Amount", value: formatCurrency(results.totalAmount), isHighlighted: true },
+            ]}
+          />
+        )
+      }
+      chartComponent={
+        chartData.length > 0 && (
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="year" label={{ value: "Years", position: "insideBottomRight", offset: -5 }} />
+                <YAxis tickFormatter={(value) => `₹${value.toLocaleString()}`} />
+                <Tooltip
+                  formatter={(value) => [`₹${Number(value).toLocaleString()}`, undefined]}
+                  labelFormatter={(label) => `Year ${label}`}
                 />
-                <div className="flex items-center bg-primary text-white rounded-r px-4">
-                  ₹
-                </div>
-              </div>
-            </div>
-
-            <div className="mb-3 xl:w-75 mx-2">
-              <label className="form-label inline-block mb-2 text-gray-700">
-                Rate Of Interest (P.A.)
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="text"
-                  className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded-l transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                  placeholder="Rate Of Interest"
-                  ref={roiRef}
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="principal" 
+                  name="Original Principal" 
+                  stroke="#ffc658" 
+                  strokeDasharray="5 5"
                 />
-                <div className="flex items-center bg-primary text-white rounded-r px-4">
-                  %
-                </div>
-              </div>
-            </div>
-
-            <div className="mb-3 xl:w-75 mx-2">
-              <label className="form-label inline-block mb-2 text-gray-700">
-                Time Period (In Years)
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="text"
-                  className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded-l transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                  placeholder="Enter Loan Tenure"
-                  ref={loanTenureRef}
+                <Line 
+                  type="monotone" 
+                  dataKey="remainingBalance" 
+                  name="Remaining Balance" 
+                  stroke="#8884d8" 
+                  activeDot={{ r: 8 }} 
                 />
-                <div className="flex items-center bg-primary text-white rounded-r px-4">
-                  Y
-                </div>
-              </div>
-            </div>
+                <Line 
+                  type="monotone" 
+                  dataKey="interestPaid" 
+                  name="Interest Paid" 
+                  stroke="#82ca9d" 
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="principalPaid" 
+                  name="Principal Paid" 
+                  stroke="#ff7300" 
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
+        )
+      }
+    >
+      <div className="grid gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="loanAmount"
+            label="Loan Amount"
+            value={loanAmount}
+            onChange={setLoanAmount}
+            type="number"
+            prefix="₹"
+            min={1}
+            tooltip="The total loan amount you want to borrow"
+          />
+          <InputField
+            id="interestRate"
+            label="Annual Interest Rate"
+            value={interestRate}
+            onChange={setInterestRate}
+            type="number"
+            suffix="%"
+            min={0.01}
+            step={0.01}
+            tooltip="The annual interest rate for the loan"
+          />
+        </div>
 
-          <div className="grid gap-4 lg:p-4 place-content-center grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))] xl:grid-cols-2 lg:grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))]">
-            <button
-              onClick={handleSubmit}
-              disabled={loading}
-              className={`btn-primary ${loading ? 'cursor-not-allowed' : ''}`}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="loanTenure"
+            label="Loan Tenure"
+            value={loanTenure}
+            onChange={setLoanTenure}
+            type="number"
+            suffix="years"
+            min={1}
+            tooltip="The duration of the loan in years"
+          />
+        </div>
+
+        <hr className="my-4" />
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              {loading ? <span className="spinner"></span> : 'Calculate'}
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="btn-primary bg-red-500 hover:bg-red-600"
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset
+          </button>
+          <button
+            onClick={calculateLoanDetails}
+            className="px-4 py-2 bg-primary text-white rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              Clear
-            </button>
-            {showStat && (
-              <button type="button" className="btn-primary" onClick={generatePDF}>
-                Print
-              </button>
-            )}
-            {showStat && (
-              <button
-                type="button"
-                className="btn-primary bg-green-500 hover:bg-green-600"
-              >
-                Download
-              </button>
-            )}
-          </div>
-        </form>
-      </li>
+              <rect width="16" height="16" x="4" y="4" rx="2" />
+              <path d="M8 10h8" />
+              <path d="M8 14h8" />
+              <path d="M12 8v8" />
+            </svg>
+            Calculate
+          </button>
+        </div>
+      </div>
+    </CalculatorLayout>
+  )
+}
 
-      {showStat && (
-        <li className="lg:col-span-2 bg-gray-200 p-4" ref={pdf_ref}>
-          <div className="p-6 overflow-hidden bg-neutral-50">
-            <div className="text-right">
-              <button
-                onClick={() => setshowgraph(!showgraph)}
-                className="btn-primary text-sm px-3 py-1"
-              >
-                {showgraph ? "Show Graph" : "Show Table"}
-              </button>
-            </div>
-
-            {!showgraph && (
-              <>
-                <h2 className="text-center text-2xl font-semibold text-primary">
-                  Graph Analysis
-                </h2>
-                <div className="p-4 mx-auto w-full sm:w-3/4 md:w-1/2 lg:w-[40%] aspect-square">
-                  <Pie data={data} />
-                </div>
-              </>
-            )}
-
-            {showgraph && (
-              <>
-                <h2 className="text-center text-xl font-semibold text-primary mb-2">
-                  Monthly Calculation
-                </h2>
-                <div className="overflow-x-auto w-[95%] mx-auto">
-                  <table className="border border-gray-300">
-                    <colgroup>
-                      <col className="w-300" />
-                      <col className="w-300" />
-                      <col />
-                    </colgroup>
-                    <thead className="border-b">
-                      <tr>
-                        <th className="text-gray-900 px-6 py-4 border-r border-b border-gray-300 bg-primary text-white text-sm">
-                          Month
-                        </th>
-                        <th className="text-gray-900 px-6 py-4 border-r border-b border-gray-300 bg-primary text-white text-sm">
-                          Opening Balance
-                        </th>
-                        <th className="text-gray-900 px-6 py-4 border-r border-b border-gray-300 bg-primary text-white text-sm">
-                          EMI
-                        </th>
-                        <th className="text-gray-900 px-6 py-4 border-r border-b border-gray-300 bg-primary text-white text-sm">
-                          Interest
-                        </th>
-                        <th className="text-gray-900 px-6 py-4 border-r border-b border-gray-300 bg-primary text-white text-sm">
-                          Principal Repaid
-                        </th>
-                        <th className="text-gray-900 px-6 py-4 border-b border-gray-300 bg-primary text-white text-sm">
-                          Closing Balance
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {showTableMonthData.map((currdata) => (
-                        <tr className="border-b" key={uuid()}>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {currdata.srNo}
-                          </td>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {formatINRCurrency(currdata.openingBalance)}
-                          </td>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {formatINRCurrency(currdata.payment)}
-                          </td>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {formatINRCurrency(currdata.interest)}
-                          </td>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {formatINRCurrency(currdata.principal)}
-                          </td>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {formatINRCurrency(currdata.remainingLoan)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-3 mt-5 gap-2">
-              <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5">
-                  EMI
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.emi)}
-                  </span>
-                </h3>
-              </div>
-              <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5">
-                  Total Interest
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.totalInterest)}
-                  </span>
-                </h3>
-              </div>
-              <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5">
-                  Total Amount
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.totalAmount)}
-                  </span>
-                </h3>
-              </div>
-            </div>
-          </div>
-        </li>
-      )}
-    </SearchResult_section>
-  );
-};
-
-export default PersonalCal;
+export default PersonalLoanCalculator

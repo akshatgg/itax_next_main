@@ -1,270 +1,206 @@
-'use client';
-import React, { useRef, useState } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
-import axios from 'axios';
-import { useReactToPrint } from 'react-to-print';
-import SearchResult_section from '@/components/pagesComponents/pageLayout/SearchResult_section.js';
-import Image from 'next/image';
-import { formatINRCurrency } from '@/utils/utilityFunctions';
-ChartJS.register(ArcElement, Tooltip, Legend);
+"use client"
 
-const SipCal = () => {
-  const monthlyInvestmentRef = useRef('');
-  const rateRef = useRef('');
-  const timeperiodRef = useRef('');
-  const [showdata, setShowData] = useState('');
-  const [showTableData, setShowTableData] = useState([]);
-  const [showTableMonthData, setShowTableMonthData] = useState([]);
-  const [loading, setLoading] = useState('');
-  const [showStat, setShowStat] = useState();
-  const pdf_ref = useRef();
+import { useState, useEffect } from "react"
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
+import CalculatorLayout from "../components/CalculatorLayout"
+import { InputField } from "../components/InputField"
+import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
-  const handleClear = () => {
-    monthlyInvestmentRef.current.value = '';
-    rateRef.current.value = '';
-    timeperiodRef.current.value = '';
-    setShowData('');
-    setLoading('');
-    setShowStat(false);
-  };
-  const generatePDF = useReactToPrint({
-    content: () => pdf_ref.current,
-    documentTitle: 'Sip',
-  });
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const SipCalculator = () => {
+  const [monthlyInvestment, setMonthlyInvestment] = useState("5000")
+  const [expectedReturn, setExpectedReturn] = useState("12")
+  const [timePeriod, setTimePeriod] = useState("10")
+  const [results, setResults] = useState(null)
+  const [chartData, setChartData] = useState([])
 
-    const principal = +monthlyInvestmentRef.current.value;
-    const rate = +rateRef.current.value;
-    const years = +timeperiodRef.current.value;
+  const calculateSIP = () => {
+    const investment = Number.parseFloat(monthlyInvestment)
+    const returnRate = Number.parseFloat(expectedReturn) / 100 / 12 // Monthly return rate
+    const months = Number.parseFloat(timePeriod) * 12 // Total months
 
-    const monthlyRate = rate / 12 / 100;
-    const interest =
-      principal *
-      (((1 + monthlyRate) ** (years * 12) - 1) / monthlyRate) *
-      (1 + monthlyRate);
+    if (isNaN(investment) || isNaN(returnRate) || isNaN(months) || investment <= 0 || returnRate <= 0 || months <= 0) {
+      return
+    }
 
-    const invested = principal * (years * 12);
+    // Calculate future value using the formula: P * ((1 + r)^n - 1) / r * (1 + r)
+    const futureValue = investment * ((Math.pow(1 + returnRate, months) - 1) / returnRate) * (1 + returnRate)
+    const totalInvestment = investment * months
+    const estimatedReturns = futureValue - totalInvestment
 
-    setShowData({
-      invested: invested.toFixed('2'),
-      total: (invested + (interest - invested)).toFixed('2'),
-      gain: (interest - invested).toFixed('2'),
-    });
+    // Generate chart data
+    const newChartData = []
+    for (let year = 1; year <= Number.parseFloat(timePeriod); year++) {
+      const yearMonths = year * 12
+      const yearInvestment = investment * yearMonths
+      const yearFutureValue = investment * ((Math.pow(1 + returnRate, yearMonths) - 1) / returnRate) * (1 + returnRate)
+      const yearReturns = yearFutureValue - yearInvestment
 
-    setLoading(false);
-    setShowStat(true);
-  };
-  const data = {
-    labels: ['Invested', 'Gain'],
-    datasets: [
-      {
-        // label: '# of Votes',
-        data: [showdata.invested, showdata.gain],
-        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
-        borderWidth: 1,
-      },
-    ],
-  };
+      newChartData.push({
+        year,
+        investment: yearInvestment,
+        returns: yearReturns,
+        total: yearFutureValue,
+      })
+    }
+
+    setResults({
+      monthlyInvestment: investment,
+      expectedReturn: Number.parseFloat(expectedReturn),
+      timePeriod: Number.parseFloat(timePeriod),
+      totalInvestment,
+      estimatedReturns,
+      futureValue,
+    })
+
+    setChartData(newChartData)
+  }
+
+  useEffect(() => {
+    calculateSIP()
+  }, [])
+
+  const handleReset = () => {
+    setMonthlyInvestment("5000")
+    setExpectedReturn("12")
+    setTimePeriod("10")
+    calculateSIP()
+  }
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value)
+  }
+
   return (
-    <SearchResult_section title="Sip Calculator">
-      <li className="p-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 ">
-            <div>
-              <label
-                htmlFor="exampleFormControlInput1"
-                className="form-label inline-block mb-2 text-gray-700"
-              >
-                Monthy Investment
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="number"
-                  className="form-control
-                                            block
-                                            w-full
-                                            px-3    
-                                            py-1.5
-                                            text-base
-                                            font-normal
-                                            text-gray-700
-                                            bg-white bg-clip-padding
-                                            border border-solid border-gray-300
-                                            rounded-l
-                                            transition
-                                            ease-in-out
-                                            m-0
-
-                                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                        "
-                  id="exampleFormControlInput1"
-                  placeholder="Invested"
-                  ref={monthlyInvestmentRef}
+    <CalculatorLayout
+      title="SIP Calculator"
+      description="Calculate the future value of your Systematic Investment Plan (SIP)."
+      resultComponent={
+        results && (
+          <CalculatorResultCard
+            results={[
+              { label: "Monthly Investment", value: formatCurrency(results.monthlyInvestment) },
+              { label: "Expected Return", value: `${results.expectedReturn}%` },
+              { label: "Time Period", value: `${results.timePeriod} years` },
+              { label: "Total Investment", value: formatCurrency(results.totalInvestment) },
+              { label: "Estimated Returns", value: formatCurrency(results.estimatedReturns), isHighlighted: true },
+              { label: "Future Value", value: formatCurrency(results.futureValue), isHighlighted: true },
+            ]}
+          />
+        )
+      }
+      chartComponent={
+        chartData.length > 0 && (
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="year" label={{ value: "Years", position: "insideBottomRight", offset: -5 }} />
+                <YAxis tickFormatter={(value) => `$${value / 1000}k`} />
+                <Tooltip
+                  formatter={(value) => [formatCurrency(Number(value)), undefined]}
+                  labelFormatter={(label) => `Year ${label}`}
                 />
-                <div className="flex items-center bg-primary text-white  rounded-r px-4">
-                  ₹
-                </div>
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="exampleFormControlInput2"
-                className="form-label inline-block mb-2 text-gray-700"
-              >
-                Expected return rate (P.A.)
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="number"
-                  className="form-control
-                                            block
-                                            w-full
-                                            px-3
-                                            py-1.5
-                                            text-base
-                                            font-normal
-                                            text-gray-700
-                                            bg-white bg-clip-padding
-                                            border border-solid border-gray-300
-                                            rounded-l
-                                            transition
-                                            ease-in-out
-                                            m-0
-
-                                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                        "
-                  id="exampleFormControlInput2"
-                  placeholder="Rate Of Interest"
-                  ref={rateRef}
-                />
-                <div className="flex items-center bg-primary text-white  rounded-r px-4">
-                  %
-                </div>
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="exampleFormControlInput3"
-                className="form-label inline-block mb-2 text-gray-700"
-              >
-                Time Period (In Years)
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="text"
-                  className="form-control
-                                            block
-                                            w-full
-                                            px-3
-                                            py-1.5
-                                            text-base
-                                            font-normal
-                                            text-gray-700
-                                            bg-white bg-clip-padding
-                                            border border-solid border-gray-300
-                                            rounded-l
-                                            transition
-                                            ease-in-out
-                                            m-0
-
-                                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                        "
-                  id="exampleFormControlInput3"
-                  placeholder="Time Period"
-                  ref={timeperiodRef}
-                />
-                <div className="flex items-center bg-primary text-white  rounded-r px-4">
-                  Y
-                </div>
-              </div>
-            </div>
+                <Legend />
+                <Bar dataKey="investment" name="Investment" stackId="a" fill="#0088FE" />
+                <Bar dataKey="returns" name="Returns" stackId="a" fill="#00C49F" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
+        )
+      }
+    >
+      <div className="grid gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="monthlyInvestment"
+            label="Monthly Investment"
+            value={monthlyInvestment}
+            onChange={setMonthlyInvestment}
+            type="number"
+            prefix="$"
+            min={100}
+            tooltip="The amount you plan to invest every month"
+          />
+          <InputField
+            id="expectedReturn"
+            label="Expected Annual Return"
+            value={expectedReturn}
+            onChange={setExpectedReturn}
+            type="number"
+            suffix="%"
+            min={1}
+            max={50}
+            step={0.1}
+            tooltip="The expected annual return rate on your investment"
+          />
+        </div>
 
-          <div className="grid gap-4 lg:p-4 place-content-center grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))] xl:grid-cols-2 lg:grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))]">
-            <button
-              disabled={loading}
-              className={`btn-primary ${loading ? ' cursor-not-allowed ' : ''}`}
+        <InputField
+          id="timePeriod"
+          label="Investment Time Period"
+          value={timePeriod}
+          onChange={setTimePeriod}
+          type="number"
+          suffix="years"
+          min={1}
+          max={50}
+          tooltip="The duration for which you plan to invest"
+        />
+
+        <hr className="my-4" />
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              {loading ? <span className="spinner"></span> : 'Calculate'}
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="btn-primary bg-red-500 hover:bg-red-600"
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset
+          </button>
+          <button
+            onClick={calculateSIP}
+            className="px-4 py-2 bg-primary text-white rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              Clear
-            </button>
-            {showStat && (
-              <button
-                type="button"
-                className="btn-primary "
-                onClick={generatePDF}
-              >
-                Print
-              </button>
-            )}
-            {showStat && (
-              <button
-                type="button"
-                className="btn-primary bg-green-500 hover:bg-green-600"
-              >
-                Download
-              </button>
-            )}
-          </div>
-        </form>
-      </li>
-      {showStat && (
-        <li className="lg:col-span-2 space-y-4 bg-gray-200 p-4" ref={pdf_ref}>
-          <div className="bg-neutral-50 p-4">
-            <div className="mx-auto w-full sm:w-3/4 md:w-1/2 lg:w-[40%] p-4 bg-neutral-50 aspect-square">
-              <Pie data={data} />
-            </div>
+              <rect width="16" height="16" x="4" y="4" rx="2" />
+              <path d="M8 10h8" />
+              <path d="M8 14h8" />
+              <path d="M12 8v8" />
+            </svg>
+            Calculate
+          </button>
+        </div>
+      </div>
+    </CalculatorLayout>
+  )
+}
 
-            <div className="grid grid-cols-[repeat(auto-fill,_minmax(250px,_1fr))] gap-4 place-content-center">
-              <div className="block p-6 rounded-lg shadow-lg bg-white">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5 ">
-                  Invested
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.invested)}
-                  </span>
-                </h3>
-              </div>
-              <div className="block p-6 rounded-lg shadow-lg bg-white">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5 ">
-                  Gain
-                </h5>
-                <h3 className="text-2xl truncate hover:text-clip">
-                  <span className="text-xl ">
-                    {formatINRCurrency(showdata.gain)}
-                  </span>
-                </h3>
-              </div>
-              <div className="block p-6 rounded-lg shadow-lg bg-white">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5 ">
-                  Total
-                </h5>
-                <h3 className="text-2xl truncate hover:text-clip">
-                  <span className="text-xl ">
-                    {formatINRCurrency(showdata.total)}
-                  </span>
-                </h3>
-              </div>
-            </div>
-          </div>
-        </li>
-      )}
-    </SearchResult_section>
-  );
-};
-
-export default SipCal;
+export default SipCalculator

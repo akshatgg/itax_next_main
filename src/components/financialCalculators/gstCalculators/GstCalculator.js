@@ -1,187 +1,215 @@
-'use client';
+"use client"
 
-import React, { useState } from 'react';
+import { useState, useEffect } from "react"
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts"
+import CalculatorLayout from "../components/CalculatorLayout"
+import { InputField } from "../components/InputField"
+import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
-const sharedInputClasses = 'w-full p-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-purple-500 transition-all';
-const sharedLabelClasses = 'block text-gray-600 font-semibold mb-2';
-const sharedContainerClasses = 'mb-6';
+const GstCalculator = () => {
+  const [amount, setAmount] = useState("1000")
+  const [gstRate, setGstRate] = useState("18")
+  const [calculationType, setCalculationType] = useState("exclusive")
+  const [results, setResults] = useState(null)
+  const [chartData, setChartData] = useState([])
 
-const GSTCalculator = () => {
-  const [gstType, setGstType] = useState('include');
-  const [amount, setAmount] = useState('');
-  const [gstRate, setGstRate] = useState('5');
-  const [customGstRate, setCustomGstRate] = useState('');
-  const [gstAmount, setGstAmount] = useState('');
-  const [totalAmount, setTotalAmount] = useState('');
-  const [isCustomGstRate, setIsCustomGstRate] = useState(false);
+  const calculateGST = () => {
+    const baseAmount = Number.parseFloat(amount)
+    const rate = Number.parseFloat(gstRate) / 100
 
-  const calculateGst = () => {
-    const amountValue = parseFloat(amount) || 0;
-    const gstRateValue = isCustomGstRate
-      ? parseFloat(customGstRate) || 0
-      : parseFloat(gstRate) || 0;
-    let gstAmountValue = 0;
-    let totalAmountValue = 0;
-
-    if (gstType === 'include') {
-      gstAmountValue = (amountValue * gstRateValue) / (100 + gstRateValue);
-      totalAmountValue = amountValue - gstAmountValue;
-    } else {
-      gstAmountValue = (amountValue * gstRateValue) / 100;
-      totalAmountValue = amountValue + gstAmountValue;
+    if (isNaN(baseAmount) || isNaN(rate) || baseAmount < 0 || rate < 0) {
+      return
     }
 
-    setGstAmount(gstAmountValue.toFixed(2));
-    setTotalAmount(totalAmountValue.toFixed(2));
-  };
+    let gstAmount, totalAmount, netAmount
 
-  const handleGstRateChange = (e) => {
-    if (e.target.value === 'custom') {
-      setIsCustomGstRate(true);
-      setGstRate(''); // Reset the gstRate value when switching to custom
+    if (calculationType === "exclusive") {
+      // GST is added to the amount
+      gstAmount = baseAmount * rate
+      totalAmount = baseAmount + gstAmount
+      netAmount = baseAmount
     } else {
-      setGstRate(e.target.value);
-      setIsCustomGstRate(false);
-      setCustomGstRate(''); // Reset the customGstRate value when switching back to predefined rates
+      // GST is included in the amount
+      netAmount = baseAmount / (1 + rate)
+      gstAmount = baseAmount - netAmount
+      totalAmount = baseAmount
     }
-  };
+
+    setResults({
+      netAmount,
+      gstAmount,
+      totalAmount,
+      gstRate: rate * 100,
+      calculationType,
+    })
+
+    setChartData([
+      { name: "Net Amount", value: netAmount },
+      { name: "GST Amount", value: gstAmount },
+    ])
+  }
+
+  useEffect(() => {
+    calculateGST()
+  }, [])
+
+  const handleReset = () => {
+    setAmount("1000")
+    setGstRate("18")
+    setCalculationType("exclusive")
+    calculateGST()
+  }
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)
+  }
+
+  const COLORS = ["#0088FE", "#00C49F"]
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 md:p-10">
-      <div className="bg-white shadow-2xl rounded-2xl p-6 md:p-8 w-full max-w-lg transform hover:scale-[1.005] transition-transform duration-300 hover:shadow-2xl">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent mb-2">
-            GST Calculator
-          </h1>
-          <p className="text-gray-500 font-medium">Smart Tax Calculation Made Simple</p>
-        </div>
-
-        <div className="space-y-6">
-          <div className={sharedContainerClasses}>
-            <label htmlFor="gst-type" className={sharedLabelClasses}>
-              GST Type
-            </label>
-            <div className="relative">
-              <select
-                id="gst-type"
-                className={`${sharedInputClasses} cursor-pointer pr-10 bg-white`}
-                value={gstType}
-                onChange={(e) => setGstType(e.target.value)}
-              >
-                <option value="include">Including GST</option>
-                <option value="exclude">Excluding GST</option>
-              </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </div>
-            </div>
-          </div>
-
-          <div className={sharedContainerClasses}>
-            <label htmlFor="amount" className={sharedLabelClasses}>
-              Amount (₹)
-            </label>
-            <div className="relative">
-              <input
-                type="number"
-                id="amount"
-                className={`${sharedInputClasses} pl-10`}
-                placeholder="Enter amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </span>
-            </div>
-          </div>
-
-          <div className={sharedContainerClasses}>
-            <label htmlFor="gst-rate" className={sharedLabelClasses}>
-              GST Rate
-            </label>
-            {!isCustomGstRate ? (
-              <div className="relative">
-                <select
-                  id="gst-rate"
-                  className={`${sharedInputClasses} cursor-pointer pr-10 bg-white`}
-                  value={gstRate}
-                  onChange={handleGstRateChange}
+    <CalculatorLayout
+      title="GST Calculator"
+      description="Calculate GST amount and total price with or without GST included."
+      resultComponent={
+        results && (
+          <CalculatorResultCard
+            results={[
+              {
+                label: calculationType === "exclusive" ? "Original Amount" : "Amount (GST Inclusive)",
+                value: formatCurrency(calculationType === "exclusive" ? results.netAmount : results.totalAmount),
+              },
+              { label: "GST Rate", value: `${results.gstRate}%` },
+              { label: "GST Amount", value: formatCurrency(results.gstAmount), isHighlighted: true },
+              {
+                label: calculationType === "exclusive" ? "Total Amount" : "Net Amount (GST Exclusive)",
+                value: formatCurrency(calculationType === "exclusive" ? results.totalAmount : results.netAmount),
+                isHighlighted: true,
+              },
+            ]}
+          />
+        )
+      }
+      chartComponent={
+        chartData.length > 0 && (
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  cx="50%"
+                  cy="50%"
+                  labelLine={false}
+                  outerRadius={80}
+                  fill="#8884d8"
+                  dataKey="value"
+                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                 >
-                  <option value="0">0% (NILL)</option>
-                  <option value="5">5%</option>
-                  <option value="12">12%</option>
-                  <option value="18">18%</option>
-                  <option value="28">28%</option>
-                  <option value="custom">Custom Rate</option>
-                </select>
-                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-blue-600">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </div>
-              </div>
-            ) : (
-              <div className="relative">
-                <input
-                  type="number"
-                  id="custom-gst-rate"
-                  className={`${sharedInputClasses} pl-12`}
-                  placeholder="Enter custom GST rate"
-                  value={customGstRate}
-                  onChange={(e) => setCustomGstRate(e.target.value)}
-                />
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-600">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
-                </svg>
-              </span>
-            </div>
-          )}
+                  {chartData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip formatter={(value) => formatCurrency(Number(value))} />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        )
+      }
+    >
+      <div className="grid gap-6">
+        <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Calculation Type</label>
+            <select
+              value={calculationType}
+              onChange={(e) => setCalculationType(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+              <option value="exclusive">Add GST to amount (Exclusive)</option>
+              <option value="inclusive">Extract GST from amount (Inclusive)</option>
+            </select>
+          </div>
+
+          <InputField
+            id="amount"
+            label={calculationType === "exclusive" ? "Amount (Excluding GST)" : "Amount (Including GST)"}
+            value={amount}
+            onChange={setAmount}
+            type="number"
+            prefix="$"
+            min={0}
+            tooltip={
+              calculationType === "exclusive" ? "Enter the amount without GST" : "Enter the amount with GST included"
+            }
+          />
+
+          <InputField
+            id="gstRate"
+            label="GST Rate"
+            value={gstRate}
+            onChange={setGstRate}
+            type="number"
+            suffix="%"
+            min={0}
+            step={0.1}
+            tooltip="The GST rate to apply"
+          />
         </div>
 
-        <div className="bg-blue-50 p-6 rounded-xl space-y-4 border-2 border-blue-100">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2 text-gray-600">
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-              </svg>
-              <span className="font-medium">GST Amount:</span>
-            </div>
-            <span className="text-blue-600 font-bold text-xl">
-              ₹{gstAmount || '0.00'}
-            </span>
-          </div>
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2 text-gray-600">
-              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
-              <span className="font-medium">Total Amount:</span>
-            </div>
-            <span className="text-green-600 font-bold text-xl">
-              ₹{totalAmount || '0.00'}
-            </span>
-          </div>
-        </div>
+        <hr className="my-4" />
 
-        <button
-          onClick={calculateGst}
-          className="w-full bg-gradient-to-r from-blue-600 to-blue-600 hover:from-blue-700 hover:to-blue-700 text-white py-4 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-        >
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-          </svg>
-          Calculate GST
-        </button>
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset
+          </button>
+          <button
+            onClick={calculateGST}
+            className="px-4 py-2 bg-primary text-white rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect width="16" height="16" x="4" y="4" rx="2" />
+              <path d="M8 10h8" />
+              <path d="M8 14h8" />
+              <path d="M12 8v8" />
+            </svg>
+            Calculate
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
-);
-};
+    </CalculatorLayout>
+  )
+}
 
-export default GSTCalculator;
+export default GstCalculator

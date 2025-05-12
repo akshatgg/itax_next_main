@@ -1,260 +1,201 @@
-'use client';
-import React, { useRef, useState } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
+"use client"
 
-import { useReactToPrint } from 'react-to-print';
-import SearchResult_section from '@/components/pagesComponents/pageLayout/SearchResult_section.js';
-import Image from 'next/image';
-import { formatINRCurrency } from '@/utils/utilityFunctions';
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { useState } from "react"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
+import CalculatorLayout from "../components/CalculatorLayout"
+import { InputField } from "../components/InputField"
+import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
-const LumpSumpCal = () => {
-  const principalRef = useRef('');
-  const roiRef = useRef('');
-  const timeperiodRef = useRef('');
-  const [showdata, setShowData] = useState('');
+const LumpSumCalculator = () => {
+  const [principal, setPrincipal] = useState("10000")
+  const [rate, setRate] = useState("7")
+  const [time, setTime] = useState("5")
+  const [results, setResults] = useState(null)
+  const [chartData, setChartData] = useState([])
 
-  const [loading, setLoading] = useState('');
-  const [showStat, setShowStat] = useState();
-  const pdf_ref = useRef();
-  const handleClear = () => {
-    principalRef.current.value = '';
-    roiRef.current.value = '';
-    timeperiodRef.current.value = '';
-    setShowData('');
-    setShowStat(false);
-  };
-  const generatePDF = useReactToPrint({
-    content: () => pdf_ref.current,
-    documentTitle: 'Lump Sum',
-  });
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const calculateLumpSum = () => {
+    const invested = Number.parseFloat(principal)
+    const interestRate = Number.parseFloat(rate) / 100
+    const years = Number.parseFloat(time)
 
-    const invested = +principalRef.current.value;
-    const rate = +roiRef.current.value;
-    const year = +timeperiodRef.current.value;
+    if (isNaN(invested) || isNaN(interestRate) || isNaN(years) || invested <= 0 || interestRate <= 0 || years <= 0) {
+      return
+    }
 
-    const total = invested * Math.pow(1 + rate / 100, year);
-    const gain = total - invested;
+    const total = invested * Math.pow(1 + interestRate, years)
+    const gain = total - invested
 
-    setShowData({
-      invested: invested.toFixed('2'),
-      total: total.toFixed('2'),
-      gain: gain.toFixed('2'),
-    });
-    setShowStat(true);
-    setLoading(false);
-  };
-  const data = {
-    labels: ['Invested', 'Gain'],
-    datasets: [
-      {
-        // label: '# of Votes',
-        data: [showdata.invested, showdata.gain],
-        backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
-        borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
-        borderWidth: 1,
-      },
-    ],
-  };
+    // Generate chart data
+    const newChartData = []
+    for (let year = 0; year <= years; year++) {
+      const yearAmount = invested * Math.pow(1 + interestRate, year)
+      const yearGain = yearAmount - invested
+      newChartData.push({
+        year,
+        invested: invested,
+        gain: yearGain,
+        total: yearAmount,
+      })
+    }
+
+    setResults({
+      invested,
+      total,
+      gain,
+      rate: interestRate * 100,
+      time: years
+    })
+
+    setChartData(newChartData)
+  }
+
+  const handleReset = () => {
+    setPrincipal("10000")
+    setRate("7")
+    setTime("5")
+    calculateLumpSum()
+  }
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)
+  }
+
+  // Trigger initial calculation on component mount
+  useState(() => {
+    calculateLumpSum()
+  })
+
   return (
-    <SearchResult_section title="Lump Sump Calculator">
-      <li className="p-4 ">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 ">
-            <div>
-              <label
-                htmlFor="exampleFormControlInput1"
-                className="form-label inline-block mb-2 text-gray-700"
-              >
-                Invested
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="text"
-                  className="form-control
-                                            block
-                                            w-full
-                                            px-3    
-                                            py-1.5
-                                            text-base
-                                            font-normal
-                                            text-gray-700
-                                            bg-white bg-clip-padding
-                                            border border-solid border-gray-300
-                                            rounded-l
-                                            transition
-                                            ease-in-out
-                                            m-0
-
-                                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                        "
-                  id="exampleFormControlInput1"
-                  placeholder="Invested"
-                  ref={principalRef}
+    <CalculatorLayout
+      title="Lump Sum Investment Calculator"
+      description="Calculate the future value of a one-time investment over time."
+      resultComponent={
+        results && (
+          <CalculatorResultCard
+            results={[
+              { label: "Initial Investment", value: formatCurrency(results.invested) },
+              { label: "Interest Rate", value: `${results.rate}%` },
+              { label: "Investment Period", value: `${results.time} years` },
+              { label: "Total Gain", value: formatCurrency(results.gain), isHighlighted: true },
+              { label: "Final Value", value: formatCurrency(results.total), isHighlighted: true },
+            ]}
+          />
+        )
+      }
+      chartComponent={
+        chartData.length > 0 && (
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="year" label={{ value: "Years", position: "insideBottomRight", offset: -5 }} />
+                <YAxis tickFormatter={(value) => `$${value}`} />
+                <Tooltip
+                  formatter={(value) => [`$${Number(value).toFixed(2)}`, undefined]}
+                  labelFormatter={(label) => `Year ${label}`}
                 />
-                <div className="flex items-center bg-primary text-white  rounded-r px-4">
-                  ₹
-                </div>
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="exampleFormControlInput2"
-                className="form-label inline-block mb-2 text-gray-700"
-              >
-                Rate Of Interest (P.A.)
-              </label>
-              <div className="flex">
-                <input
-                  type="text"
-                  required
-                  className="form-control
-                                            block
-                                            w-full
-                                            px-3
-                                            py-1.5
-                                            text-base
-                                            font-normal
-                                            text-gray-700
-                                            bg-white bg-clip-padding
-                                            border border-solid border-gray-300
-                                            rounded-l
-                                            transition
-                                            ease-in-out
-                                            m-0
-
-                                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                        "
-                  id="exampleFormControlInput2"
-                  placeholder="Rate Of Interest"
-                  ref={roiRef}
-                />
-                <div className="flex items-center bg-primary text-white  rounded-r px-4">
-                  %
-                </div>
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="exampleFormControlInput3"
-                className="form-label inline-block mb-2 text-gray-700"
-              >
-                Time Period (In Years)
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="text"
-                  className="form-control
-                                            block
-                                            w-full
-                                            px-3
-                                            py-1.5
-                                            text-base
-                                            font-normal
-                                            text-gray-700
-                                            bg-white bg-clip-padding
-                                            border border-solid border-gray-300
-                                            rounded-l
-                                            transition
-                                            ease-in-out
-                                            m-0
-
-                                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                        "
-                  id="exampleFormControlInput3"
-                  placeholder="Time Period"
-                  ref={timeperiodRef}
-                />
-                <div className="flex items-center bg-primary text-white  rounded-r px-4">
-                  Y
-                </div>
-              </div>
-            </div>
+                <Legend />
+                <Line type="monotone" dataKey="total" name="Total Value" stroke="#8884d8" activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="gain" name="Gain" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="invested" name="Initial Investment" stroke="#ffc658" strokeDasharray="5 5" />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
+        )
+      }
+    >
+      <div className="grid gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="principal"
+            label="Initial Investment"
+            value={principal}
+            onChange={setPrincipal}
+            type="number"
+            prefix="$"
+            min={1}
+            tooltip="The amount you're investing as a lump sum"
+          />
+          <InputField
+            id="rate"
+            label="Annual Interest Rate"
+            value={rate}
+            onChange={setRate}
+            type="number"
+            suffix="%"
+            min={0.01}
+            step={0.01}
+            tooltip="The expected annual return rate"
+          />
+        </div>
 
-          <div className="grid gap-4 lg:p-4 place-content-center grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))] xl:grid-cols-2 lg:grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))]">
-            <button
-              disabled={loading}
-              className={`btn-primary ${loading ? ' cursor-not-allowed ' : ''}`}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="time"
+            label="Investment Period"
+            value={time}
+            onChange={setTime}
+            type="number"
+            suffix="years"
+            min={1}
+            tooltip="The number of years you plan to invest"
+          />
+        </div>
+
+        <hr className="my-4" />
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              {loading ? <span className="spinner"></span> : 'Calculate'}
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="btn-primary bg-red-500 hover:bg-red-600"
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset
+          </button>
+          <button
+            onClick={calculateLumpSum}
+            className="px-4 py-2 bg-primary text-white rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              Clear
-            </button>
-            {showStat && (
-              <button
-                type="button"
-                className="btn-primary "
-                onClick={generatePDF}
-              >
-                Print
-              </button>
-            )}
-            {showStat && (
-              <button
-                type="button"
-                className="btn-primary bg-green-500 hover:bg-green-600"
-              >
-                Download
-              </button>
-            )}
-          </div>
-        </form>
-      </li>
-      {showStat && (
-        <li className="lg:col-span-2 space-y-4 bg-gray-200 p-4" ref={pdf_ref}>
-          <div className="p-4 bg-neutral-50">
-            <div className="p-4 mx-auto w-full sm:w-3/4 md:w-1/2 lg:w-[40%] aspect-square">
-              <Pie data={data} />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 mt-5 gap-2">
-              <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm  mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5">
-                  Invested
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.invested)}
-                  </span>
-                </h3>
-              </div>
-              <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm  mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5 ">
-                  Gain
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.gain)}
-                  </span>
-                </h3>
-              </div>
-              <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm  mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5">
-                  Total
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.total)}
-                  </span>
-                </h3>
-              </div>
-            </div>
-          </div>
-        </li>
-      )}
-    </SearchResult_section>
-  );
-};
+              <rect width="16" height="16" x="4" y="4" rx="2" />
+              <path d="M8 10h8" />
+              <path d="M8 14h8" />
+              <path d="M12 8v8" />
+            </svg>
+            Calculate
+          </button>
+        </div>
+      </div>
+    </CalculatorLayout>
+  )
+}
 
-export default LumpSumpCal;
+export default LumpSumCalculator
