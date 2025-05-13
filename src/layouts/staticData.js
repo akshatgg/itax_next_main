@@ -694,7 +694,7 @@ export const DashboardSidebarItemsData = {
           title: 'Invoice',
           iconName: 'material-symbols:dashboard',
           upcoming: false,
-          linkTo: '/dashboard/invoice',
+          linkTo: '/dashboard/accounts/invoice',
         },
         {
           title: 'E-Invoice',
@@ -840,6 +840,20 @@ export const DashboardSidebarItemsData = {
           linkTo: 'reports',
         },
       ],
+    },
+    {
+       upcoming: false,
+       title: 'Carrer',
+        iconName: 'material-symbols:dashboard',
+        subMenu: true,
+        subMenuItems: [
+          {
+            title: 'Job/Intern',
+            iconName: 'material-symbols:dashboard',
+            upcoming: false,
+            linkTo: '/dashboard/user-contacts/',
+          },
+        ],
     },
     {
       upcoming: false,

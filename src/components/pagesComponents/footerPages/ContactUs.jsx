@@ -1,168 +1,186 @@
-'use client';
-import { useForm } from 'react-hook-form';
-import { useState } from 'react';
-import userAxios from '@/lib/userAxios';
-import { toast } from 'react-toastify';
+"use client"
+import { useForm } from "react-hook-form"
+import { useState } from "react"
+import userAxios from "@/lib/userbackAxios"
+import { toast } from "react-toastify"
+import { Loader2 } from "lucide-react"
+
 export default function ContactUs() {
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm();
-  const [loading, setLoading] = useState(false);
-  const submitHandler = async (formData) => {
-    console.log(formData);
-    try {
-      setLoading(true);
-      const response = await userAxios.post('/contactUs/create', {
-        ...formData,
-        // phoneNumber: '8400258085',
-      });
-      toast.success(response.data.message);
-      setLoading(false);
-    } catch (error) {
-      console.log(error);
-      toast.error(error.response.data.error);
-      setLoading(false);
-    }
-    reset();
-  };
-  return (
-    <main className=" bg-gray-100 dark:bg-neutral-900 sm:p-8 min-h-screen grid place-items-center">
-      <section className="sm:rounded-lg -bg--clr-neutral-100 dark:bg-gray-800 p-4 sm:p-8 max-w-7xl mx-auto grid gap-12 lg:grid-cols-[2fr,1fr] grid-rows-[2fr,1fr] lg:grid-rows-1">
-        <div className="bg-gray-100 py-8 lg:py-16 px-4 mx-auto max-w-3xl rounded-md dark:bg-neutral-900 shadow-lg dark:shadow-sm dark:shadow-white ">
-          <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-center text-gray-900 dark:text-white">
-            Contact Us
-          </h2>
-          <p className="mb-8 lg:mb-16 font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl">
-            Got a technical issue? Want to send feedback about a beta feature?
-            Need details about our Business plan? Let us know.
-          </p>
-          <form
-            onSubmit={handleSubmit(submitHandler)}
-            className="  grid sm:grid-cols-3 gap-2"
-          >
-            <div>
-              <label
-                htmlFor="name"
-                className="block mb-1 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                Your Name<sup className="text-red-500">*</sup>
-              </label>
-              <input
-                type="text"
-                {...register('name', { required: 'Name is required' })}
-                id="name"
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
-                placeholder="Enter name"
-              />
-              {errors && errors.name && (
-                <p className="text-red-500">{errors.name.message}</p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="email"
-                className="block mb-1 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                Your email<sup className="text-red-500">*</sup>
-              </label>
-              <input
-                type="email"
-                {...register('email', { required: 'Email is required' })}
-                id="email"
-                className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-3 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
-                placeholder="xyz@gmail.com"
-              />
-              {errors && errors.email && (
-                <p className="text-red-500">{errors.email.message}</p>
-              )}
-            </div>
-            <div>
-              <label
-                htmlFor="subject"
-                className="block mb-1 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
-                Subject<sup className="text-red-500">*</sup>
-              </label>
-              <input
-                type="text"
-                id="subject"
-                {...register('subject', { required: 'Subject is required' })}
-                className="block p-3 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 shadow-sm focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500 dark:shadow-sm-light"
-                placeholder="Let us know how we can help you"
-              />
-              {errors && errors.subject && (
-                <p className="text-red-500">{errors.subject.message}</p>
-              )}
-            </div>
+  } = useForm()
+  const [loading, setLoading] = useState(false)
 
-            <div className="sm:col-span-3">
-              <label
-                htmlFor="message"
-                className="block mb-1 text-sm font-medium text-gray-900 dark:text-gray-400"
+  const submitHandler = async (formData) => {
+    try {
+      setLoading(true)
+      const response = await userAxios.post("/contactUs/create", {
+        ...formData,
+      })
+      toast.success(response.data.message)
+      reset()
+    } catch (error) {
+      console.log(error)
+      toast.error(error.response.data.error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <main className="bg-gray-100 dark:bg-neutral-900 min-h-screen flex items-center justify-center p-4">
+      <div className="w-full max-w-7xl bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div className="grid md:grid-cols-2 gap-0">
+          {/* Form Section */}
+          <div className="p-6">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Contact Us</h2>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
+              Got a technical issue? Want to send feedback? Let us know.
+            </p>
+
+            <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-1">
+                    Your Name<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    {...register("name", { required: "Name is required" })}
+                    id="name"
+                    className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                    placeholder="Enter name"
+                  />
+                  {errors?.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-1">
+                    Your Email<span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    {...register("email", { required: "Email is required" })}
+                    id="email"
+                    className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                    placeholder="xyz@gmail.com"
+                  />
+                  {errors?.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="subject" className="block text-sm font-medium text-gray-900 dark:text-gray-300 mb-1">
+                  Subject<span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="subject"
+                  {...register("subject", { required: "Subject is required" })}
+                  className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  placeholder="Let us know how we can help you"
+                />
+                {errors?.subject && <p className="text-red-500 text-xs mt-1">{errors.subject.message}</p>}
+              </div>
+
+              <div>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-900 dark:text-gray-400 mb-1">
+                  Your Message<span className="text-red-500">*</span>
+                </label>
+                <textarea
+                  id="message"
+                  rows={4}
+                  {...register("message", { required: "Message is required" })}
+                  className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                  placeholder="Leave a comment..."
+                ></textarea>
+                {errors?.message && <p className="text-red-500 text-xs mt-1">{errors.message.message}</p>}
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="py-2.5 px-5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 focus:ring-4 focus:outline-none focus:ring-primary/50 transition-colors disabled:opacity-70"
+                >
+                  {loading ? (
+                    <span className="flex items-center">
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Sending...
+                    </span>
+                  ) : (
+                    "Send Message"
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => reset()}
+                  className="py-2.5 px-5 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 transition-colors"
+                >
+                  Reset
+                </button>
+              </div>
+            </form>
+
+            <div className="flex flex-col sm:flex-row sm:justify-between mt-6 text-sm">
+              <a
+                className="text-gray-500 dark:text-gray-400 hover:underline flex items-center mb-2 sm:mb-0"
+                href="tel:+918770877270"
               >
-                Your message<sup className="text-red-500">*</sup>
-              </label>
-              <textarea
-                id="message"
-                rows="6"
-                {...register('message', { required: 'Message is required' })}
-                className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg shadow-sm border border-gray-300 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                placeholder="Leave a comment..."
-              ></textarea>
-              {errors && errors.message && (
-                <p className="text-red-500">{errors.message.message}</p>
-              )}
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                  />
+                </svg>
+                +91 8770877270
+              </a>
+              <a
+                className="text-gray-500 dark:text-gray-400 hover:underline flex items-center"
+                href="mailto:support@itaxeasy.com"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 mr-2"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+                support@itaxeasy.com
+              </a>
             </div>
-            <div className="flex gap-4 flex-wrap sm:col-span-3">
-              <button
-                type="submit"
-                className="py-3 px-5 text-sm font-medium text-center bg-primary text-white rounded-lg bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-              >
-                {loading ? (
-                  <span className="inline-block w-4 h-4 border-white border-b-zinc-400 border-r-zinc-400 border-2 border-solid rounded-full animate-spin"></span>
-                ) : (
-                  'Send Message'
-                )}
-              </button>
-              <button
-                type="reset"
-                onClick={() => {
-                  reset();
-                }}
-                className="py-3 px-5 text-sm font-medium text-center  bg-red-500 text-white rounded-lg bg-primary-700 sm:w-fit hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-              >
-                Reset
-              </button>
-            </div>
-          </form>
-          <div className="flex justify-between mt-8">
-            <a
-              className="underline font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl"
-              href="tel:+918770877270"
-            >
-              Contact us: 8770877270
-            </a>
-            <a
-              className="underline font-light text-center text-gray-500 dark:text-gray-400 sm:text-xl"
-              href="mailto:support@itaxeasy.com"
-            >
-              support@itaxeasy.com
-            </a>
+          </div>
+
+          {/* Map Section */}
+          <div className="h-full w-full min-h-[300px] md:min-h-full">
+            <iframe
+              className="w-full h-full"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4668.759088204337!2d78.1760718502079!3d26.2171536260565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976c69faa0547f1%3A0x3996f8cdea3069b!2sItax%20easy%20private%20limited!5e0!3m2!1sen!2sin!4v1676326483432!5m2!1sen!2sin"
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Itax Easy Office Location"
+            ></iframe>
           </div>
         </div>
-        <div className="bg-gray-100 rounded-md overflow-hidden shadow-lg dark:shadow-sm dark:shadow-white ">
-          <iframe
-            className="w-full h-full"
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4668.759088204337!2d78.1760718502079!3d26.2171536260565!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3976c69faa0547f1%3A0x3996f8cdea3069b!2sItax%20easy%20private%20limited!5e0!3m2!1sen!2sin!4v1676326483432!5m2!1sen!2sin"
-            allowFullScreen=""
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          ></iframe>
-        </div>
-      </section>
+      </div>
     </main>
-  );
+  )
 }

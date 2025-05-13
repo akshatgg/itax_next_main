@@ -1,8 +1,9 @@
 'use client';
-import Image from 'next/image';
 import { useState } from 'react';
+
 function ViewResumeModal({ data }) {
   const [isOpen, setIsOpen] = useState(false);
+  
   if (!data.includes('https://')) {
     return (
       <>
@@ -22,12 +23,12 @@ function ViewResumeModal({ data }) {
       </button>
       <div
         id="resume-modal"
-        tabIndex="-1"
+        tabIndex={-1}
         aria-hidden="true"
         className={
           isOpen
-            ? 'overflow-y-auto backdrop-blur-sm bg-black/30 overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full'
-            : 'hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full'
+            ? 'overflow-y-auto backdrop-blur-sm bg-black/30 overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex justify-center items-center w-full md:inset-0 h-screen'
+            : 'hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-screen'
         }
       >
         <div className="relative p-4 w-full max-w-4xl mx-auto max-h-full">
@@ -60,8 +61,13 @@ function ViewResumeModal({ data }) {
               </button>
             </div>
 
-            <div className="p-4 md:p-5">
-              <Image src={data} width={800} height={500} alt="resume" />
+            <div className="p-4 md:p-5 h-[80vh]">
+              <iframe 
+                src={`${data}#view=FitH`} 
+                className="w-full h-full rounded border-0"
+                title="Resume PDF"
+                allowFullScreen
+              />
             </div>
           </div>
         </div>

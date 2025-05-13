@@ -9,16 +9,13 @@
 
 const ReactTable = ({ columns, data, id }) => {
   return (
-    <div>
+    <div className="overflow-x-auto">
       <table className="w-full shadow-md" id={id}>
         <thead>
           <tr className="bg-primary h-10">
             {columns &&
               columns.map((column, index) => (
-                <th
-                  className="border-2 min-w-fit text-nowrap p-2 py-3 font-semibold text-white"
-                  key={index}
-                >
+                <th className="border-2 min-w-fit text-nowrap p-2 py-3 font-semibold text-white" key={index}>
                   <div className="flex justify-start">
                     <span>{column.text}</span>
                   </div>
@@ -27,24 +24,29 @@ const ReactTable = ({ columns, data, id }) => {
           </tr>
         </thead>
         <tbody>
-          {data &&
+          {data && data.length > 0 ? (
             data.map((row, rowIndex) => (
-              <tr className="h-10" key={rowIndex}>
+              <tr className="h-10 hover:bg-gray-50" key={rowIndex}>
                 {columns.map((column, colIndex) => {
                   return (
                     <td className="border-2 p-2" key={colIndex}>
-                      {column.formatter
-                        ? column.formatter(row[column.dataField], row)
-                        : row[column.dataField]}
+                      {column.formatter ? column.formatter(row[column.dataField], row) : row[column.dataField]}
                     </td>
-                  );
+                  )
                 })}
               </tr>
-            ))}
+            ))
+          ) : (
+            <tr>
+              <td colSpan={columns.length} className="border-2 p-4 text-center text-gray-500">
+                No data available
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
-  );
-};
+  )
+}
 
-export default ReactTable;
+export default ReactTable
