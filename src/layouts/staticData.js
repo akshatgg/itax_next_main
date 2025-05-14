@@ -97,28 +97,28 @@ export const DashboardSidebarItemsData = {
         },
       ],
     },
-    // {
-    //   upcoming: false,
-    //   title: 'Accounts',
-    //   iconName: 'fa6-solid:users',
-    //   subMenu: true,
-    //   subMenuItems: [
-    //     {
-    //       title: 'Accounts',
-    //       iconName: 'material-symbols:dashboard',
-    //       upcoming: false,
-    //       linkTo: '/dashboard/accounts/',
-    //       subMenu: false,
-    //     },
-    //     {
-    //       title: 'Invoice',
-    //       iconName: 'material-symbols:dashboard',
-    //       upcoming: false,
-    //       linkTo: '/dashboard/accounts/invoice',
-    //       subMenu: false,
-    //     },
-    //   ],
-    // },
+    {
+      upcoming: false,
+      title: 'Accounts',
+      iconName: 'fa6-solid:users',
+      subMenu: true,
+      subMenuItems: [
+        {
+          title: 'Accounts',
+          iconName: 'material-symbols:dashboard',
+          upcoming: false,
+          linkTo: '/dashboard/accounts/',
+          subMenu: false,
+        },
+        {
+          title: 'Invoice',
+          iconName: 'material-symbols:dashboard',
+          upcoming: false,
+          linkTo: '/dashboard/accounts/invoice',
+          subMenu: false,
+        },
+      ],
+    },
     {
       upcoming: false,
       title: 'Finance',

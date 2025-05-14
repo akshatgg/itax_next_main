@@ -69,7 +69,7 @@ export default function CreateSale() {
     }
 	return (
         <>
-            <BackButton title={"Create Sales"} />
+            {/* <BackButton title={"Create Sales"} /> */}
             <section className="p-4 max-w-6xl mx-auto">
                 <form action="" onSubmit={handleSubmit(onCreateSale)}>
                     <p className={formClassNames.formSectionTitle}>Party Details</p>

@@ -35,7 +35,7 @@ export default function AllSales() {
       // },
     ],
   };
-  const linkToCreateSale = '/dashboard/accounts/invoice/sales/create';
+  const linkToCreateSale = '/dashboard/accounts/invoice/all-sales/create-sale';
   return (
     <>
       {/* <BackButton title={'All Sales'} /> */}

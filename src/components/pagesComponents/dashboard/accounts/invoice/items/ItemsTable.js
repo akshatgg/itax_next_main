@@ -60,14 +60,14 @@ const itemData = {
 const ItemsTable = ({ itemsData }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
+  
   const handleDelete = async (id) => {
     try {
       const response = await userAxios.delete('/invoice/items/' + id);
       if (response.data.success) {
         toast.success(`Item Deleted : ${response.data.item?.itemName}`);
       }
-
+    
       startTransition(() => {
         // Refresh the current route and fetch new data
         // from the server without losing
