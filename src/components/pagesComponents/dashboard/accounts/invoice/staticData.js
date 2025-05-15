@@ -8,7 +8,7 @@ export const invoiceDashboardNavItems = [
       'p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500',
   },
   {
-    linkTo: 'all-sales',
+    linkTo: 'sales',
     icon: 'mdi:cart-sale',
     title: 'sale',
     data: '0',
@@ -16,7 +16,7 @@ export const invoiceDashboardNavItems = [
       'p-3 mr-4 text-yellow-500 bg-yellow-100 rounded-full dark:text-yellow-100 dark:bg-yellow-500',
   },
   {
-    linkTo: 'all-purchase',
+    linkTo: 'purchase',
     icon: 'carbon:purchase',
     title: 'purchase',
     data: '0',
