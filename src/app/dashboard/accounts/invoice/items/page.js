@@ -1,6 +1,6 @@
 import Items from '@/components/pagesComponents/dashboard/accounts/invoice/items/Items';
 import { nodeAxios } from '@/lib/axios';
-
+import userbackAxios from '@/lib/userbackAxios';
 export const dynamic = 'force-dynamic';
 
 export default function page() {
@@ -9,7 +9,7 @@ export default function page() {
 
 export async function getInvoiceItems(params) {
   try {
-    const response = await nodeAxios.get(
+    const response = await userbackAxios.get(
       `/invoice/items/${params ? params : ''}`,
     );
     console.log('🚀 ~ getInvoiceItems ~ response:', response);
@@ -23,7 +23,7 @@ export async function getInvoiceItems(params) {
 
 export async function getInvoiceItem(id) {
   try {
-    const response = await nodeAxios.get(`/invoice/items/${id}`);
+    const response = await userbackAxios.get(`/invoice/items/${id}`);
     const itemsData = response.data;
     return itemsData;
   } catch (error) {

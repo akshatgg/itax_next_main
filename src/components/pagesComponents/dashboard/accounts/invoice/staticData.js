@@ -32,7 +32,7 @@ export const invoiceDashboardNavItems = [
       'p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500',
   },
   {
-    linkTo: 'customers',
+    linkTo: 'parties/customer',
     icon: 'ph:users-four',
     title: 'customer',
     data: '0',
@@ -40,7 +40,7 @@ export const invoiceDashboardNavItems = [
       'p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-500',
   },
   {
-    linkTo: 'suppliers',
+    linkTo: 'parties/supplier',
     icon: 'ph:users-four',
     title: 'supplier',
     data: '0',

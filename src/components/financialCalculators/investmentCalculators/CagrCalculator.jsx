@@ -1,235 +1,215 @@
-'use client';
-import React, { useRef, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { useReactToPrint } from 'react-to-print';
-import SearchResult_section from '@/components/pagesComponents/pageLayout/SearchResult_section.js';
-import Image from 'next/image';
-ChartJS.register(ArcElement, Tooltip, Legend);
+"use client"
 
-const CAGR = () => {
-  const initialInvestmentRef = useRef('');
-  const finalInvestmentRef = useRef('');
-  const timeperiodRef = useRef('');
-  const [cagr, setCagr] = useState();
-  const [loading, setLoading] = useState('');
-  const [showStat, setShowStat] = useState(false);
-  const pdf_ref = useRef();
-  const generatePDF = useReactToPrint({
-    content: () => pdf_ref.current,
-    documentTitle: 'CAGR',
-  });
+import { useState, useEffect } from "react"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts"
+import CalculatorLayout from "../components/CalculatorLayout"
+import { InputField } from "../components/InputField"
+import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
-  const handleClear = () => {
-    initialInvestmentRef.current.value = '';
-    finalInvestmentRef.current.value = '';
-    timeperiodRef.current.value = '';
-    setShowStat(false);
-    setCagr();
-  };
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+const CAGRCalculator = () => {
+  const [initialInvestment, setInitialInvestment] = useState("100000")
+  const [finalInvestment, setFinalInvestment] = useState("150000")
+  const [timePeriod, setTimePeriod] = useState("5")
+  const [results, setResults] = useState(null)
+  const [chartData, setChartData] = useState([])
 
-    const initial = +initialInvestmentRef.current.value;
-    const final = +finalInvestmentRef.current.value;
-    const years = +timeperiodRef.current.value;
+  const calculateCAGR = () => {
+    const initial = Number.parseFloat(initialInvestment)
+    const final = Number.parseFloat(finalInvestment)
+    const years = Number.parseFloat(timePeriod)
 
-    const cagr = ((final / initial) ** (1 / years) - 1) * 100;
+    if (isNaN(initial) || isNaN(final) || isNaN(years) || initial <= 0 || final <= 0 || years <= 0) {
+      return
+    }
 
-    setCagr(cagr.toFixed(2));
-    setShowStat(true);
+    // Calculate CAGR
+    const cagr = ((final / initial) ** (1 / years) - 1) * 100
 
-    setLoading(false);
-  };
-  const data = {
-    labels: ['Cagr'],
-    datasets: [
-      {
-        data: [cagr || 0],
-        backgroundColor: [
-       '   #69AFFF'
-        ],
-        borderColor: [
-         '#136EFF'
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+    // Generate chart data
+    const newChartData = []
+    for (let year = 0; year <= years; year++) {
+      const value = initial * Math.pow(1 + cagr / 100, year)
+      newChartData.push({
+        year,
+        initialInvestment: initial,
+        currentValue: value,
+        growthDifference: value - initial
+      })
+    }
+
+    setResults({
+      initialInvestment: initial,
+      finalInvestment: final,
+      timePeriod: years,
+      cagr: cagr.toFixed(2),
+      totalGrowth: ((final / initial - 1) * 100).toFixed(2)
+    })
+
+    setChartData(newChartData)
+  }
+
+  useEffect(() => {
+    calculateCAGR()
+  }, [])
+
+  const handleReset = () => {
+    setInitialInvestment("100000")
+    setFinalInvestment("150000")
+    setTimePeriod("5")
+    calculateCAGR()
+  }
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value)
+  }
+
   return (
-    <SearchResult_section title="CAGR Calculator">
-      <li className="p-4">
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 ">
-            <div>
-              <label
-                htmlFor="exampleFormControlInput1"
-                className="form-label inline-block mb-2 text-gray-700"
-              >
-                Initial Investment
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="text"
-                  className="form-control
-                                        block
-                                        w-full
-                                        px-3    
-                                        py-1.5
-                                        text-base
-                                        font-normal
-                                        text-gray-700
-                                        bg-white bg-clip-padding
-                                        border border-solid border-gray-300
-                                        rounded-l
-                                        transition
-                                        ease-in-out
-                                        m-0
-
-                                        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                    "
-                  id="exampleFormControlInput1"
-                  placeholder="Principal"
-                  ref={initialInvestmentRef}
+    <CalculatorLayout
+      title="CAGR Calculator"
+      description="Calculate Compound Annual Growth Rate (CAGR) for your investments"
+      resultComponent={
+        results && (
+          <CalculatorResultCard
+            results={[
+              { label: "Initial Investment", value: formatCurrency(results.initialInvestment) },
+              { label: "Final Investment", value: formatCurrency(results.finalInvestment) },
+              { label: "Time Period", value: `${results.timePeriod} years` },
+              { label: "CAGR", value: `${results.cagr}%`, isHighlighted: true },
+              { label: "Total Growth", value: `${results.totalGrowth}%`, isHighlighted: true },
+            ]}
+          />
+        )
+      }
+      chartComponent={
+        chartData.length > 0 && (
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="year" label={{ value: "Years", position: "insideBottomRight", offset: -5 }} />
+                <YAxis tickFormatter={(value) => `₹${value.toLocaleString()}`} />
+                <Tooltip
+                  formatter={(value) => [`₹${Number(value).toLocaleString()}`, undefined]}
+                  labelFormatter={(label) => `Year ${label}`}
                 />
-                <div className="flex items-center bg-primary text-white  rounded-r px-4">
-                  ₹
-                </div>
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="exampleFormControlInput2"
-                className="form-label inline-block mb-2 text-gray-700"
-              >
-                Final Investment
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="text"
-                  className="form-control
-                                        block
-                                        w-full
-                                        px-3
-                                        py-1.5
-                                        text-base
-                                        font-normal
-                                        text-gray-700
-                                        bg-white bg-clip-padding
-                                        border border-solid border-gray-300
-                                        rounded-l
-                                        transition
-                                        ease-in-out
-                                        m-0
-
-                                        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                    "
-                  id="exampleFormControlInput2"
-                  placeholder="Rate Of Interest"
-                  ref={finalInvestmentRef}
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="initialInvestment" 
+                  name="Initial Investment" 
+                  stroke="#ffc658" 
+                  strokeDasharray="5 5"
                 />
-                <div className="flex items-center bg-primary text-white  rounded-r px-4">
-                  %
-                </div>
-              </div>
-            </div>
-            <div className="mb-3 xl:w-75 ">
-              <label
-                htmlFor="exampleFormControlInput3"
-                className="form-label inline-block mb-2 text-gray-700"
-              >
-                Duration (in Years)
-              </label>
-              <div className="flex">
-                <input
-                  required
-                  type="text"
-                  className="form-control
-                                        block
-                                        w-full
-                                        px-3
-                                        py-1.5
-                                        text-base
-                                        font-normal
-                                        text-gray-700
-                                        bg-white bg-clip-padding
-                                        border border-solid border-gray-300
-                                        rounded-l
-                                        transition
-                                        ease-in-out
-                                        m-0
-
-                                        focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
-                                    "
-                  id="exampleFormControlInput3"
-                  placeholder="Years"
-                  ref={timeperiodRef}
+                <Line 
+                  type="monotone" 
+                  dataKey="currentValue" 
+                  name="Current Value" 
+                  stroke="#8884d8" 
+                  activeDot={{ r: 8 }} 
                 />
-                <div className="flex items-center bg-primary text-white  rounded-r px-4">
-                  Y
-                </div>
-              </div>
-            </div>
+                <Line 
+                  type="monotone" 
+                  dataKey="growthDifference" 
+                  name="Growth" 
+                  stroke="#82ca9d" 
+                />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
-          <div className="grid gap-4 lg:p-4 place-content-center grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))] xl:grid-cols-2 lg:grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))]">
-            <button
-              disabled={loading}
-              className={`btn-primary ${loading ? ' cursor-not-allowed ' : ''}`}
+        )
+      }
+    >
+      <div className="grid gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="initialInvestment"
+            label="Initial Investment"
+            value={initialInvestment}
+            onChange={setInitialInvestment}
+            type="number"
+            prefix="₹"
+            min={1}
+            tooltip="The initial amount of investment"
+          />
+          <InputField
+            id="finalInvestment"
+            label="Final Investment"
+            value={finalInvestment}
+            onChange={setFinalInvestment}
+            type="number"
+            prefix="₹"
+            min={1}
+            tooltip="The final value of the investment"
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="timePeriod"
+            label="Investment Duration"
+            value={timePeriod}
+            onChange={setTimePeriod}
+            type="number"
+            suffix="years"
+            min={1}
+            tooltip="The duration of the investment in years"
+          />
+        </div>
+
+        <hr className="my-4" />
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              {loading ? <span className="spinner"></span> : 'Calculate'}
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="btn-primary bg-red-500 hover:bg-red-600"
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset
+          </button>
+          <button
+            onClick={calculateCAGR}
+            className="px-4 py-2 bg-primary text-white rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              Clear
-            </button>
-            {showStat && (
-              <button
-                type="button"
-                className="btn-primary "
-                onClick={generatePDF}
-              >
-                Print
-              </button>
-            )}
-            {showStat && (
-              <button
-                type="button"
-                className="btn-primary bg-green-500 hover:bg-green-600"
-              >
-                Download
-              </button>
-            )}
-          </div>
-        </form>
-      </li>
+              <rect width="16" height="16" x="4" y="4" rx="2" />
+              <path d="M8 10h8" />
+              <path d="M8 14h8" />
+              <path d="M12 8v8" />
+            </svg>
+            Calculate
+          </button>
+        </div>
+      </div>
+    </CalculatorLayout>
+  )
+}
 
-      {showStat && (
-        <li className="lg:col-span-2 space-y-4 bg-gray-200 p-4" ref={pdf_ref}>
-          <div className="bg-neutral-50 p-4 ">
-            <div className="mx-auto w-[40%] ">
-              <Pie data={data} />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-4 mt-5 gap-2">
-              <div className="block p-6 col-span-2 rounded-lg shadow-lg bg-white max-w-sm  mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5 text-center">
-                  CAGR
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">{cagr} %</span>
-                </h3>
-              </div>
-            </div>
-          </div>
-        </li>
-      )}
-    </SearchResult_section>
-  );
-};
-
-export default CAGR;
+export default CAGRCalculator

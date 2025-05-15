@@ -12,6 +12,7 @@ export const itr1 = {
             FirstName: "",
             MiddleName: "",
             SurNameOrOrgName: "",
+            
         },
         PAN: "",
         Address: {

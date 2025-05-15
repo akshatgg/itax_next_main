@@ -1,300 +1,256 @@
-'use client';
-import React, { useRef, useState } from 'react';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
-import uuid from 'react-uuid';
-import { useReactToPrint } from 'react-to-print';
-import SearchResult_section from '@/components/pagesComponents/pageLayout/SearchResult_section.js';
-import { formatINRCurrency } from '@/utils/utilityFunctions';
+"use client"
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { useState, useRef, useEffect } from "react"
+import { PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line } from "recharts"
+import CalculatorLayout from "../components/CalculatorLayout"
+import { InputField } from "../components/InputField"
+import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
-const NpsCal = () => {
-  const monthlyinvestmentRef = useRef(0);
-  const roiRef = useRef(0);
-  const ageRef = useRef(0);
-  const [showdata, setShowData] = useState('');
-  const [showTableData, setShowTableData] = useState([]);
-  const [showStat, setShowStat] = useState(false);
-  const [loading, setLoading] = useState('');
-  const [showgraph, setshowgraph] = useState(false);
-  const pdf_ref = useRef();
+const NpsCalculator = () => {
+  const [monthlyInvestment, setMonthlyInvestment] = useState("5000")
+  const [rateOfInterest, setRateOfInterest] = useState("8")
+  const [currentAge, setCurrentAge] = useState("30")
+  const [results, setResults] = useState(null)
+  const [chartData, setChartData] = useState([])
+  const [pieChartData, setPieChartData] = useState([])
 
-  const handleClear = () => {
-    monthlyinvestmentRef.current.value = '';
-    roiRef.current.value = '';
-    ageRef.current.value = '';
-    setShowData('');
-    setShowTableData([]);
-    setShowStat(false);
-  };
+  const calculateNPS = () => {
+    const monthlyInvestmentNum = Number.parseFloat(monthlyInvestment)
+    const rateNum = Number.parseFloat(rateOfInterest) / 100 / 12
+    const currentAgeNum = Number.parseFloat(currentAge)
 
-  const generatePDF = useReactToPrint({
-    content: () => pdf_ref.current,
-    documentTitle: 'NPS',
-  });
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const rate = +roiRef.current.value / (100 * 12);
-    const year = 60 - +ageRef.current.value;
-    const invested = +monthlyinvestmentRef.current.value * year * 12;
-    const yearlyGain = [];
-
-    let multiplier = Math.pow(1 + rate, year * 12) - 1 / rate;
-    let futureValue =
-      +monthlyinvestmentRef.current.value * multiplier * (1 + rate);
-
-    const gains = futureValue - invested;
-    let thisYearInterest = 0;
-
-    for (let i = 0; i < year; i++) {
-      const previousYearInterest = thisYearInterest;
-
-      multiplier = Math.pow(1 + rate, (i + 1) * 12) - 1 / rate;
-      const thisYearGain =
-        +monthlyinvestmentRef.current.value * multiplier * (1 + rate);
-      thisYearInterest =
-        thisYearGain - +monthlyinvestmentRef.current.value * 12 * (i + 1);
-
-      yearlyGain.push({
-        year: i + 1,
-        investment_amount: +monthlyinvestmentRef.current.value * 12,
-        interest_earned: Math.round(thisYearInterest - previousYearInterest),
-        maturity_amount: Math.round(thisYearGain),
-      });
+    if (
+      isNaN(monthlyInvestmentNum) || 
+      isNaN(rateNum) || 
+      isNaN(currentAgeNum) || 
+      monthlyInvestmentNum <= 0 || 
+      currentAgeNum < 18 || 
+      currentAgeNum >= 60
+    ) {
+      return
     }
 
-    const data = {
-      status: 'success',
-      total: Math.round(futureValue),
-      invested: invested,
-      gain: Math.round(gains),
-      yearlyGain: yearlyGain,
-    };
-    setShowData(data);
-    setShowTableData(data.yearlyGain);
-    setShowStat(true);
-    setLoading(false);
-  };
+    const retirementAge = 60
+    const investmentYears = retirementAge - currentAgeNum
+    const monthsToInvest = investmentYears * 12
 
-  const data = {
-    labels: ['Total', 'Invested', 'Gain'],
-    datasets: [
-      {
-        data: [showdata.total, showdata.invested, showdata.gain],
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.2)',
-          'rgba(54, 162, 235, 0.2)',
-          'rgba(255, 206, 86, 0.2)',
-        ],
-        borderColor: [
-          'rgba(255, 99, 132, 1)',
-          'rgba(54, 162, 235, 1)',
-          'rgba(255, 206, 86, 1)',
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+    let totalInvested = monthlyInvestmentNum * monthsToInvest
+    let futureValue = 0
+    const yearlyGain = []
+
+    // Calculate future value using compound interest
+    for (let month = 1; month <= monthsToInvest; month++) {
+      futureValue += monthlyInvestmentNum * Math.pow(1 + rateNum, monthsToInvest - month + 1)
+    }
+
+    // Generate yearly data for chart
+    for (let year = 1; year <= investmentYears; year++) {
+      const yearlyInvestment = monthlyInvestmentNum * 12
+      const yearlyInterestEarned = futureValue * (rateNum * 12) * (year / investmentYears)
+      
+      yearlyGain.push({
+        year,
+        investment: yearlyInvestment,
+        interest: yearlyInterestEarned,
+        totalAmount: yearlyInvestment + yearlyInterestEarned
+      })
+    }
+
+    const totalAmount = Math.round(futureValue)
+    const totalInterest = Math.round(totalAmount - totalInvested)
+
+    const results = {
+      monthlyInvestment: monthlyInvestmentNum,
+      rateOfInterest: rateNum * 12 * 100,
+      currentAge: currentAgeNum,
+      totalInvested: totalInvested,
+      totalAmount: totalAmount,
+      totalInterest: totalInterest
+    }
+
+    setResults(results)
+    setChartData(yearlyGain)
+    setPieChartData([
+      { name: 'Total Invested', value: totalInvested },
+      { name: 'Total Interest', value: totalInterest }
+    ])
+  }
+
+  useEffect(() => {
+    calculateNPS()
+  }, [])
+
+  const handleReset = () => {
+    setMonthlyInvestment("5000")
+    setRateOfInterest("8")
+    setCurrentAge("30")
+    calculateNPS()
+  }
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)
+  }
+
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28']
 
   return (
-    <SearchResult_section title="NPS Calculator">
-      <li className="p-4">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="mb-3 xl:w-75 mx-2">
-            <label className="form-label inline-block mb-2 text-gray-700">
-              Monthly Investment
-            </label>
-            <div className="flex">
-              <input
-                required
-                type="number"
-                className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded-l transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                placeholder="Investment Amount"
-                ref={monthlyinvestmentRef}
-              />
-              <div className="flex items-center bg-primary text-white rounded-r px-4">
-                ₹
-              </div>
+    <CalculatorLayout
+      title="NPS Calculator"
+      description="Calculate your National Pension Scheme (NPS) investment growth"
+      resultComponent={
+        results && (
+          <CalculatorResultCard
+            results={[
+              { label: "Monthly Investment", value: formatCurrency(results.monthlyInvestment) },
+              { label: "Interest Rate", value: `${results.rateOfInterest.toFixed(2)}%` },
+              { label: "Current Age", value: `${results.currentAge} years` },
+              { label: "Total Invested", value: formatCurrency(results.totalInvested), isHighlighted: true },
+              { label: "Total Interest", value: formatCurrency(results.totalInterest), isHighlighted: true },
+              { label: "Maturity Amount", value: formatCurrency(results.totalAmount), isHighlighted: true },
+            ]}
+          />
+        )
+      }
+      chartComponent={
+        (chartData.length > 0 && results) && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="w-full h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={pieChartData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {pieChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    formatter={(value) => [formatCurrency(value), undefined]}
+                  />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="w-full h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="year" label={{ value: "Years", position: "insideBottomRight", offset: -5 }} />
+                  <YAxis tickFormatter={(value) => `$${value}`} />
+                  <Tooltip
+                    formatter={(value) => [`$${Number(value).toFixed(2)}`, undefined]}
+                    labelFormatter={(label) => `Year ${label}`}
+                  />
+                  <Legend />
+                  <Line type="monotone" dataKey="totalAmount" name="Total Amount" stroke="#8884d8" activeDot={{ r: 8 }} />
+                  <Line type="monotone" dataKey="investment" name="Investment" stroke="#82ca9d" />
+                  <Line type="monotone" dataKey="interest" name="Interest" stroke="#ffc658" />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
+        )
+      }
+    >
+      <div className="grid gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="monthlyInvestment"
+            label="Monthly Investment"
+            value={monthlyInvestment}
+            onChange={setMonthlyInvestment}
+            type="number"
+            prefix="₹"
+            min={1}
+            tooltip="The amount you plan to invest monthly"
+          />
+          <InputField
+            id="rateOfInterest"
+            label="Rate of Interest (P.A.)"
+            value={rateOfInterest}
+            onChange={setRateOfInterest}
+            type="number"
+            suffix="%"
+            min={0.01}
+            step={0.01}
+            tooltip="Expected annual rate of return"
+          />
+        </div>
 
-          <div className="mb-3 xl:w-75 mx-2">
-            <label className="form-label inline-block mb-2 text-gray-700">
-              Rate Of Interest (P.A.)
-            </label>
-            <div className="flex">
-              <input
-                required
-                type="number"
-                className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded-l transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                placeholder="Rate Of Interest"
-                ref={roiRef}
-              />
-              <div className="flex items-center bg-primary text-white rounded-r px-4">
-                %
-              </div>
-            </div>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <InputField
+            id="currentAge"
+            label="Current Age"
+            value={currentAge}
+            onChange={setCurrentAge}
+            type="number"
+            suffix="years"
+            min={18}
+            max={59}
+            tooltip="Your current age (between 18-59)"
+          />
+        </div>
 
-          <div className="mb-3 xl:w-75 mx-2">
-            <label className="form-label inline-block mb-2 text-gray-700">
-              Current Age
-            </label>
-            <div className="flex">
-              <input
-                required
-                type="number"
-                className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded-l transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                placeholder="Current Age"
-                ref={ageRef}
-              />
-              <div className="flex items-center bg-primary text-white rounded-r px-4">
-                Y
-              </div>
-            </div>
-          </div>
+        <hr className="my-4" />
 
-          <div className="grid gap-4 lg:p-4 place-content-center grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))] xl:grid-cols-2 lg:grid-cols-[repeat(auto-fill,_minmax(120px,_1fr))]">
-            <button
-              disabled={loading}
-              className={`btn-primary ${loading ? 'cursor-not-allowed' : ''}`}
+        <div className="flex flex-col sm:flex-row gap-4 justify-end">
+          <button
+            onClick={handleReset}
+            className="px-4 py-2 border border-gray-300 rounded-md flex items-center justify-center gap-2 hover:bg-gray-50"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              {loading ? <span className="spinner"></span> : 'Calculate'}
-            </button>
-            <button
-              type="button"
-              onClick={handleClear}
-              className="btn-primary bg-red-500 hover:bg-red-600"
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+              <path d="M3 3v5h5" />
+            </svg>
+            Reset
+          </button>
+          <button
+            onClick={calculateNPS}
+            className="px-4 py-2 bg-primary text-white rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              Clear
-            </button>
-            {showStat && (
-              <button type="button" className="btn-primary" onClick={generatePDF}>
-                Print
-              </button>
-            )}
-            {showStat && (
-              <button
-                type="button"
-                className="btn-primary bg-green-500 hover:bg-green-600"
-              >
-                Download
-              </button>
-            )}
-          </div>
-        </form>
-      </li>
+              <rect width="16" height="16" x="4" y="4" rx="2" />
+              <path d="M8 10h8" />
+              <path d="M8 14h8" />
+              <path d="M12 8v8" />
+            </svg>
+            Calculate
+          </button>
+        </div>
+      </div>
+    </CalculatorLayout>
+  )
+}
 
-      {showStat && (
-        <li className="lg:col-span-2 bg-gray-200 p-4" ref={pdf_ref}>
-          <div className="p-6 overflow-hidden bg-neutral-50">
-            <div className="text-right">
-              <button
-                onClick={() => setshowgraph(!showgraph)}
-                className="btn-primary text-sm px-3 py-1"
-              >
-                {showgraph ? "Show Graph" : "Show Table"}
-              </button>
-            </div>
-
-            {!showgraph && (
-              <>
-                <h2 className="text-center text-2xl font-semibold text-primary">
-                  Investment Breakdown
-                </h2>
-                <div className="p-4 mx-auto w-full sm:w-3/4 md:w-1/2 lg:w-[40%] aspect-square">
-                  <Pie data={data} />
-                </div>
-              </>
-            )}
-
-            {showgraph && (
-              <>
-                <h2 className="text-center text-xl font-semibold text-primary">
-                  Yearly Growth
-                </h2>
-                <div className="overflow-x-auto w-[95%] mx-auto">
-                  <table className="min-w-full border border-gray-300">
-                    <thead className="border-b">
-                      <tr>
-                        <th className="text-gray-900 px-6 py-4 border-r border-b border-gray-300 bg-primary text-white text-sm">
-                          Year
-                        </th>
-                        <th className="text-gray-900 px-6 py-4 border-r border-b border-gray-300 bg-primary text-white text-sm">
-                          Investment
-                        </th>
-                        <th className="text-gray-900 px-6 py-4 border-r border-b border-gray-300 bg-primary text-white text-sm">
-                          Interest Earned
-                        </th>
-                        <th className="text-gray-900 px-6 py-4 border-b border-gray-300 bg-primary text-white text-sm">
-                          Maturity Amount
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {showTableData.map((currdata) => (
-                        <tr className="border-b" key={uuid()}>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {currdata.year}
-                          </td>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {formatINRCurrency(currdata.investment_amount)}
-                          </td>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {formatINRCurrency(currdata.interest_earned)}
-                          </td>
-                          <td className="text-sm text-gray-900 font-light px-6 py-4 border-r border-gray-300 whitespace-nowrap">
-                            {formatINRCurrency(currdata.maturity_amount)}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-3 mt-5 gap-4">
-              <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5">
-                  Total Value
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.total)}
-                  </span>
-                </h3>
-              </div>
-              <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5">
-                  Total Invested
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.invested)}
-                  </span>
-                </h3>
-              </div>
-              <div className="block p-6 rounded-lg shadow-lg bg-white max-w-sm mx-4">
-                <h5 className="text-gray-900 text-xl leading-tight font-medium mb-5">
-                  Total Gain
-                </h5>
-                <h3 className="text-2xl">
-                  <span className="text-xl">
-                    {formatINRCurrency(showdata.gain)}
-                  </span>
-                </h3>
-              </div>
-            </div>
-          </div>
-        </li>
-      )}
-    </SearchResult_section>
-  );
-};
-
-export default NpsCal;
+export default NpsCalculator

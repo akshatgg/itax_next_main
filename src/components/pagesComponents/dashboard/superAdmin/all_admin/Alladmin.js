@@ -2,7 +2,7 @@
 
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import ReactTable from '@/components/ui/ReactTable';
-import userAxios from '@/lib/userAxios';
+import userbackAxios from '@/lib/userbackAxios';
 import { useCallback, useEffect, useState } from 'react';
 import { getAdminTableHeaders } from './staticData';
 import { toast } from 'react-toastify';
@@ -28,7 +28,7 @@ const Alladmin = () => {
   const getAllUsers = useCallback(async () => {
     try {
       setIsLoading(true);
-      const { data, status } = await userAxios.get(
+      const { data, status } = await userbackAxios.get(
         `/user/get-all-admins?page=${currentPage}&order=desc`,
       );
       if (status === 200 && data && data.data) {
