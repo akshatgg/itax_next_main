@@ -77,15 +77,17 @@ export default function Cart() {
 
   const handlePayment = async () => {
     try {
-      // Step 1: Calculate subtotal (cart total before GST)
-      const subtotal = cartItems.reduce((total, item) => total + item.price, 0);
+      // Step 1: Calculate subtotal from BOTH cart and startup items
+      const serviceSubtotal = cartItems.reduce((total, item) => total + item.price, 0);
+      const startupSubtotal = startupcartItems.reduce((total, item) => total + (item.priceWithGst || 0), 0);
+      const subtotal = serviceSubtotal + startupSubtotal;
   
-      // Step 2: Add GST (18% here)
+      // Step 2: Add GST (18%) - but only for service items since startup items already include GST
       const gstRate = 0.18; // 18%
-      const gstAmount = subtotal * gstRate;
+      const gstAmount = serviceSubtotal * gstRate;
   
-      // Step 3: Calculate final amount (subtotal + gst)
-      const totalAmount = Math.round(subtotal + gstAmount); // Rounded to nearest rupee
+      // Step 3: Calculate final amount (service subtotal + service GST + startup total with GST)
+      const totalAmount = Math.round(serviceSubtotal + gstAmount + startupSubtotal); // Rounded to nearest rupee
   
       // Step 4: Create Razorpay order
       const orderData = await createOrder(totalAmount);
@@ -97,6 +99,7 @@ export default function Cart() {
       toast.error('Payment failed. Please try again.');
     }
   };
+  
   
   if (isLoading) {
     return (
