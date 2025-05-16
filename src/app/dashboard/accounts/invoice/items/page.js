@@ -7,11 +7,13 @@ export default function page() {
   return <Items />;
 }
 
-export async function getInvoiceItems(params) {
+export async function getInvoiceItems() {
   try {
     const response = await userbackAxios.get(
-      `/invoice/items/${params ? params : ''}`,
+      `/invoice/items`,
     );
+    console.log("hi");
+    
     console.log('🚀 ~ getInvoiceItems ~ response:', response);
     const itemsData = response.data;
     return itemsData;

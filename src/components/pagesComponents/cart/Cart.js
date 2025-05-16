@@ -84,6 +84,7 @@ export default function Cart() {
   const totalWithGst = serviceTotalWithGST + startupSubtotal;
 
   const handlePayment = async () => {
+
     if (!token) {
       toast.error('Please login to continue with payment');
       return;
@@ -185,6 +186,7 @@ export default function Cart() {
           }
         }
       });
+
 
     } catch (error) {
       console.error('Payment error:', error);

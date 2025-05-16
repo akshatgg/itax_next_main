@@ -2,7 +2,7 @@
 
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
-import userAxios from '@/lib/userAxios';
+import userAxios from '@/lib/userbackAxios';
 import { useEffect, useState } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import gstStateCodes from '@/utils/gstStateCodes';
@@ -248,30 +248,31 @@ export default function CreateInvoice({
   const isCredit = watch('credit');
 
   // setting state of supply
-  useEffect(() => {
-    if (regex.GSTIN.test(gstin)) {
-      const code = gstin.slice(0, 2);
-      setValue('stateOfSupply', code);
+useEffect(() => {
+  if (regex.GSTIN.test(gstin)) {
+    const code = gstin.slice(0, 2);
+    setValue('stateOfSupply', code);
 
-      if (UT_STATE_CODES.includes(code)) {
-        return setTaxType(TAX_TYPES_BY_STATES.ut);
-      }
-      // if (gstin === businessProfile?.gstin) {
-      //   return setTaxType(TAX_TYPES_BY_STATES.intra);
-      // }
-
-      const enteredcode = gstin.slice(0, 2);
-      const businessgstcode = businessProfile.gstin.slice(0, 2);
-
-      if (enteredcode === businessgstcode) {
-        return setTaxType(TAX_TYPES_BY_STATES.intra);
-      }
-
-      if (gstin !== businessProfile?.gstin) {
-        return setTaxType(TAX_TYPES_BY_STATES.inter);
-      }
+    if (UT_STATE_CODES.includes(code)) {
+      return setTaxType(TAX_TYPES_BY_STATES.ut);
     }
-  }, [gstin, setValue, businessProfile]);
+
+    // Add null check for businessProfile and gstin
+    if (!businessProfile || !businessProfile.gstin) {
+      // If businessProfile or its gstin property is undefined, default to inter-state
+      return setTaxType(TAX_TYPES_BY_STATES.inter);
+    }
+
+    const enteredcode = gstin.slice(0, 2);
+    const businessgstcode = businessProfile.gstin.slice(0, 2);
+
+    if (enteredcode === businessgstcode) {
+      return setTaxType(TAX_TYPES_BY_STATES.intra);
+    }
+
+    return setTaxType(TAX_TYPES_BY_STATES.inter);
+  }
+}, [gstin, setValue, businessProfile]);
   useEffect(() => {
     if (isCredit === true) {
       setValue('status', 'unpaid');
