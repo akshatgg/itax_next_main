@@ -1,165 +1,331 @@
-'use client';
+"use client"
 
-import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
-// import BackButton from '../../../BackButton';
-import { usePathname, useRouter } from 'next/navigation';
-import userAxios from '@/lib/userbackAxios';
-import { startTransition, useEffect, useState } from 'react';
+import { useForm } from "react-hook-form"
+import { useState, useEffect, useRef } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import userAxios from "@/lib/userbackAxios"
+import { toast } from "react-toastify"
 
-export default function CreateItem({ data, id }) {
-  console.log('CreateItem Data Prop:', data); // Debugging
+export default function CreateItem() {
+  const defaultValues = {
+    itemName: "",
+    hsnCode: "",
+    taxExempted: false,
+    price: "",
+    purchasePrice: "",
+    cgst: "",
+    sgst: "",
+    igst: "",
+    utgst: "",
+    openingStock: "",
+    closingStock: "",
+    unit: "pieces",
+    description: "",
+  }
 
-  const pathname = usePathname();
   const {
-    register,
     handleSubmit,
-    watch,
+    register,
     setValue,
-    formState: { errors },
+    watch,
+    getValues,
+    formState: { errors, isDirty },
     reset,
   } = useForm({
-    defaultValues: {
-      itemName: '',
-      hsnCode: '',
-      taxExempted: false,
-      price: '',
-      purchasePrice: '',
-      cgst: '',
-      sgst: '',
-      igst: '',
-      utgst: '',
-      openingStock: '',
-      closingStock: '',
-      unit: '',
-      description: '',
-    },
-  });
+    defaultValues,
+  })
+
+  const [isLoading, setIsLoading] = useState(false)
+  const [apiError, setApiError] = useState(null)
+  const [backendLimitation, setBackendLimitation] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const itemId = searchParams.get("id") // Get the item ID from the query parameter
+  const formValues = watch() // Watch all form values
+  const originalItemRef = useRef(null)
 
   useEffect(() => {
-    if (data?.item) {
-      reset(data.item);
-    }
-  }, [data, reset]);
+    if (itemId) {
+      // Fetch the item details if in edit mode
+      const fetchItemDetails = async () => {
+        try {
+          setIsLoading(true)
+          setApiError(null)
+          console.log("Fetching item details for ID:", itemId)
 
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+          // Add cache-busting parameter to prevent caching
+          const response = await userAxios.get(`/invoice/items/${itemId}?_=${Date.now()}`)
+          console.log("API Response:", response.data)
 
-  async function createItem(data) {
-    return await userAxios.post('/invoice/items', JSON.stringify(data));
-  }
+          if (response.data && response.data.item) {
+            const item = response.data.item
+            console.log("Item data received:", item)
 
-  async function updateItem(data) {
-    return await userAxios.put(`/invoice/items/${id}`, JSON.stringify(data));
-  }
+            // Store the original item data for comparison
+            originalItemRef.current = { ...item }
 
-  const onSubmit = async (formData) => {
-    if (
-      !itemName &&
-      !hsnCode &&
-      !taxExempted &&
-      !unit &&
-      !price &&
-      !purchasePrice &&
-      !openingStock &&
-      !closingStock &&
-      !cgst &&
-      !sgst &&
-      !igst &&
-      !utgst &&
-      !description &&
-      userId
-    ) {
-      return toast.error('Please fill all the fields');
-    }
-    try {
-      setIsLoading(true);
+            // Reset form with the item data
+            reset({
+              itemName: item.itemName || "",
+              hsnCode: item.hsnCode || "",
+              taxExempted: item.taxExempted || false,
+              price: item.price?.toString() || "",
+              purchasePrice: item.purchasePrice?.toString() || "",
+              cgst: item.cgst?.toString() || "",
+              sgst: item.sgst?.toString() || "",
+              igst: item.igst?.toString() || "",
+              utgst: item.utgst?.toString() || "",
+              openingStock: item.openingStock?.toString() || "",
+              closingStock: item.closingStock?.toString() || "",
+              unit: item.unit || "pieces",
+              description: item.description || "",
+            })
 
-      const values = {
-        closingStock: formData.closingStock,
-        description: formData.description,
-        hsnCode: formData.hsnCode,
-        cgst: formData.cgst,
-        sgst: formData.sgst,
-        igst: formData.igst,
-        utgst: formData.utgst,
-        itemName: formData.itemName,
-        openingStock: formData.openingStock,
-        price: formData.price,
-        purchasePrice: formData.purchasePrice,
-        taxExempted: formData.taxExempted,
-        unit: formData.unit,
-      };
-      const response = !data
-        ? await createItem(values)
-        : await updateItem(values);
+            console.log("Form reset with item data")
 
-      if (response.data.success) {
-        toast.success(!data ? `New item created.` : `Item is updated.`);
-        startTransition(() => {
-          if (
-            pathname.includes(
-              '/dashboard/accounts/invoice/items/update-item',
-            ) ||
-            pathname.includes('/dashboard/accounts/invoice/items/create-item')
-          ) {
-            router.push('/dashboard/accounts/invoice/items');
+            // Show backend limitation warning
+            setBackendLimitation(true)
           } else {
-            router.refresh();
+            console.log("No item data found in response")
+            setApiError("Item data not found")
+            toast.error("Item data not found")
           }
-        });
+          setIsLoading(false)
+        } catch (error) {
+          console.error("Error fetching item details:", error)
+          setApiError(error.message || "Failed to fetch item details")
+          toast.error("Failed to fetch item details")
+          setIsLoading(false)
+        }
       }
 
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
-      console.log(error);
-      toast.error(error.response.data.message);
+      fetchItemDetails()
     }
-  };
+  }, [itemId, reset])
+
+  const onCreateOrUpdateItem = async (formData) => {
+    try {
+      console.log("Form data received:", formData)
+      setIsLoading(true)
+      setApiError(null)
+
+      if (itemId) {
+        // For update, only send itemName as that's all the backend supports
+        const updateData = {
+          itemName: formData.itemName,
+        }
+
+        console.log("Sending only itemName for update:", updateData)
+
+        const apiUrl = `/invoice/items/${itemId}`
+        const response = await userAxios.put(apiUrl, updateData, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        console.log("Update response:", response)
+
+        if (response.data.success || response.data.sucess) {
+          // Handle both spellings
+          toast.success("Item name updated successfully")
+          // toast.info("Note: Only the item name can be updated due to backend limitations")
+
+          setTimeout(() => {
+            router.push("/dashboard/accounts/invoice/items")
+          }, 1500)
+        } else {
+          const errorMsg = response.data.message || "Operation failed. Please try again."
+          setApiError(errorMsg)
+          toast.error(errorMsg)
+        }
+      } else {
+        // For create, send all fields
+        const JsonData = {
+          itemName: formData.itemName,
+          hsnCode: formData.hsnCode,
+          taxExempted: formData.taxExempted,
+          price: Number.parseFloat(formData.price),
+          purchasePrice: Number.parseFloat(formData.purchasePrice),
+          cgst: Number.parseFloat(formData.cgst),
+          sgst: Number.parseFloat(formData.sgst),
+          igst: Number.parseFloat(formData.igst),
+          utgst: Number.parseFloat(formData.utgst),
+          openingStock: Number.parseFloat(formData.openingStock),
+          closingStock: Number.parseFloat(formData.closingStock),
+          unit: formData.unit,
+          description: formData.description,
+        }
+
+        console.log("Creating new item with data:", JsonData)
+
+        const apiUrl = "/invoice/items"
+        const response = await userAxios.post(apiUrl, JsonData, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+
+        console.log("Create response:", response)
+
+        if (response.data.success || response.data.sucess) {
+          toast.success("Item created successfully")
+
+          setTimeout(() => {
+            router.push("/dashboard/accounts/invoice/items")
+          }, 1500)
+        } else {
+          const errorMsg = response.data.message || "Operation failed. Please try again."
+          setApiError(errorMsg)
+          toast.error(errorMsg)
+        }
+      }
+
+      setIsLoading(false)
+    } catch (error) {
+      setIsLoading(false)
+      const errorMsg = error.response?.data?.message || error.message || "An error occurred. Please try again."
+      console.error("Error:", error)
+      console.error("Error Response:", error.response?.data)
+      setApiError(errorMsg)
+      toast.error(errorMsg)
+    }
+  }
+
+  // Function to create a completely new item with the updated data and delete the old one
+  const createNewAndDeleteOld = async () => {
+    try {
+      setIsLoading(true)
+      setApiError(null)
+
+      const formData = getValues()
+      console.log("Creating new item with updated data:", formData)
+
+      // Prepare data for new item
+      const JsonData = {
+        itemName: formData.itemName,
+        hsnCode: formData.hsnCode,
+        taxExempted: formData.taxExempted,
+        price: Number.parseFloat(formData.price),
+        purchasePrice: Number.parseFloat(formData.purchasePrice),
+        cgst: Number.parseFloat(formData.cgst),
+        sgst: Number.parseFloat(formData.sgst),
+        igst: Number.parseFloat(formData.igst),
+        utgst: Number.parseFloat(formData.utgst),
+        openingStock: Number.parseFloat(formData.openingStock),
+        closingStock: Number.parseFloat(formData.closingStock),
+        unit: formData.unit,
+        description: formData.description,
+      }
+
+      // Create a new item
+      const apiUrl = "/invoice/items"
+      console.log("Creating new item at:", apiUrl)
+
+      const response = await userAxios.post(apiUrl, JsonData, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+
+      console.log("Create new item response:", response)
+
+      if (response.data.success || response.data.sucess) {
+        toast.success("New item created successfully")
+
+        // If successful, delete the old item
+        if (itemId) {
+          try {
+            console.log("Deleting old item:", itemId)
+            const deleteResponse = await userAxios.delete(`/invoice/items/${itemId}`)
+            console.log("Delete response:", deleteResponse)
+
+            if (deleteResponse.data.success || deleteResponse.data.sucess) {
+              toast.success("Old item deleted successfully")
+            } else {
+              toast.warning("Created new item but couldn't delete the old one")
+            }
+          } catch (deleteError) {
+            console.error("Error deleting old item:", deleteError)
+            toast.warning("Created new item but couldn't delete the old one")
+          }
+        }
+
+        setTimeout(() => {
+          router.push("/dashboard/accounts/invoice/items")
+        }, 1500)
+      } else {
+        const errorMsg = response.data.message || "Operation failed. Please try again."
+        setApiError(errorMsg)
+        toast.error(errorMsg)
+      }
+    } catch (error) {
+      console.error("Create new item error:", error)
+      const errorMsg = error.response?.data?.message || error.message || "Failed to create new item"
+      setApiError(errorMsg)
+      toast.error(errorMsg)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const formClassNames = {
-    label: 'block mb-2 text-sm font-medium text-gray-950/90 dark:text-white',
+    label: "block mb-2 text-sm font-medium text-gray-950/90 dark:text-white",
     input:
-      'bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500',
+      "bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
     button:
-      'w-full text-center mt-4 focus:outline-none text-white bg-blue-400 hover:bg-blue-500 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-4 ',
-    gridUL: 'grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4',
-    formSectionTitle:
-      'text-lg mt-4 font-semibold text-gray-600 dark:text-gray-300',
-  };
-
-  useEffect(() => {
-    if (data?.item) {
-      const item = data.item;
-      console.log('Pre-filling Form Data:', item); // Check data being set
-
-      setValue('itemName', item.itemName || '');
-      setValue('hsnCode', item.hsnCode || '');
-      setValue('taxExempted', item.taxExempted || false);
-      setValue('price', item.price || '');
-      setValue('purchasePrice', item.purchasePrice || '');
-      setValue('cgst', item.cgst || '');
-      setValue('sgst', item.sgst || '');
-      setValue('igst', item.igst || '');
-      setValue('utgst', item.utgst || '');
-      setValue('openingStock', item.openingStock || '');
-      setValue('closingStock', item.closingStock || '');
-      setValue('unit', item.unit || '');
-      setValue('description', item.description || '');
-    }
-  }, [data, setValue]);
+      "w-full text-center mt-4 focus:outline-none text-white bg-blue-400 hover:bg-blue-500 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-4",
+    gridUL: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4",
+    formSectionTitle: "text-lg mt-4 font-semibold text-gray-600 dark:text-gray-300",
+  }
 
   return (
     <>
-      {/* <BackButton title={'Create Item'} /> */}
       <section className="p-4 max-w-6xl mx-auto text-slate-800">
-        <h1 className="text-4xl font-semibold my-4">
-          {data ? 'Update' : 'Create'} Item
-        </h1>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <ul className="grid grid-cols-12 gap-4">
-            <li className="md:col-span-6 col-span-12">
+        {isLoading && (
+          <div className="flex justify-center items-center my-4">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+            <span className="ml-2">Loading...</span>
+          </div>
+        )}
+
+        <h1 className="text-4xl font-semibold my-4">{itemId ? "Update" : "Create"} Item</h1>
+
+        {apiError && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <p>Error: {apiError}</p>
+          </div>
+        )}
+
+        {backendLimitation && itemId && (
+          <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4">
+            <p className="font-bold">⚠️ Backend Limitation</p>
+            <p>The backend only supports updating the item name. Other fields cannot be updated.</p>
+            <p className="mt-2">To update all fields, use the "Create New & Delete Old" button below.</p>
+          </div>
+        )}
+
+        {/* Debug info - remove in production */}
+        <div className="bg-gray-100 p-2 mb-4 text-xs rounded">
+          <p>Form is {isDirty ? "dirty" : "pristine"}</p>
+          <p>Item ID: {itemId || "None (Creating new item)"}</p>
+          {itemId && (
+            <div className="flex flex-wrap gap-2 mt-2">
+              <button
+                onClick={createNewAndDeleteOld}
+                className="bg-green-500 text-white px-2 py-1 rounded text-xs"
+                disabled={isLoading}
+              >
+                Create New & Delete Old
+              </button>
+            </div>
+          )}
+        </div>
+
+        <form onSubmit={handleSubmit(onCreateOrUpdateItem)}>
+          <p className={formClassNames.formSectionTitle}>Basic Details</p>
+          <ul className={formClassNames.gridUL}>
+            <li>
               <label htmlFor="itemName" className={formClassNames.label}>
                 Item name
               </label>
@@ -168,17 +334,13 @@ export default function CreateItem({ data, id }) {
                 id="itemName"
                 className={formClassNames.input}
                 placeholder="Item name"
-                {...register('itemName', {
-                  required: 'Item name is required',
+                {...register("itemName", {
+                  required: "Item name is required",
                 })}
               />
-              {errors.itemName && (
-                <p className=" text-xs text-red-500 italic">
-                  {errors.itemName.message}
-                </p>
-              )}
+              {errors.itemName && <p className="text-xs text-red-500 italic">{errors.itemName.message}</p>}
             </li>
-            <li className="md:col-span-6 col-span-12">
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="hsnCode" className={formClassNames.label}>
                 HSN Code
               </label>
@@ -187,40 +349,39 @@ export default function CreateItem({ data, id }) {
                 id="hsnCode"
                 className={formClassNames.input}
                 placeholder="HSN Code"
-                {...register('hsnCode', {
-                  required: 'HSN is required',
+                disabled={itemId}
+                {...register("hsnCode", {
+                  required: "HSN is required",
                 })}
               />
+              {errors.hsnCode && <p className="text-xs text-red-500 italic">{errors.hsnCode.message}</p>}
             </li>
-            {errors.hsnCode && (
-              <p className=" text-xs text-red-500 italic">
-                {errors.hsnCode.message}
-              </p>
-            )}
+            <li className={itemId ? "opacity-50" : ""}>
+              <div className="flex items-center space-x-3 p-2 bg-blue-50 dark:bg-blue-950 rounded-lg">
+                <label htmlFor="taxExempted" className={formClassNames.label}>
+                  Tax Exempted
+                </label>
+                <label htmlFor="taxExempted" className="relative inline-flex cursor-pointer items-center">
+                  <input
+                    type="checkbox"
+                    id="taxExempted"
+                    className="peer sr-only"
+                    disabled={itemId}
+                    {...register("taxExempted")}
+                  />
+                  <div
+                    className={`${
+                      watch("taxExempted") ? "bg-blue-400" : "bg-gray-400"
+                    } h-6 w-11 rounded-full after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-all after:content-[''] hover:bg-gray-200 peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-primary-200 peer-disabled:cursor-not-allowed peer-disabled:bg-gray-100 peer-disabled:after:bg-gray-50`}
+                  ></div>
+                </label>
+              </div>
+            </li>
+          </ul>
 
-            <li className="col-span-12 p-2 flex items-center space-x-3 bg-blue-50 dark:bg-blue-950">
-              <label htmlFor="taxExempted"> Tax Exempted</label>
-              <label
-                htmlFor="taxExempted"
-                className="relative inline-flex cursor-pointer items-center"
-              >
-                <input
-                  type="checkbox"
-                  id="taxExempted"
-                  className="peer sr-only"
-                  {...register('taxExempted')}
-                />
-                <div
-                  className={` ${watch('taxExempted') ? 'bg-blue-400' : 'bg-gray-400'} h-6 w-11 rounded-full after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-all after:content-[''] hover:bg-gray-200 peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-primary-200 peer-disabled:cursor-not-allowed peer-disabled:bg-gray-100 peer-disabled:after:bg-gray-50`}
-                ></div>
-                {errors.taxExempted && (
-                  <p className=" text-xs text-red-500 italic">
-                    {errors.taxExempted.message}
-                  </p>
-                )}
-              </label>
-            </li>
-            <li className="md:col-span-6 col-span-12 relative">
+          <p className={formClassNames.formSectionTitle}>Pricing</p>
+          <ul className={formClassNames.gridUL}>
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="price" className={formClassNames.label}>
                 Price
               </label>
@@ -228,26 +389,21 @@ export default function CreateItem({ data, id }) {
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2.5 text-gray-500">
                   ₹
                 </div>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
-                  Price
-                </div>
                 <input
                   type="number"
                   id="price"
-                  className=" px-8 bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="pl-8 bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="0.00"
-                  {...register('price', {
-                    required: 'Selling Price is required',
+                  step="0.01"
+                  disabled={itemId}
+                  {...register("price", {
+                    required: "Selling Price is required",
                   })}
                 />
-                {errors.price && (
-                  <p className=" text-xs text-red-500 italic">
-                    {errors.price.message}
-                  </p>
-                )}
               </div>
+              {errors.price && <p className="text-xs text-red-500 italic">{errors.price.message}</p>}
             </li>
-            <li className="md:col-span-6 col-span-12 relative">
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="purchasePrice" className={formClassNames.label}>
                 Purchase Price
               </label>
@@ -255,51 +411,25 @@ export default function CreateItem({ data, id }) {
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-2.5 text-gray-500">
                   ₹
                 </div>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-500">
-                  Purchase Price
-                </div>
                 <input
                   type="number"
                   id="purchasePrice"
-                  className=" px-8 bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  className="pl-8 bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   placeholder="0.00"
-                  {...register('purchasePrice', {
-                    required: 'Purchase Price is required',
+                  step="0.01"
+                  disabled={itemId}
+                  {...register("purchasePrice", {
+                    required: "Purchase Price is required",
                   })}
                 />
-                {errors.purchasePrice && (
-                  <p className=" text-xs text-red-500 italic">
-                    {errors.purchasePrice.message}
-                  </p>
-                )}
               </div>
+              {errors.purchasePrice && <p className="text-xs text-red-500 italic">{errors.purchasePrice.message}</p>}
             </li>
+          </ul>
 
-            {/* <li className="md:col-span-6 col-span-12">
-                            <label
-                                htmlFor="GST%"
-                                className={formClassNames.label}>
-                                GST %
-                            </label>
-                            <select
-                                id="GST%"
-                                className={`${watch("taxExempted")?"cursor-not-allowed ":" "} bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500`}
-                                {...register("gst_percentage")}
-                                disabled={watch("taxExempted")}
-                                >
-                                <option value="0">GST @ 0%</option>
-                                <option value="0.1">GST @ 0.1%</option>
-                                <option value="0.25">GST @ 0.25%</option>
-                                <option value="3">GST @ 3%</option>
-                                <option value="5">GST @ 5%</option>
-                                <option value="6">GST @ 6%</option>
-                                <option value="7.5">GST @ 7.5%</option>
-                                <option value="12">GST @ 12%</option>
-                                <option value="18">GST @ 18%</option>
-                                <option value="28">GST @ 28%</option>
-                            </select>
-                        </li> */}
-            <li className="md:col-span-6 col-span-12">
+          <p className={formClassNames.formSectionTitle}>Tax Details</p>
+          <ul className={formClassNames.gridUL}>
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="cgst" className={formClassNames.label}>
                 CGST
               </label>
@@ -308,17 +438,15 @@ export default function CreateItem({ data, id }) {
                 id="cgst"
                 className={formClassNames.input}
                 placeholder="0.00"
-                {...register('cgst', {
-                  required: 'CGST is required',
+                step="0.01"
+                disabled={itemId}
+                {...register("cgst", {
+                  required: "CGST is required",
                 })}
               />
-              {errors.cgst && (
-                <p className=" text-xs text-red-500 italic">
-                  {errors.cgst.message}
-                </p>
-              )}
+              {errors.cgst && <p className="text-xs text-red-500 italic">{errors.cgst.message}</p>}
             </li>
-            <li className="md:col-span-6 col-span-12">
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="sgst" className={formClassNames.label}>
                 SGST
               </label>
@@ -327,17 +455,15 @@ export default function CreateItem({ data, id }) {
                 id="sgst"
                 className={formClassNames.input}
                 placeholder="0.00"
-                {...register('sgst', {
-                  required: 'SGST is required',
+                step="0.01"
+                disabled={itemId}
+                {...register("sgst", {
+                  required: "SGST is required",
                 })}
               />
-              {errors.sgst && (
-                <p className=" text-xs text-red-500 italic">
-                  {errors.sgst.message}
-                </p>
-              )}
+              {errors.sgst && <p className="text-xs text-red-500 italic">{errors.sgst.message}</p>}
             </li>
-            <li className="md:col-span-6 col-span-12">
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="igst" className={formClassNames.label}>
                 IGST
               </label>
@@ -346,17 +472,15 @@ export default function CreateItem({ data, id }) {
                 id="igst"
                 className={formClassNames.input}
                 placeholder="0.00"
-                {...register('igst', {
-                  required: 'IGST is required',
+                step="0.01"
+                disabled={itemId}
+                {...register("igst", {
+                  required: "IGST is required",
                 })}
               />
-              {errors.igst && (
-                <p className=" text-xs text-red-500 italic">
-                  {errors.igst.message}
-                </p>
-              )}
+              {errors.igst && <p className="text-xs text-red-500 italic">{errors.igst.message}</p>}
             </li>
-            <li className="md:col-span-6 col-span-12">
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="utgst" className={formClassNames.label}>
                 UTGST
               </label>
@@ -365,18 +489,19 @@ export default function CreateItem({ data, id }) {
                 id="utgst"
                 className={formClassNames.input}
                 placeholder="0.00"
-                {...register('utgst', {
-                  required: 'UTGST is required',
+                step="0.01"
+                disabled={itemId}
+                {...register("utgst", {
+                  required: "UTGST is required",
                 })}
               />
-              {errors.utgst && (
-                <p className=" text-xs text-red-500 italic">
-                  {errors.utgst.message}
-                </p>
-              )}
+              {errors.utgst && <p className="text-xs text-red-500 italic">{errors.utgst.message}</p>}
             </li>
+          </ul>
 
-            <li className="md:col-span-6 col-span-12">
+          <p className={formClassNames.formSectionTitle}>Inventory</p>
+          <ul className={formClassNames.gridUL}>
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="openingStock" className={formClassNames.label}>
                 Opening Stock
               </label>
@@ -385,17 +510,15 @@ export default function CreateItem({ data, id }) {
                 id="openingStock"
                 className={formClassNames.input}
                 placeholder="0.00"
-                {...register('openingStock', {
-                  required: 'Opening Stock is required',
+                step="0.01"
+                disabled={itemId}
+                {...register("openingStock", {
+                  required: "Opening Stock is required",
                 })}
               />
-              {errors.openingStock && (
-                <p className=" text-xs text-red-500 italic">
-                  {errors.openingStock.message}
-                </p>
-              )}
+              {errors.openingStock && <p className="text-xs text-red-500 italic">{errors.openingStock.message}</p>}
             </li>
-            <li className="md:col-span-6 col-span-12">
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="closingStock" className={formClassNames.label}>
                 Closing Stock
               </label>
@@ -404,25 +527,24 @@ export default function CreateItem({ data, id }) {
                 id="closingStock"
                 className={formClassNames.input}
                 placeholder="0.00"
-                {...register('closingStock', {
-                  required: 'Closing Stock is required',
+                step="0.01"
+                disabled={itemId}
+                {...register("closingStock", {
+                  required: "Closing Stock is required",
                 })}
               />
-              {errors.closingStock && (
-                <p className=" text-xs text-red-500 italic">
-                  {errors.closingStock.message}
-                </p>
-              )}
+              {errors.closingStock && <p className="text-xs text-red-500 italic">{errors.closingStock.message}</p>}
             </li>
-            <li className="md:col-span-6 col-span-12">
+            <li className={itemId ? "opacity-50" : ""}>
               <label htmlFor="unit" className={formClassNames.label}>
                 Unit
               </label>
               <select
                 id="unit"
                 className={formClassNames.input}
-                {...register('unit', {
-                  required: 'Unit is required',
+                disabled={itemId}
+                {...register("unit", {
+                  required: "Unit is required",
                 })}
               >
                 <option value="pieces">Pieces</option>
@@ -432,47 +554,35 @@ export default function CreateItem({ data, id }) {
                 <option value="meter">Meter (M)</option>
                 <option value="liter">Liter (L)</option>
               </select>
-              {errors.unit && (
-                <p className=" text-xs text-red-500 italic">
-                  {errors.unit.message}
-                </p>
-              )}
+              {errors.unit && <p className="text-xs text-red-500 italic">{errors.unit.message}</p>}
             </li>
+          </ul>
 
-            <li className="col-span-12">
-              <label htmlFor="Description" className={formClassNames.label}>
+          <p className={formClassNames.formSectionTitle}>Additional Information</p>
+          <ul className="grid grid-cols-1 gap-4">
+            <li className={itemId ? "opacity-50" : ""}>
+              <label htmlFor="description" className={formClassNames.label}>
                 Description
               </label>
               <textarea
-                id="Description"
+                id="description"
                 className={formClassNames.input}
                 rows="3"
                 placeholder="Description"
-                {...register('description', {
-                  required: 'Description is required',
+                disabled={itemId}
+                {...register("description", {
+                  required: "Description is required",
                 })}
               ></textarea>
-              {errors.description && (
-                <p className=" text-xs text-red-500 italic">
-                  {errors.description.message}
-                </p>
-              )}
-            </li>
-
-            <li className="md:col-span-6 col-span-12">
-              <div className="flex justify-between md:justify-start items-center">
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="focus:outline-none text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-900"
-                >
-                  Submit
-                </button>
-              </div>
+              {errors.description && <p className="text-xs text-red-500 italic">{errors.description.message}</p>}
             </li>
           </ul>
+
+          <button type="submit" disabled={isLoading} className={formClassNames.button}>
+            {isLoading ? "Processing..." : itemId ? "Update Item Name" : "Create Item"}
+          </button>
         </form>
       </section>
     </>
-  );
+  )
 }

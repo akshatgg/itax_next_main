@@ -1,9 +1,9 @@
 "use client"
 import { useForm } from "react-hook-form";
-import BackButton from "../../../../../components/BackButton";
-import { Link } from "react-router-dom";
-import { H1 } from "../../../../../components/pageLayouts/Headings";
-import Section from "../../../../../components/pageLayouts/Section";
+// import BackButton from "../../../../../components/BackButton";
+// import { Link } from "react-router-dom";
+// import { H1 } from "../../../../../components/pageLayouts/Headings";
+// import Section from "../../../../../components/pageLayouts/Section";
 import { useState } from "react";
 import { Icon } from "@iconify/react";
 const indianStates = [
@@ -72,7 +72,7 @@ export default function CreatePurchase() {
     }
 	return (
         <>
-            <BackButton title="Create Purchase"/>
+            {/* <BackButton title="Create Purchase"/> */}
             <section className="p-4 max-w-6xl mx-auto">
                 <form action="" onSubmit={handleSubmit(onCreatePurchase)}>
                     <p className={formClassNames.formSectionTitle}>Party Details</p>

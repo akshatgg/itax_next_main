@@ -26,7 +26,7 @@ const CompoundInterestCalculator = () => {
 
     const amount = p * Math.pow(1 + r / n, n * t)
     const interest = amount - p
-
+    
     // Generate chart data
     const newChartData = []
     for (let year = 0; year <= t; year++) {

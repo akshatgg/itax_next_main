@@ -10,7 +10,7 @@ import { toast } from "react-toastify"
 const defaultVisibleColumns = ["partyName", "email", "phone", "gstin", "address"]
 
 export default function AllParties(props) {
-  const { type } = props
+  const { type = "customer" } = props
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(null)
   const [error, setError] = useState(null)
@@ -46,9 +46,9 @@ export default function AllParties(props) {
       setIsLoading(true)
       setIsError(false)
 
-      // Always fetch customer type parties
+      // Fetch parties based on the type prop
       const response = await userAxios.get("/invoice/parties", {
-        params: { types: "customer" },
+        params: { types: type },
       })
       setAllParties(response.data)
 
@@ -61,22 +61,32 @@ export default function AllParties(props) {
   }
 
   useEffect(() => {
-    fetchPartiesData()
-  }, [])
+    try {
+      fetchPartiesData()
+    } catch (error) {
+      console.error("Error fetching parties data:", error)
+      toast.error("Failed to load parties data")
+    }
+  }, [type])
 
   const handleDeleteParty = async (id) => {
     try {
+      console.log(`Attempting to delete party with ID: ${id}`)
       setIsLoading(true)
       const resp = await userAxios.delete(`/invoice/parties/${id}`)
+      console.log("Delete API response:", resp)
+
       if (resp.data.success) {
         fetchPartiesData()
-        toast.success("Party Deleted Successfully")
+        toast.success(`${type === "customer" ? "Customer" : "Supplier"} Deleted Successfully`)
         setDeleteConfirm(null)
       } else {
-        toast.error("Something went wrong. Party Not Deleted")
+        console.error("Delete API returned unsuccessful response:", resp.data)
+        toast.error(`Something went wrong. ${type === "customer" ? "Customer" : "Supplier"} Not Deleted`)
       }
     } catch (error) {
-      toast.error("Failed to delete party.")
+      console.error("Error deleting party:", error)
+      toast.error(`Failed to delete ${type === "customer" ? "customer" : "supplier"}.`)
     } finally {
       setIsLoading(false)
     }
@@ -101,10 +111,10 @@ export default function AllParties(props) {
     setVisibleColumns(allColumns)
   }
 
-  // Filter parties based on search term and only show customer type
+  // Filter parties based on search term and only show the selected type
   const filteredParties = allParties?.parties?.filter((party) => {
-    // Only include customer type parties
-    if (party.type !== "customer") return false
+    // Only include parties of the selected type
+    if (party.type !== type) return false
 
     if (!searchTerm) return true
 
@@ -129,6 +139,8 @@ export default function AllParties(props) {
   }
 
   const linkToCreateParty = "/dashboard/accounts/invoice/parties/add-party"
+  const typeLabel = type === "customer" ? "Customer" : "Supplier"
+  const typeLabelPlural = type === "customer" ? "Customers" : "Suppliers"
 
   return (
     <>
@@ -139,15 +151,15 @@ export default function AllParties(props) {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h1 className="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
                 <Icon icon="solar:users-group-rounded-bold" className="text-sky-500" />
-                Customer Parties
+                {typeLabelPlural} Parties
               </h1>
-              <Link href={`${linkToCreateParty}?type=customer`}>
+              <Link href={`${linkToCreateParty}?type=${type}`}>
                 <button
                   type="button"
                   className="flex items-center gap-2 text-white bg-sky-500 hover:bg-sky-600 focus:ring-4 focus:ring-sky-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors"
                 >
                   <Icon icon="solar:add-circle-bold" className="text-lg" />
-                  Add Customer
+                  Add {typeLabel}
                 </button>
               </Link>
             </div>
@@ -163,7 +175,7 @@ export default function AllParties(props) {
                 <input
                   type="search"
                   className="block w-full p-2.5 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                  placeholder="Search customers by name, email, phone..."
+                  placeholder={`Search ${typeLabelPlural.toLowerCase()} by name, email, phone...`}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
@@ -244,21 +256,23 @@ export default function AllParties(props) {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
-                <p className="mt-4 text-gray-600 dark:text-gray-400">Loading customers...</p>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">Loading {typeLabelPlural.toLowerCase()}...</p>
               </div>
             ) : isError || !filteredParties || filteredParties.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <Icon icon="solar:users-group-broken" className="w-16 h-16 text-gray-300 dark:text-gray-600" />
                 <p className="mt-4 text-gray-600 dark:text-gray-400">
-                  {isError ? "Error loading customers" : "No customers found"}
+                  {isError
+                    ? `Error loading ${typeLabelPlural.toLowerCase()}`
+                    : `No ${typeLabelPlural.toLowerCase()} found`}
                 </p>
-                <Link href={`${linkToCreateParty}?type=customer`} className="mt-4">
+                <Link href={`${linkToCreateParty}?type=${type}`} className="mt-4">
                   <button
                     type="button"
                     className="flex items-center gap-2 text-white bg-sky-500 hover:bg-sky-600 focus:ring-4 focus:ring-sky-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors"
                   >
                     <Icon icon="solar:add-circle-bold" className="text-lg" />
-                    Add Your First Customer
+                    Add Your First {typeLabel}
                   </button>
                 </Link>
               </div>
@@ -294,15 +308,15 @@ export default function AllParties(props) {
                       <td className="px-4 py-3 text-right whitespace-nowrap">
                         <div className="flex items-center justify-end gap-2">
                           <Link
-                            href={`/dashboard/accounts/invoice/parties/add-party?id=${party.id}&type=customer`}
+                            href={`/dashboard/accounts/invoice/parties/add-party?id=${party.id}&type=${type}`}
                             className="text-sky-500 hover:text-sky-700 transition-colors"
-                            title="Edit Customer"
+                            title={`Edit ${typeLabel}`}
                           >
                             <Icon icon="solar:pen-bold" className="text-lg" />
                           </Link>
 
                           {deleteConfirm === party.id ? (
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 bg-red-50 dark:bg-red-900/20 p-1 rounded">
                               <button
                                 onClick={() => handleDeleteParty(party.id)}
                                 className="text-red-500 hover:text-red-700 transition-colors"
@@ -322,7 +336,7 @@ export default function AllParties(props) {
                             <button
                               onClick={() => setDeleteConfirm(party.id)}
                               className="text-red-500 hover:text-red-700 transition-colors"
-                              title="Delete Customer"
+                              title={`Delete ${typeLabel}`}
                             >
                               <Icon icon="solar:trash-bin-trash-bold" className="text-lg" />
                             </button>
@@ -340,7 +354,8 @@ export default function AllParties(props) {
           {filteredParties?.length > 0 && (
             <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
               <div className="text-sm text-gray-700 dark:text-gray-300">
-                Showing <span className="font-medium">{filteredParties?.length || 0}</span> customers
+                Showing <span className="font-medium">{filteredParties?.length || 0}</span>{" "}
+                {typeLabelPlural.toLowerCase()}
               </div>
               <div className="flex gap-2">
                 <button
