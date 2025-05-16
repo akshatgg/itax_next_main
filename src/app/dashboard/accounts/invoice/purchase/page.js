@@ -1,5 +1,6 @@
 'use client';
-import Sales from '@/components/pagesComponents/dashboard/accounts/invoice/sales/Sales';
+import Purchase from '@/components/pagesComponents/dashboard/accounts/invoice/purchase/Purchase';
+;
 import userAxios from '@/lib/userbackAxios';
 import { useEffect, useState } from 'react';
 export default function Page() {
@@ -37,7 +38,7 @@ export default function Page() {
   }, []);
 
   return (
-    <Sales salesInvoices={respAllInvoice} loading={loading} error={error} />
+    <Purchase salesInvoices={respAllInvoice} loading={loading} error={error} />
   );
 }
 // import Sales from "@/components/pagesComponents/dashboard/accounts/invoice/sales/Sales";

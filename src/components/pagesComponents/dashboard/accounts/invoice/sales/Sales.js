@@ -192,7 +192,7 @@ export default function   Sales(props) {
 
   return (
     <DashSection
-      title={'Purchase Invoice'}
+      title={'Sales Invoice'}
       titleRight={
         <div className=" flex flex-row items-center gap-4 justify-center mb-2">
           <Link
