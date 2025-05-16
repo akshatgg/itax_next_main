@@ -54,12 +54,12 @@ export default function Admin_Dashboard() {
                     <DataState/>
                 </div>
             </DashSection>
-            <DashSection className={"col-span-12 xl:col-span-5"} title={"income by category"} titleRight={"Year - 2024"}>
+            <DashSection className={"col-span-12 xl:col-span-5"} title={"income by category"} titleRight={"Year - 2025"}>
                 <div className="p-4">
                     <DataState/>
                 </div>
             </DashSection>
-            <DashSection className={"col-span-12 xl:col-span-7"} title={"Expense By Category"} titleRight={"Year - 2024"}>
+            <DashSection className={"col-span-12 xl:col-span-7"} title={"Expense By Category"} titleRight={"Year - 2025"}>
                 <div className="p-4">
                     <DataState/>
                 </div>

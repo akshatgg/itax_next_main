@@ -303,7 +303,7 @@ function InvoiceDashboardNavItem() {
         <DashSection
             className="bg-white"
             title="Account Dashboard"
-            titleRight="current year - 2024"
+            titleRight="current year - 2025"
         >
             <GridContainer className=" p-4">
                 {AccountDashLinksData.map((el, key) => (

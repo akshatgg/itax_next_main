@@ -156,7 +156,7 @@ export default function SuperAdmin_Dashboard() {
 
       <DashSection
         title={'Financial Details'}
-        titleRight={'current year - 2024'}
+        titleRight={'current year - 2025'}
       >
         <div className=" grid grid-cols-2">
           <div className="relative overflow-x-auto">
@@ -388,7 +388,7 @@ export default function SuperAdmin_Dashboard() {
       </DashSection>
       <DashSection
         title={'Recent Transactions'}
-        titleRight={'current year - 2024'}
+        titleRight={'current year - 2025'}
       >
         <div className="p-4">
           <div className="relative overflow-x-auto">

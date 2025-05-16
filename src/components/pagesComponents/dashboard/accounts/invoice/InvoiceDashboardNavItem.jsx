@@ -7,12 +7,13 @@ import { Icon } from '@iconify/react';
 import { invoiceDashboardNavItems } from './staticData';
 
 function InvoiceDashboardNavItem({ navCardData }) {
+  console.log(navCardData);
   // console.log(navCardData);
   return (
     <DashSection
       className="mt-4"
       title="Invoice"
-      titleRight="current year - 2024"
+      titleRight="current year - 2025"
     >
       <div className="grid grid-rows-1 grid-flow-col p-4">
         {invoiceDashboardNavItems.map((el, key) => (

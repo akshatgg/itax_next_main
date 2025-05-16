@@ -3,8 +3,8 @@
 import InvoiceDashboardNavItem from './InvoiceDashboardNavItem.jsx';
 import OverviewDashboard from './OverviewDashboard.jsx';
 import OverviewTable from './OverviewTable.jsx';
-import userAxios from '@/lib/userAxios.js';
-import { useCallback, useEffect, useState } from 'react';
+import userAxios from '@/lib/userbackAxios.js';
+import { use, useCallback, useEffect, useState } from 'react';
 import Image from 'next/image.js';
 import moment from 'moment';
 import Modal from '@/components/ui/Modal.js';
@@ -26,7 +26,37 @@ export default function InvoiceDashboard_index({ businessProfile }) {
   });
   const [invoices, setInvoices] = useState(null);
   const [pagination, setPagination] = useState({});
+const fetchItems = async () => {
+  try {
+    setIsLoading(true)
+    
+    console.log("Fetching items data...")
+    const response = await userAxios.get("/invoice/items")
+    // console.log("API Response:", response.data.items);
+    setItems(response.data.items)
 
+
+    if (response.data.success) {
+      // Nothing here to set the items state!
+    } else {
+      console.error("Error fetching items:", response.data.error)
+    }
+  } catch (error) {
+    console.error("Error fetching items:", error)
+  } finally {
+    setIsLoading(false)
+  }
+}
+  useEffect(() => {
+    fetchItems();
+  }, []);
+  // useEffect(() => {
+  //   if (items) {
+  //     console.log("Items data:", items);
+  //   } else {
+  //     console.log("Items data is null or undefined.");
+  //   }
+  // }, [items]);
   const getInvoices = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -50,11 +80,13 @@ export default function InvoiceDashboard_index({ businessProfile }) {
     invoice: invoices && invoices,
     sale: invoices && invoices.filter((inv) => inv.type === 'sales'),
     purchase: invoices && invoices.filter((inv) => inv.type === 'purchase'),
-    item: items && items,
+item: items || [],
     customer: invoices && invoices.filter((inv) => inv.type === 'sales'),
     supplier: invoices && invoices.filter((inv) => inv.type === 'purchase'),
     'cash/bank': invoices && invoices,
   };
+  console.log("navCardData",navCardData);
+  
   const invoiceOverview = {
     totalInvoices: invoices && invoices.length,
     unpaidInvoices:

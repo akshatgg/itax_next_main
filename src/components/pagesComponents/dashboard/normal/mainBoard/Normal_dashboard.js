@@ -12,7 +12,7 @@ export default function Normal_dashboard() {
      <DashSection
         className={'col-span-12 xl:col-span-7'}
         title={'Income & Expense'}
-        titleRight={'current year - 2024'}
+        titleRight={'current year - 2025'}
       >
         <div className="p-4">
           <DataState />
@@ -84,7 +84,7 @@ export default function Normal_dashboard() {
       <DashSection
         className={'col-span-12 xl:col-span-5'}
         title={'income by category'}
-        titleRight={'Year - 2024'}
+        titleRight={'Year - 2025'}
       >
         <div className="p-4">
           <DataState />
@@ -93,7 +93,7 @@ export default function Normal_dashboard() {
       <DashSection
         className={'col-span-12 xl:col-span-7'}
         title={'Expense By Category'}
-        titleRight={'Year - 2024'}
+        titleRight={'Year - 2025'}
       >
         <div className="p-4">
           <DataState />

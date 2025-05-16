@@ -2,7 +2,7 @@ import DashSection from "@/components/pagesComponents/pageLayout/DashSection";
 
 const Transactions = () => {
   return (
-    <DashSection title={"Transactions"} titleRight={"current year - 2024"}>
+    <DashSection title={"Transactions"} titleRight={"current year - 2025"}>
       <div className="p-4">
         <div className="relative overflow-x-auto">
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

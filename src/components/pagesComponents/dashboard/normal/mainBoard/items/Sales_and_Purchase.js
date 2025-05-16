@@ -22,7 +22,7 @@ export default function Sales_Purchase() {
     <DashSection
       className={'col-span-12 xl:col-span-5'}
       title={'Sale & Purchase'}
-      titleRight={'current year - 2024'}
+      titleRight={'current year - 2025'}
     >
       <div className="p-4 grid lg:grid-cols-2">
         <div>

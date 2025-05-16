@@ -20,7 +20,7 @@ export default function Financial_Details() {
   return (
     <div
       title={"Loan , Payment ,Working Capital "}
-      titleRight={"current year - 2024"}
+      titleRight={"current year - 2025"}
     >
       <div className="p-4 grid lg:grid-cols-2">
         <div>
