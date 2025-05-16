@@ -21,6 +21,8 @@ export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [startupcartItems, setStartUpCartItems] = useState([]);
   const [refreshKey, setRefreshKey] = useState(0); // Add this state to force refresh
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+  const [paymentError, setPaymentError] = useState(null);
 
   // Function to refresh both carts
   const refreshCart = useCallback(() => {
@@ -71,32 +73,125 @@ export default function Cart() {
     }
   }, [token, refreshKey]); // Add refreshKey to dependencies to trigger re-fetch
 
-  let subTotal = 0;
-  const gstPercentage = 0.18;
-  const getTotal = (st = 0) => st + st * gstPercentage;
+  // Calculate totals
+  const serviceSubtotal = cartItems.reduce((total, item) => total + (item.price || 0), 0);
+  // For startup items, use the base price (not priceWithGst) for calculation to avoid double-counting GST
+  const startupSubtotal = startupcartItems.reduce((total, item) => total + (item.price?item.price:item.priceWithGst || 0), 0);
+  const gstRate = 0.18; // 18% GST
+  const gstAmount =serviceSubtotal*gstRate
+  const serviceTotalWithGST = serviceSubtotal + gstAmount;
+  const subtotal = serviceSubtotal + startupSubtotal;
+  const totalWithGst = serviceTotalWithGST + startupSubtotal;
 
   const handlePayment = async () => {
+    if (!token) {
+      toast.error('Please login to continue with payment');
+      return;
+    }
+
+    if (cartItems.length === 0 && startupcartItems.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+
     try {
-      // Step 1: Calculate subtotal from BOTH cart and startup items
-      const serviceSubtotal = cartItems.reduce((total, item) => total + item.price, 0);
-      const startupSubtotal = startupcartItems.reduce((total, item) => total + (item.priceWithGst || 0), 0);
-      const subtotal = serviceSubtotal + startupSubtotal;
-  
-      // Step 2: Add GST (18%) - but only for service items since startup items already include GST
-      const gstRate = 0.18; // 18%
-      const gstAmount = serviceSubtotal * gstRate;
-  
-      // Step 3: Calculate final amount (service subtotal + service GST + startup total with GST)
-      const totalAmount = Math.round(serviceSubtotal + gstAmount + startupSubtotal); // Rounded to nearest rupee
-  
-      // Step 4: Create Razorpay order
-      const orderData = await createOrder(totalAmount);
-  
-      // Step 5: Initiate payment
-      await makePayment(totalAmount, orderData);
+      setIsPaymentLoading(true);
+      setPaymentError(null);
+
+      // Step 1: Calculate amounts
+      // For regular services, we'll add GST
+      const serviceSubtotal = cartItems.reduce((total, item) => total + (item.price || 0), 0);
+      const serviceGST = serviceSubtotal * 0.18; // 18% GST
+      const serviceTotalWithGST = serviceSubtotal + serviceGST;
+
+      // For startup items, use priceWithGst as it already includes GST
+      const startupTotal = startupcartItems.reduce((total, item) => total + (item.priceWithGst || 0), 0);
+      
+      // Calculate final total
+      const totalAmount = Math.round(serviceTotalWithGST + startupTotal);
+
+      if (totalAmount <= 0) {
+        throw new Error('Invalid order amount');
+      }
+
+      console.log({
+        serviceSubtotal,
+        serviceGST,
+        serviceTotalWithGST,
+        startupTotal,
+        totalAmount
+      });
+
+      // Step 2: Create Razorpay order with retry mechanism
+      let orderData;
+      let retryCount = 0;
+      const maxRetries = 3;
+
+      while (retryCount < maxRetries) {
+        try {
+          orderData = await createOrder(totalAmount);
+          if (orderData && orderData.id) break;
+          retryCount++;
+        } catch (err) {
+          if (retryCount === maxRetries - 1) throw err;
+          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
+        }
+      }
+
+      if (!orderData || !orderData.id) {
+        throw new Error('Failed to create order');
+      }
+
+      // Step 3: Initiate payment
+      await makePayment(totalAmount, {
+        ...orderData,
+        prefill: {
+          name: token?.name || '',
+          email: token?.email || '',
+          contact: token?.phone || ''
+        },
+        handler: async function (response) {
+          try {
+            // Handle successful payment
+            const paymentData = {
+              orderId: orderData.id,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+              amount: totalAmount,
+              services: cartItems.map(item => ({
+                ...item,
+                gstAmount: (item.price || 0) * 0.18,
+                totalWithGst: (item.price || 0) * 1.18
+              })),
+              startupServices: startupcartItems.map(item => ({
+                ...item,
+                // For startup services, priceWithGst already includes GST
+                gstAmount: item.priceWithGst - item.price,
+                totalWithGst: item.priceWithGst
+              }))
+            };
+
+            // Update order status
+            await axios.post(`${process.env.NEXT_PUBLIC_BACK_URL}/payment/verify`, paymentData, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+
+            toast.success('Payment successful!');
+            refreshCart(); // Refresh cart after successful payment
+            
+          } catch (error) {
+            console.error('Payment verification error:', error);
+            toast.error('Payment verification failed. Please contact support.');
+          }
+        }
+      });
+
     } catch (error) {
       console.error('Payment error:', error);
-      toast.error('Payment failed. Please try again.');
+      setPaymentError(error.message);
+      toast.error(error.message || 'Payment failed. Please try again.');
+    } finally {
+      setIsPaymentLoading(false);
     }
   };
   
@@ -118,8 +213,9 @@ export default function Cart() {
           {/* Combined Cart Items */}
           {[...(cartItems || []).map(item => ({ ...item, type: 'service' })), ...(startupcartItems || []).map(item => ({ ...item, type: 'startup' }))].map((item) => {
             const isStartup = item.type === 'startup';
-            subTotal += isStartup ? (item.priceWithGst || 0) : item.price;
-
+            // For display purposes only, use priceWithGst for startup items if available
+            const displayPrice = isStartup && item.priceWithGst ? item.priceWithGst : item.price;
+            
             return (
               <div
                 key={item.id}
@@ -186,10 +282,10 @@ export default function Cart() {
                 {/* Price Information */}
                 <div className="w-full md:w-auto mt-3 md:mt-0 bg-gray-100 rounded-lg px-3 py-2 md:py-3 md:px-4 flex flex-row md:flex-col justify-between items-center md:items-end">
                   <p className="text-gray-700 text-sm">
-                    Price{isStartup ? ' (With GST)' : ''}:
+                    Price{isStartup && item.priceWithGst !== item.price ? ' (With GST)' : ''}:
                   </p>
                   <p className="font-semibold text-black text-sm md:text-base md:mt-1">
-                    {formatINRCurrency(isStartup ? item.priceWithGst : item.price)}
+                    {formatINRCurrency(displayPrice)}
                   </p>
                 </div>
               </div>
@@ -200,24 +296,32 @@ export default function Cart() {
           <div className="flex flex-col items-end p-4 bg-white rounded-lg shadow-lg mt-6 md:mt-8 gap-2 md:gap-3">
             <div className="w-full md:w-auto flex justify-between md:justify-end gap-4">
               <span className="text-base md:text-xl font-semibold text-gray-700">Subtotal:</span>
-              <span className="text-base md:text-xl text-black">{formatINRCurrency(subTotal)}</span>
+              <span className="text-base md:text-xl text-black">{formatINRCurrency(subtotal)}</span>
             </div>
             
             <div className="w-full md:w-auto flex justify-between md:justify-end gap-4">
               <span className="text-sm md:text-lg text-gray-600">GST (18%):</span>
-              <span className="text-sm md:text-lg text-black">{formatINRCurrency(subTotal * gstPercentage)}</span>
+              <span className="text-sm md:text-lg text-black">{formatINRCurrency(gstAmount)}</span>
             </div>
             
             <div className="w-full md:w-auto flex justify-between md:justify-end gap-4 border-t border-gray-300 pt-2 mt-1">
               <span className="text-lg md:text-2xl font-bold text-green-700">Total Payable:</span>
-              <span className="text-lg md:text-2xl font-bold text-green-700">{formatINRCurrency(getTotal(subTotal))}</span>
+              <span className="text-lg md:text-2xl font-bold text-green-700">{formatINRCurrency(totalWithGst)}</span>
             </div>
             
             <button 
               onClick={handlePayment}
-              className="w-full md:w-auto mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition text-center"
+              disabled={isPaymentLoading}
+              className="w-full md:w-auto mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition text-center disabled:bg-blue-400 disabled:cursor-not-allowed"
             >
-              Proceed to Payment
+              {isPaymentLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <span>Processing...</span>
+                  <Image src="/loading.svg" width={20} height={20} alt="Loading" />
+                </div>
+              ) : (
+                'Proceed to Payment'
+              )}
             </button>
           </div>
         </div>
