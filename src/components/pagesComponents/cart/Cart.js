@@ -76,18 +76,17 @@ export default function Cart() {
   const getTotal = (st = 0) => st + st * gstPercentage;
 
   const handlePayment = async () => {
+
     try {
-      // Step 1: Calculate subtotal from BOTH cart and startup items
-      const serviceSubtotal = cartItems.reduce((total, item) => total + item.price, 0);
-      const startupSubtotal = startupcartItems.reduce((total, item) => total + (item.priceWithGst || 0), 0);
-      const subtotal = serviceSubtotal + startupSubtotal;
-  
-      // Step 2: Add GST (18%) - but only for service items since startup items already include GST
+     
+      const allItems = [...cartItems, ...startupcartItems];
+      const Subtotal = allItems.reduce((total, item) => total + item.price, 0);
+
       const gstRate = 0.18; // 18%
-      const gstAmount = serviceSubtotal * gstRate;
+      const gstAmount = Subtotal * gstRate;
   
-      // Step 3: Calculate final amount (service subtotal + service GST + startup total with GST)
-      const totalAmount = Math.round(serviceSubtotal + gstAmount + startupSubtotal); // Rounded to nearest rupee
+
+      const totalAmount = Math.round(Subtotal + gstAmount); 
   
       // Step 4: Create Razorpay order
       const orderData = await createOrder(totalAmount);
