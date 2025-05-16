@@ -22,7 +22,7 @@ const tableData = {
   Status: 'status',
 };
 
-export default function Sales(props) {
+export default function   Sales(props) {
   const { salesInvoices, loading, error } = props;
   // const [invoiceFiltered, setInvoiceFiltered] = useState();
 
@@ -192,7 +192,7 @@ export default function Sales(props) {
 
   return (
     <DashSection
-      title={'Sales Invoice'}
+      title={'Purchase Invoice'}
       titleRight={
         <div className=" flex flex-row items-center gap-4 justify-center mb-2">
           <Link
