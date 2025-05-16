@@ -22,7 +22,7 @@ const tableData = {
   Status: 'status',
 };
 
-export default function Sales(props) {
+export default function   Sales(props) {
   const { salesInvoices, loading, error } = props;
   // const [invoiceFiltered, setInvoiceFiltered] = useState();
 

@@ -39,7 +39,7 @@ const Allusers = () => {
   }, [currentPage, setCurrentPage]);
   return (
     <>
-      <DashSection title={"All Users"} titleRight={"current year - 2024"}>
+      <DashSection title={"All Users"} titleRight={"current year - 2025"}>
         <div >
 
 

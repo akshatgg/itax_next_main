@@ -25,7 +25,7 @@ function AddToCart({ item }) {
       
       setLoading(true);
       // Get all cart items
-      const { data } = await axios.get(
+      const response = await axios.get(
         `${process.env.NEXT_PUBLIC_BACK_URL}/cartStartup/`, 
         {
           headers: {
@@ -33,16 +33,25 @@ function AddToCart({ item }) {
           },
         }
       );
-      console.log("Cart items from API:", data);
-      console.log("Current item:", item);
+
       // Check if our specific item is in the cart
-      if (data?.data && Array.isArray(data.data)) {
-        // Check if item.id exists in the cart items array
-        const itemExists = data.data.some(cartItem => 
-          cartItem.id === item.id || cartItem.startupId === item.id
-        );
+      if (response.status === 200 && response.data) {
+        const cartItems = response.data.startupItems || response.data.data || [];
+        
+        // Check if item exists in cart using both possible ID fields
+        const itemExists = cartItems.some(cartItem => {
+          const cartItemId = cartItem.id || cartItem.startupId;
+          const currentItemId = item.id || item.startupId;
+          return cartItemId === currentItemId;
+        });
+
+        console.log('Cart check:', {
+          cartItems,
+          currentItem: item,
+          isInCart: itemExists
+        });
+
         setIsInCart(itemExists);
-        console.log(`Item ${item.id} in cart: ${itemExists}`);
       } else {
         setIsInCart(false);
       }
@@ -76,6 +85,7 @@ function AddToCart({ item }) {
         setIsInCart(true);
         toast.success(data.message || 'Successfully added to cart');
         dispatch({ type: Actions.CART_UPDATE_COUNT });
+        await checkCartStatus(); // Recheck cart status after adding
         refreshPage();
       }
     } catch (error) {
@@ -108,6 +118,7 @@ function AddToCart({ item }) {
         setIsInCart(false);
         toast.success(data.message || 'Successfully removed from cart');
         dispatch({ type: Actions.CART_UPDATE_COUNT });
+        await checkCartStatus(); // Recheck cart status after removing
         refreshPage();
       }
     } catch (error) {
@@ -122,8 +133,6 @@ function AddToCart({ item }) {
   useEffect(() => {
     if (item && token) {
       checkCartStatus();
-      console.log("item",item);
-      
     }
   }, [item, token, checkCartStatus]);
 
