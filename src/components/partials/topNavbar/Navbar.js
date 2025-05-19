@@ -490,12 +490,12 @@ const rightArrow = (
 // MENUS
 
 const ourProductsMenu = [
-  {
-    url: '/dashboard/easy-gst-return',
-    // type: 'billshill',
-    menu: 'Easy GST',
-    upcoming: false,
-  },
+  // {
+  //   url: '/dashboard/easy-gst-return',
+  //   // type: 'billshill',
+  //   menu: 'Easy GST',
+  //   upcoming: false,
+  // },
   {
     url: '/dashboard/itr/itr-filling/upload-form-16',
     menu: 'Easy ITR',
