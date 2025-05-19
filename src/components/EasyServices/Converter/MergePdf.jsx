@@ -1,316 +1,472 @@
-"use client";
-import { useState, useEffect } from "react";
-import Dropzone from "react-dropzone";
-import { PDFDocument } from "pdf-lib";
-import { MdDelete, MdDragIndicator } from "react-icons/md";
-import { FaFilePdf } from "react-icons/fa";
+"use client"
+import { useState, useEffect, useRef } from "react"
+import { PDFDocument } from "pdf-lib"
+import { useDropzone } from "react-dropzone"
+import {
+  Upload,
+  Trash2,
+  FileText,
+  Download,
+  ExternalLink,
+  CheckCircle,
+  AlertCircle,
+  GripVertical,
+  RefreshCw,
+  FilePlus,
+  ArrowDownUp,
+} from "lucide-react"
+import { DndProvider, useDrag, useDrop } from "react-dnd"
+import { HTML5Backend } from "react-dnd-html5-backend"
 
 // Valid file types for upload
 const validMimeTypes = {
   "application/pdf": ".pdf",
-};
+}
+
+// Draggable file item component
+const DraggableFileItem = ({ file, index, moveFile, removeFile }) => {
+  const ref = useRef(null)
+
+  const [{ isDragging }, drag] = useDrag({
+    type: "FILE_ITEM",
+    item: { index },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  })
+
+  const [, drop] = useDrop({
+    accept: "FILE_ITEM",
+    hover: (item, monitor) => {
+      if (!ref.current) {
+        return
+      }
+      const dragIndex = item.index
+      const hoverIndex = index
+
+      // Don't replace items with themselves
+      if (dragIndex === hoverIndex) {
+        return
+      }
+
+      moveFile(dragIndex, hoverIndex)
+      item.index = hoverIndex
+    },
+  })
+
+  drag(drop(ref))
+
+  return (
+    <div
+      ref={ref}
+      className={`flex items-center p-4 ${
+        index % 2 === 0 ? "bg-gray-50" : "bg-white"
+      } border-b last:border-b-0 transition-opacity ${isDragging ? "opacity-50" : "opacity-100"}`}
+    >
+      <div className="mr-2 cursor-move text-gray-400 hover:text-gray-600 touch-none">
+        <GripVertical className="h-5 w-5" />
+      </div>
+      <div className="flex-shrink-0 mr-3">
+        <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+          <FileText className="h-5 w-5 text-red-600" />
+        </div>
+      </div>
+      <div className="flex-grow min-w-0">
+        <p className="truncate font-medium text-gray-800">{file.name}</p>
+        <p className="text-xs text-gray-500">{file.size}</p>
+      </div>
+      <button
+        onClick={() => removeFile(file.id)}
+        className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-2"
+        title="Remove file"
+      >
+        <Trash2 className="h-4 w-4 text-gray-500 hover:text-red-500" />
+      </button>
+    </div>
+  )
+}
 
 export default function MergePdf() {
-  const [files, setFiles] = useState([]);
-  const [mergedPdf, setMergedPdf] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [downloadUrl, setDownloadUrl] = useState("");
+  const [files, setFiles] = useState([])
+  const [mergedPdf, setMergedPdf] = useState(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [downloadUrl, setDownloadUrl] = useState("")
+  const [dragActive, setDragActive] = useState(false)
 
   // Cleanup URL object when component unmounts
   useEffect(() => {
     return () => {
       if (downloadUrl) {
-        URL.revokeObjectURL(downloadUrl);
+        URL.revokeObjectURL(downloadUrl)
       }
-    };
-  }, [downloadUrl]);
-
-  const handleDrop = async (acceptedFiles) => {
-    setError("");
-    
-    // Validate files
-    const invalidFiles = acceptedFiles.filter(file => !validMimeTypes[file.type]);
-    if (invalidFiles.length > 0) {
-      setError(`${invalidFiles.length} invalid file(s). Only PDF files are supported.`);
-      return;
     }
-    
+  }, [downloadUrl])
+
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    accept: validMimeTypes,
+    onDrop: handleDrop,
+    onDragEnter: () => setDragActive(true),
+    onDragLeave: () => setDragActive(false),
+    noClick: true,
+    noKeyboard: true,
+  })
+
+  async function handleDrop(acceptedFiles) {
+    setError("")
+    setDragActive(false)
+
+    // Validate files
+    const invalidFiles = acceptedFiles.filter((file) => !validMimeTypes[file.type])
+    if (invalidFiles.length > 0) {
+      setError(`${invalidFiles.length} invalid file(s). Only PDF files are supported.`)
+      return
+    }
+
     // Add new files with preview info
-    const newFiles = acceptedFiles.map(file => ({
+    const newFiles = acceptedFiles.map((file) => ({
       file,
       name: file.name,
       size: formatFileSize(file.size),
       type: file.type,
-      id: `${file.name}-${Date.now()}`
-    }));
-    
-    setFiles(prev => [...prev, ...newFiles]);
-    
+      id: `${file.name}-${Date.now()}`,
+    }))
+
+    setFiles((prev) => [...prev, ...newFiles])
+
     // Reset merged PDF if files change
     if (mergedPdf) {
-      setMergedPdf(null);
-      setDownloadUrl("");
+      setMergedPdf(null)
+      setDownloadUrl("")
     }
-  };
+  }
 
   const removeFile = (id) => {
-    setFiles(files.filter(file => file.id !== id));
+    setFiles(files.filter((file) => file.id !== id))
     // Reset merged PDF if files change
     if (mergedPdf) {
-      setMergedPdf(null);
-      setDownloadUrl("");
+      setMergedPdf(null)
+      setDownloadUrl("")
     }
-  };
+  }
+
+  const moveFile = (dragIndex, hoverIndex) => {
+    const draggedFile = files[dragIndex]
+    const newFiles = [...files]
+    newFiles.splice(dragIndex, 1)
+    newFiles.splice(hoverIndex, 0, draggedFile)
+    setFiles(newFiles)
+
+    // Reset merged PDF if files change
+    if (mergedPdf) {
+      setMergedPdf(null)
+      setDownloadUrl("")
+    }
+  }
 
   const mergePDFs = async () => {
     if (files.length === 0) {
-      setError("Please add PDF files to merge");
-      return;
+      setError("Please add PDF files to merge")
+      return
     }
-    
-    setLoading(true);
-    setError("");
-    
+
+    setLoading(true)
+    setError("")
+
     try {
       // Load all PDF files
       const loadedPdfs = await Promise.all(
-        files.map(fileObj => {
+        files.map((fileObj) => {
           return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (event) => resolve({
-              data: event.target.result,
-              name: fileObj.name
-            });
-            reader.onerror = (error) => reject(new Error(`Failed to read ${fileObj.name}: ${error}`));
-            reader.readAsArrayBuffer(fileObj.file);
-          });
-        })
-      );
-      
+            const reader = new FileReader()
+            reader.onload = (event) =>
+              resolve({
+                data: event.target.result,
+                name: fileObj.name,
+              })
+            reader.onerror = (error) => reject(new Error(`Failed to read ${fileObj.name}: ${error}`))
+            reader.readAsArrayBuffer(fileObj.file)
+          })
+        }),
+      )
+
       // Create new PDF document
-      const mergedPdfDoc = await PDFDocument.create();
-      
+      const mergedPdfDoc = await PDFDocument.create()
+
       // Add pages from each PDF
       for (const pdfData of loadedPdfs) {
         try {
-          const pdf = await PDFDocument.load(pdfData.data);
-          const copiedPages = await mergedPdfDoc.copyPages(pdf, pdf.getPageIndices());
-          copiedPages.forEach(page => {
-            mergedPdfDoc.addPage(page);
-          });
+          const pdf = await PDFDocument.load(pdfData.data)
+          const copiedPages = await mergedPdfDoc.copyPages(pdf, pdf.getPageIndices())
+          copiedPages.forEach((page) => {
+            mergedPdfDoc.addPage(page)
+          })
         } catch (err) {
-          console.error(`Error processing ${pdfData.name}:`, err);
-          setError(`Error processing ${pdfData.name}. File may be corrupted or password protected.`);
-          setLoading(false);
-          return;
+          console.error(`Error processing ${pdfData.name}:`, err)
+          setError(`Error processing ${pdfData.name}. File may be corrupted or password protected.`)
+          setLoading(false)
+          return
         }
       }
-      
+
       // Generate the merged PDF
-      const mergedPdfBytes = await mergedPdfDoc.save();
-      setMergedPdf(mergedPdfBytes);
-      
+      const mergedPdfBytes = await mergedPdfDoc.save()
+      setMergedPdf(mergedPdfBytes)
+
       // Create download URL
-      const url = URL.createObjectURL(
-        new Blob([mergedPdfBytes], { type: "application/pdf" })
-      );
-      setDownloadUrl(url);
-      
+      const url = URL.createObjectURL(new Blob([mergedPdfBytes], { type: "application/pdf" }))
+      setDownloadUrl(url)
     } catch (error) {
-      console.error("Error merging PDFs:", error);
-      setError("Failed to merge PDFs. Please try again.");
+      console.error("Error merging PDFs:", error)
+      setError("Failed to merge PDFs. Please try again.")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   // Format file size to readable format
   const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+    if (bytes === 0) return "0 Bytes"
+    const k = 1024
+    const sizes = ["Bytes", "KB", "MB", "GB"]
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  }
+
+  const clearAll = () => {
+    setFiles([])
+    setMergedPdf(null)
+    setDownloadUrl("")
+    setError("")
+  }
 
   return (
-    <div className="min-h-screen my-10 max-w-5xl mx-auto px-4">
-      <h1 className="text-3xl font-bold text-center mb-8 text-primary">Merge PDF Files</h1>
-      
-      {/* Dropzone */}
-      <Dropzone 
-        accept={validMimeTypes}
-        onDrop={handleDrop}
-        multiple={true}
-      >
-        {({ getRootProps, getInputProps, isDragActive }) => (
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg py-12 px-6 transition-all ${
-              isDragActive 
-                ? "border-primary bg-primary/5" 
-                : "border-zinc-400 hover:border-primary/70"
-            }`}
-          >
-            <input {...getInputProps()} />
-            <div className="flex flex-col items-center">
-              <span className="block object-contain h-14 w-14 fill-primary">
-                {uploadIcon}
-              </span>
-              <p className="text-center mt-5 leading-loose font-medium text-lg">
-                {isDragActive 
-                  ? "Drop your PDF files here" 
-                  : "Drag & drop PDF files to upload"}
-                <br /> Or
-              </p>
-              <button className="inline-block bg-primary mt-3 px-8 py-3 text-white rounded-md font-semibold text-sm hover:bg-primary/90 transition-colors">
-                Browse Files
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-blue-700 mb-2">PDF Merger</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            Combine multiple PDF files into a single document. Drag and drop your files, arrange them in the desired
+            order, and merge them with a single click.
+          </p>
+        </div>
+
+        {/* Error message */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
+            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+            <p className="text-red-700">{error}</p>
+          </div>
+        )}
+
+        {/* Dropzone */}
+        <div
+          {...getRootProps()}
+          className={`border-2 border-dashed rounded-lg p-8 mb-6 text-center transition-all duration-200 ${
+            dragActive || isDragActive
+              ? "bg-blue-50 border-blue-300"
+              : "bg-white border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+          }`}
+        >
+          <input {...getInputProps()} />
+          <div className="flex flex-col items-center">
+            <Upload className="h-16 w-16 text-blue-600 mb-4" />
+            <p className="text-lg font-medium text-gray-800 mb-1">
+              {dragActive || isDragActive ? "Drop your PDF files here" : "Drag & drop PDF files to upload"}
+            </p>
+            <p className="text-gray-500 mb-4">Or</p>
+            <button
+              type="button"
+              onClick={open}
+              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Browse Files
+            </button>
+            <p className="text-xs text-gray-500 mt-4">Only PDF files are supported</p>
+          </div>
+        </div>
+
+        {/* File list */}
+        {files.length > 0 && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+            <div className="p-4 border-b border-gray-200">
+              <div className="flex justify-between items-center">
+                <h3 className="text-lg font-semibold text-gray-800">Selected Files ({files.length})</h3>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setFiles([...files].sort((a, b) => a.name.localeCompare(b.name)))}
+                    className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors flex items-center text-sm"
+                    title="Sort alphabetically"
+                  >
+                    <ArrowDownUp className="h-4 w-4 mr-1" />
+                    <span className="hidden sm:inline">Sort</span>
+                  </button>
+                  <button
+                    onClick={clearAll}
+                    className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors flex items-center text-sm"
+                  >
+                    <Trash2 className="h-4 w-4 mr-1" />
+                    <span className="hidden sm:inline">Clear All</span>
+                  </button>
+                </div>
+              </div>
+              <p className="text-sm text-gray-500 mt-1">Drag files to reorder them</p>
+            </div>
+
+            <DndProvider backend={HTML5Backend}>
+              <div className="max-h-80 overflow-y-auto">
+                {files.map((file, index) => (
+                  <DraggableFileItem
+                    key={file.id}
+                    file={file}
+                    index={index}
+                    moveFile={moveFile}
+                    removeFile={removeFile}
+                  />
+                ))}
+              </div>
+            </DndProvider>
+
+            <div className="p-4 border-t border-gray-200">
+              <button
+                onClick={open}
+                className="w-full py-2 border border-blue-300 text-blue-600 rounded-md flex items-center justify-center hover:bg-blue-50 transition-colors"
+              >
+                <FilePlus className="h-4 w-4 mr-2" />
+                Add More PDFs
               </button>
-              <p className="text-zinc-600 text-xs font-medium mt-3">
-                Only PDF files are supported
-              </p>
             </div>
           </div>
         )}
-      </Dropzone>
 
-      {/* Error message */}
-      {error && (
-        <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">
-          {error}
-        </div>
-      )}
-
-      {/* File list */}
-      {files.length > 0 && (
-        <div className="mt-8">
-          <h3 className="text-lg font-semibold mb-2">Selected Files ({files.length})</h3>
-          <div className="border rounded-md overflow-hidden">
-            {files.map((file, index) => (
-              <div 
-                key={file.id} 
-                className={`flex items-center p-3 ${index % 2 === 0 ? "bg-gray-50" : "bg-white"}`}
-              >
-                <div className="mr-2">
-                  <MdDragIndicator className="text-gray-400" size={20} />
-                </div>
-                <div className="flex-shrink-0 mr-3">
-                  <FaFilePdf className="text-red-500" size={24} />
-                </div>
-                <div className="flex-grow min-w-0">
-                  <p className="truncate font-medium">{file.name}</p>
-                  <p className="text-xs text-gray-500">{file.size}</p>
-                </div>
-                <button 
-                  onClick={() => removeFile(file.id)}
-                  className="p-2 hover:bg-gray-100 rounded-full transition-colors ml-2"
-                  title="Remove file"
-                >
-                  <MdDelete className="text-gray-500 hover:text-red-500" size={20} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Action buttons */}
-      <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+        {/* Action buttons */}
         {files.length > 0 && (
-          <>
+          <div className="flex flex-wrap gap-4 justify-center mb-8">
             <button
               onClick={mergePDFs}
               disabled={loading || files.length === 0}
-              className={`px-6 py-3 rounded-md font-semibold text-white flex items-center justify-center ${
-                loading || files.length === 0
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-primary hover:bg-primary/90"
+              className={`px-6 py-3 rounded-lg font-medium text-white flex items-center ${
+                loading || files.length === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"
               }`}
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Processing...
+                  <RefreshCw className="h-5 w-5 mr-2 animate-spin" />
+                  Merging PDFs...
                 </>
               ) : (
-                "Merge PDFs"
+                <>
+                  <FileText className="h-5 w-5 mr-2" />
+                  Merge PDFs
+                </>
               )}
             </button>
-            
-            <button
-              onClick={() => {
-                setFiles([]);
-                setMergedPdf(null);
-                setDownloadUrl("");
-                setError("");
-              }}
-              className="px-6 py-3 border border-gray-300 rounded-md font-semibold text-gray-700 hover:bg-gray-50"
-            >
-              Clear All
-            </button>
-          </>
+          </div>
         )}
-      </div>
 
-      {/* Download section */}
-      {downloadUrl && (
-        <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-lg text-center">
-          <div className="flex flex-col items-center">
-            <svg className="text-green-500 w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">PDF Successfully Merged!</h3>
-            <p className="text-gray-600 mb-4">Your PDF is ready to download.</p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <a
-                href={downloadUrl}
-                download="merged.pdf"
-                className="px-6 py-3 bg-primary text-white rounded-md font-semibold hover:bg-primary/90 inline-flex items-center justify-center"
-              >
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd"></path>
-                </svg>
-                Download Merged PDF
-              </a>
-              <a
-                href={downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-md font-semibold hover:bg-gray-50 inline-flex items-center justify-center"
-              >
-                <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"></path>
-                  <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"></path>
-                </svg>
-                Preview PDF
-              </a>
+        {/* Download section */}
+        {downloadUrl && (
+          <div className="mb-10 bg-white rounded-lg shadow-sm border border-green-200 overflow-hidden">
+            <div className="bg-green-50 p-4 border-b border-green-200">
+              <div className="flex items-center">
+                <CheckCircle className="h-6 w-6 text-green-500 mr-3" />
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">PDF Successfully Merged!</h3>
+                  <p className="text-sm text-gray-600">Your PDF is ready to download or preview.</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <a
+                  href={downloadUrl}
+                  download="merged.pdf"
+                  className="px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center"
+                >
+                  <Download className="h-5 w-5 mr-2" />
+                  Download Merged PDF
+                </a>
+                <a
+                  href={downloadUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center"
+                >
+                  <ExternalLink className="h-5 w-5 mr-2" />
+                  Preview PDF
+                </a>
+                <button
+                  onClick={clearAll}
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center justify-center sm:ml-auto"
+                >
+                  <RefreshCw className="h-5 w-5 mr-2" />
+                  Start Over
+                </button>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Instructions */}
-      {!files.length && !downloadUrl && (
-        <div className="mt-10 p-6 bg-gray-50 rounded-lg">
-          <h3 className="text-lg font-semibold mb-3">How to Merge PDF Files</h3>
-          <ol className="list-decimal list-inside space-y-2 text-gray-700">
-            <li>Drag and drop PDF files into the upload area, or click "Browse Files" to select them.</li>
-            <li>Arrange the files in the order you want them to appear in the merged PDF.</li>
-            <li>Click "Merge PDFs" to combine all files into a single PDF document.</li>
-            <li>Download or preview your merged PDF file.</li>
-          </ol>
-        </div>
-      )}
+        {/* Instructions */}
+        {!files.length && !downloadUrl && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-10">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">How to Merge PDF Files</h3>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="flex">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                  <span className="text-blue-600 font-semibold">1</span>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-800 mb-1">Upload Your PDFs</h4>
+                  <p className="text-gray-600 text-sm">
+                    Drag and drop PDF files into the upload area, or click "Browse Files" to select them from your
+                    device.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                  <span className="text-blue-600 font-semibold">2</span>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-800 mb-1">Arrange Your Files</h4>
+                  <p className="text-gray-600 text-sm">
+                    Drag and drop the files to reorder them. The PDFs will be merged in the order they appear in the
+                    list.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                  <span className="text-blue-600 font-semibold">3</span>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-800 mb-1">Merge Your PDFs</h4>
+                  <p className="text-gray-600 text-sm">
+                    Click the "Merge PDFs" button to combine all your files into a single PDF document.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex">
+                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+                  <span className="text-blue-600 font-semibold">4</span>
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-800 mb-1">Download or Preview</h4>
+                  <p className="text-gray-600 text-sm">
+                    Once merged, you can download the combined PDF file or preview it in your browser.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
-  );
+  )
 }
-
-const uploadIcon = (
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-    <path d="M246.6 9.4c-12.5-12.5-32.8-12.5-45.3 0l-128 128c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3V320c0 17.7 14.3 32 32 32s32-14.3 32-32V109.3l73.4 73.4c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-128-128zM64 352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 53 43 96 96 96H352c53 0 96-43 96-96V352c0-17.7-14.3-32-32-32s-32 14.3-32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V352z" />
-  </svg>
-);
