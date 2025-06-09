@@ -67,9 +67,9 @@ const HRACalculator = () => {
   }
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value)
@@ -100,9 +100,9 @@ const HRACalculator = () => {
               <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="category" />
-                <YAxis tickFormatter={(value) => `$${value}`} />
+                <YAxis tickFormatter={(value) => `₹${value}`} />
                 <Tooltip
-                  formatter={(value) => [`$${Number(value).toFixed(2)}`, undefined]}
+                  formatter={(value) => [`₹${Number(value).toFixed(2)}`, undefined]}
                 />
                 <Legend />
                 <Line type="monotone" dataKey="value" name="Amount" stroke="#8884d8" activeDot={{ r: 8 }} />
@@ -120,7 +120,7 @@ const HRACalculator = () => {
             value={basic}
             onChange={setBasic}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={0}
             tooltip="Total basic salary amount"
           />
@@ -130,7 +130,7 @@ const HRACalculator = () => {
             value={hra}
             onChange={setHra}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={0}
             tooltip="House Rent Allowance received"
           />
@@ -143,7 +143,7 @@ const HRACalculator = () => {
             value={rent}
             onChange={setRent}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={0}
             tooltip="Total rent paid during the year"
           />
@@ -153,7 +153,7 @@ const HRACalculator = () => {
             value={da}
             onChange={setDa}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={0}
             tooltip="Dearness allowance amount"
           />
@@ -166,7 +166,7 @@ const HRACalculator = () => {
             value={otherAllowances}
             onChange={setOtherAllowances}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={0}
             tooltip="Other additional allowances"
           />

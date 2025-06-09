@@ -92,9 +92,9 @@ const HomeLoanCalculator = () => {
   }
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value)
@@ -151,7 +151,7 @@ const HomeLoanCalculator = () => {
               <AreaChart data={chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" label={{ value: "Years", position: "insideBottomRight", offset: -5 }} />
-                <YAxis tickFormatter={(value) => `$${value / 1000}k`} />
+                <YAxis tickFormatter={(value) => `₹${value / 1000}k`} />
                 <Tooltip formatter={(value) => formatCurrency(Number(value))} />
                 <Legend />
                 <Area
@@ -189,7 +189,7 @@ const HomeLoanCalculator = () => {
             value={loanAmount}
             onChange={setLoanAmount}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={1000}
             tooltip="The total amount you wish to borrow"
           />

@@ -12,11 +12,11 @@ const topNavbarData = [
     href: '/',
     name: 'our products',
     subLink: [
-      {
-        href: '/',
-        name: 'Easy GST',
-        upcoming: true,
-      },
+      // {
+      //   href: '/',
+      //   name: 'Easy GST',
+      //   upcoming: true,
+      // },
       {
         href: '/ourproducts/library',
         name: 'Easy E-Library',

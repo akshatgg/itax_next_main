@@ -62,9 +62,9 @@ const DepreciationCalculator = () => {
   }
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value)
@@ -95,9 +95,9 @@ const DepreciationCalculator = () => {
               <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" label={{ value: "Years", position: "insideBottomRight", offset: -5 }} />
-                <YAxis tickFormatter={(value) => `$${value}`} />
+                <YAxis tickFormatter={(value) => `₹${value}`} />
                 <Tooltip
-                  formatter={(value) => [`$${Number(value).toFixed(2)}`, undefined]}
+                  formatter={(value) => [`₹${Number(value).toFixed(2)}`, undefined]}
                   labelFormatter={(label) => `Year ${label}`}
                 />
                 <Legend />
@@ -116,7 +116,7 @@ const DepreciationCalculator = () => {
             value={purchasePrice}
             onChange={setPurchasePrice}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={1}
             tooltip="The original purchase price of the asset"
           />
@@ -126,7 +126,7 @@ const DepreciationCalculator = () => {
             value={scrapValue}
             onChange={setScrapValue}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={0}
             tooltip="The estimated salvage or residual value of the asset"
           />

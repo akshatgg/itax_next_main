@@ -47,9 +47,9 @@ const PostOfficeMonthlyIncomeSchemeCal = () => {
   }
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value)
@@ -83,9 +83,9 @@ const PostOfficeMonthlyIncomeSchemeCal = () => {
               <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="category" />
-                <YAxis tickFormatter={(value) => `$${value}`} />
+                <YAxis tickFormatter={(value) => `₹${value}`} />
                 <Tooltip 
-                  formatter={(value) => [`$${Number(value).toFixed(2)}`, undefined]}
+                  formatter={(value) => [`₹${Number(value).toFixed(2)}`, undefined]}
                 />
                 <Legend />
                 <Bar dataKey="amount" name="Income" fill="#8884d8" />
@@ -103,7 +103,7 @@ const PostOfficeMonthlyIncomeSchemeCal = () => {
             value={investmentAmount}
             onChange={setInvestmentAmount}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={1}
             tooltip="Total amount invested in the Post Office Monthly Income Scheme"
           />

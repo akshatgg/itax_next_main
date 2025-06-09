@@ -56,9 +56,9 @@ const CapitalGainsCalculator = () => {
   }
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value)
@@ -108,7 +108,7 @@ const CapitalGainsCalculator = () => {
             value={purchasePrice}
             onChange={setPurchasePrice}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={1}
             tooltip="The original purchase price of the asset"
           />
@@ -118,7 +118,7 @@ const CapitalGainsCalculator = () => {
             value={salePrice}
             onChange={setSalePrice}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={1}
             tooltip="The price at which the asset was sold"
           />

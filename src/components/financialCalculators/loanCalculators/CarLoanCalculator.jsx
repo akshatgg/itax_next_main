@@ -70,9 +70,9 @@ const CarLoanCalculator = () => {
   }
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(value)
@@ -103,9 +103,9 @@ const CarLoanCalculator = () => {
               <LineChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" label={{ value: "Months", position: "insideBottomRight", offset: -5 }} />
-                <YAxis tickFormatter={(value) => `$${value.toLocaleString()}`} />
+                <YAxis tickFormatter={(value) => `₹${value.toLocaleString()}`} />
                 <Tooltip
-                  formatter={(value) => [`$${Number(value).toLocaleString()}`, undefined]}
+                  formatter={(value) => [`₹${Number(value).toLocaleString()}`, undefined]}
                   labelFormatter={(label) => `Month ${label}`}
                 />
                 <Legend />
@@ -125,7 +125,7 @@ const CarLoanCalculator = () => {
             value={loanAmount}
             onChange={setLoanAmount}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={1000}
             tooltip="The total amount of the car loan"
           />

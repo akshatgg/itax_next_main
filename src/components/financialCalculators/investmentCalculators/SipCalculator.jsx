@@ -67,9 +67,9 @@ const SipCalculator = () => {
   }
 
   const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-IN", {
       style: "currency",
-      currency: "USD",
+      currency: "INR",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value)
@@ -100,7 +100,7 @@ const SipCalculator = () => {
               <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" label={{ value: "Years", position: "insideBottomRight", offset: -5 }} />
-                <YAxis tickFormatter={(value) => `$${value / 1000}k`} />
+                <YAxis tickFormatter={(value) => `₹${value / 1000}k`} />
                 <Tooltip
                   formatter={(value) => [formatCurrency(Number(value)), undefined]}
                   labelFormatter={(label) => `Year ${label}`}
@@ -122,7 +122,7 @@ const SipCalculator = () => {
             value={monthlyInvestment}
             onChange={setMonthlyInvestment}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={100}
             tooltip="The amount you plan to invest every month"
           />
