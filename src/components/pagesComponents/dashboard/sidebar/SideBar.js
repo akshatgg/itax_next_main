@@ -42,7 +42,7 @@ export default function SideBar(prop) {
                     shadow-sm shadow-blue-500
                     pb-[50px]
                     scrollbar-thin
-                    overflow-hidden z-30 fixed top-16 bottom-0 bg-neutral-50 text-blue-500 h-full
+                    overflow-hidden z-30 fixed top-[3.6rem] bottom-0 bg-neutral-50 text-blue-500 h-full
                     ${isSidebarOpen ? '-translate-x-[0%] lg:w-64' : 'lg:-translate-x-[0%] -translate-x-full lg:w-16'} w-64 transition-all duration-200`}
       >
         <SidebarToggle

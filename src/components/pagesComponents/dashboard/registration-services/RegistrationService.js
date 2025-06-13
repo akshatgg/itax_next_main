@@ -105,9 +105,23 @@ const Insurance = () => {
 
   const handleDownload = async (url, filename) => {
     try {
-      const response = await fetch(url, {
+      if (!url) {
+        throw new Error('No file URL provided');
+      }
+
+      // If the URL is a full path, convert it to a proper URL
+      const fileUrl = url.includes('http') 
+        ? url 
+        : `http://localhost:8000/uploads/${url.split('uploads/').pop()}`;
+
+      const response = await fetch(fileUrl, {
         mode: 'cors',
       });
+      
+      if (!response.ok) {
+        throw new Error('File not found');
+      }
+      
       const blob = await response.blob();
       const link = document.createElement('a');
       const urlObject = URL.createObjectURL(blob);
@@ -119,6 +133,7 @@ const Insurance = () => {
       URL.revokeObjectURL(urlObject);
     } catch (error) {
       console.error('Failed to download file:', error);
+      toast.error('Failed to download file. Please try again.');
     }
   };
 
@@ -239,69 +254,96 @@ const Insurance = () => {
             <div className="grid md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2 items-center border p-2 shadow-sm">
                 <span className="text-xl font-medium">Photo</span>
-                <Image
-                  src={editModalData.photo}
-                  width={250}
-                  height={250}
-                  className="max-w-[250px]"
-                  alt="photo"
-                />
+                {editModalData.photo ? (
+                  <Image
+                    src={editModalData.photo.includes('http') 
+                      ? editModalData.photo 
+                      : `http://localhost:8000/uploads/${editModalData.photo.split('uploads/').pop()}`}
+                    width={250}
+                    height={250}
+                    className="max-w-[250px]"
+                    alt="photo"
+                  />
+                ) : (
+                  <div className="text-center text-gray-500">
+                    No Photo Available
+                  </div>
+                )}
                 <Button
                   onClick={() => handleDownload(editModalData.photo, 'photo')}
+                  disabled={!editModalData.photo}
                 >
                   Download
                 </Button>
               </div>
               <div className="flex flex-col gap-2 items-center border p-2 shadow-sm">
                 <span className="text-xl font-medium">Aadhaar Card</span>
-                <Image
-                  src={editModalData.aadhaarCard}
-                  width={250}
-                  height={250}
-                  className="max-w-[250px]"
-                  alt="aadhaarCard"
-                />
+                {editModalData.aadhaarCard ? (
+                  <Image
+                    src={editModalData.aadhaarCard.includes('http') 
+                      ? editModalData.aadhaarCard 
+                      : `http://localhost:8000/uploads/${editModalData.aadhaarCard.split('uploads/').pop()}`}
+                    width={250}
+                    height={250}
+                    className="max-w-[250px]"
+                    alt="aadhaarCard"
+                  />
+                ) : (
+                  <div className="text-center text-gray-500">
+                    No Aadhaar Card Available
+                  </div>
+                )}
                 <Button
-                  onClick={() =>
-                    handleDownload(editModalData.aadhaarCard, 'aadhaarCard')
-                  }
+                  onClick={() => handleDownload(editModalData.aadhaarCard, 'aadhaarCard')}
+                  disabled={!editModalData.aadhaarCard}
                 >
                   Download
                 </Button>
               </div>
               <div className="flex flex-col gap-2 items-center border p-2 shadow-sm">
                 <span className="text-xl font-medium">Pan Card</span>
-                <Image
-                  src={editModalData.panCard}
-                  width={250}
-                  height={250}
-                  className="max-w-[250px]"
-                  alt="panCard"
-                />
+                {editModalData.panCard ? (
+                  <Image
+                    src={editModalData.panCard.includes('http') 
+                      ? editModalData.panCard 
+                      : `http://localhost:8000/uploads/${editModalData.panCard.split('uploads/').pop()}`}
+                    width={250}
+                    height={250}
+                    className="max-w-[250px]"
+                    alt="panCard"
+                  />
+                ) : (
+                  <div className="text-center text-gray-500">
+                    No Pan Card Available
+                  </div>
+                )}
                 <Button
-                  onClick={() =>
-                    handleDownload(editModalData.panCard, 'panCard')
-                  }
+                  onClick={() => handleDownload(editModalData.panCard, 'panCard')}
+                  disabled={!editModalData.panCard}
                 >
                   Download
                 </Button>
               </div>
               <div className="flex flex-col gap-2 items-center border p-2 shadow-sm">
                 <span className="text-xl font-medium">Gst Certificate</span>
-                <Image
-                  src={editModalData.gstCertificate}
-                  width={250}
-                  height={250}
-                  className="max-w-[250px]"
-                  alt="gstCertificate"
-                />
+                {editModalData.gstCertificate ? (
+                  <Image
+                    src={editModalData.gstCertificate.includes('http') 
+                      ? editModalData.gstCertificate 
+                      : `http://localhost:8000/uploads/${editModalData.gstCertificate.split('uploads/').pop()}`}
+                    width={250}
+                    height={250}
+                    className="max-w-[250px]"
+                    alt="gstCertificate"
+                  />
+                ) : (
+                  <div className="text-center text-gray-500">
+                    No GST Certificate Available
+                  </div>
+                )}
                 <Button
-                  onClick={() =>
-                    handleDownload(
-                      editModalData.gstCertificate,
-                      'gstCertificate',
-                    )
-                  }
+                  onClick={() => handleDownload(editModalData.gstCertificate, 'gstCertificate')}
+                  disabled={!editModalData.gstCertificate}
                 >
                   Download
                 </Button>
