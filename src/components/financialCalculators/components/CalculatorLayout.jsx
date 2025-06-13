@@ -1,9 +1,23 @@
 "use client"
 
+import DownloadButton from "@/components/downloads/DownloadButton"
 import { useState } from "react"
 
 const CalculatorLayout = ({ title, description, children, resultComponent, chartComponent }) => {
   const [activeTab, setActiveTab] = useState("calculator")
+
+  // Extract results from resultComponent if it exists
+  const getResults = () => {
+    if (!resultComponent) return null;
+    
+    // Try to get results from CalculatorResultCard
+    const resultsElement = resultComponent.props?.results;
+    if (resultsElement) {
+      return resultsElement;
+    }
+    
+    return null;
+  };
 
   return (
     <div className="w-full max-w-6xl mx-auto p-4 md:p-6">
@@ -124,6 +138,14 @@ const CalculatorLayout = ({ title, description, children, resultComponent, chart
                   </div>
                 </div>
               )}
+              <div className="p-4 border-b text-center">
+              <DownloadButton 
+                id="result-table" 
+                fileName="calculation_result.pdf" 
+                results={getResults()}
+                title={title}
+              />
+            </div>
             </div>
           </div>
         </div>
