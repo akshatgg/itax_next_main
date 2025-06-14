@@ -392,7 +392,7 @@ function LinksItems({ linkItem }) {
 
 function TopNavbarLinks() {
   return (
-    <ul className="flex items-center gap-2">
+    <ul className="hidden lg:flex items-center justify-center gap-6 font-semibold text-sm h-14">
       {topNavbarData.map((linkItem, index) => (
         <LinksItems key={index} linkItem={linkItem} />
       ))}
@@ -404,7 +404,11 @@ export default function TopNavbar({ handleSidebar, isSidebarOpen }) {
   const token = useClient(() => getCookie('token'));
   return (
     <header
-      className={`${isSidebarOpen ? 'lg:pl-64' : 'lg:pl-16'} transition-[padding] duration-200 bg-white sticky w-full z-10 top-0 start-0 border-b pt-1 border-gray-200`}
+      className={` 
+    fixed top-0 left-0 right-0 z-20 
+    bg-white border-b border-gray-200 
+    transition-[padding] duration-200
+  `}
     >
       <div className="flex items-center justify-between mx-auto min-h-14 px-4">
         <button

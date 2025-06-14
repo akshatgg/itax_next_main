@@ -89,6 +89,7 @@ function RegisterStartUpDetails({ params }) {
       setIsLoading(true);
       const { data } = await axios.get(
         `${process.env.NEXT_PUBLIC_BACK_URL}/cartStartup/`,
+        console.log("Checking cart for startup ID:", NEXT_PUBLIC_BACK_URL),
         {
           headers: {
             Authorization: `Bearer ${token}`,
