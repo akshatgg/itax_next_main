@@ -5,13 +5,13 @@ import { USER_ROLES } from '@/utils/globals';
 export default function PrivateRoute(props) {
   const cookieStore = cookies();
   const currentUser = cookieStore.get('currentUser') || '';
-  const { role } = JSON.parse(currentUser.value || '{}');
+  const { userType} = JSON.parse(currentUser.value || '{}');
   const { Normal, Admin, SuperAdmin } = props;
 
   let Component;
 
-  switch (role) {
-    case USER_ROLES.member:
+  switch (userType) {
+    case USER_ROLES.normal:
       Component = Normal;
       break;
     case USER_ROLES.admin:
