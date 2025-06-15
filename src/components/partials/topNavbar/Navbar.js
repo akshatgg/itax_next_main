@@ -76,8 +76,8 @@ export default function Navbar(props) {
             className="flex flex-shrink-0 justify-between items-center mx-auto"
           >
             <Image
-              width={280}
-              height={280}
+              width={56}
+              height={56}
               src="/logo.svg"
               alt="logo"
               className="object-contain w-14"
