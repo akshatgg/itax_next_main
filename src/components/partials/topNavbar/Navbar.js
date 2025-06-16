@@ -378,7 +378,7 @@ export default function Navbar({ className = '' }) {
   ], []);
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-20 bg-white border-b border-gray-200 transition-[padding] duration-200 ${className}`}>
+    <div className={`sticky top-0 left-0 right-0 z-20 bg-white border-b border-gray-200 transition-[padding] duration-200 ${className}`}>
       <nav className="max-w-7xl m-auto text-xs sticky top-0 min-h-10 z-50 py-1 px-5 flex items-center flex-wrap">
         {/* Logo */}
         <div>
