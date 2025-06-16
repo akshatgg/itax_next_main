@@ -5,6 +5,7 @@ import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import Sales_and_Purchase from './items/Sales_and_Purchase';
 import DataState from './items/DataState';
 import userAxios from '@/lib/userbackAxios';
+import Loader from '@/components/partials/loading/Loader';
 
 export default function Normal_dashboard() {
   const [invoices, setInvoices] = useState([]);
@@ -27,15 +28,18 @@ export default function Normal_dashboard() {
     fetchInvoices();
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex h-[70vh] justify-center items-center">
+        <Loader />
+      </div>
+    );
+  }
+
   return (
     <div className="p-4 grid xl:grid-cols-12 gap-8">
-      {!loading && (
-        <CardOverview
-          invoices={invoices}
-          className="col-span-12 xl:col-span-7"
-        />
-      )}
-      <Sales_and_Purchase invoices={invoices}/>
+      <CardOverview invoices={invoices} className="col-span-12 xl:col-span-7" />
+      <Sales_and_Purchase invoices={invoices} />
 
       {/* <DashSection
         className={'col-span-12 xl:col-span-7'}

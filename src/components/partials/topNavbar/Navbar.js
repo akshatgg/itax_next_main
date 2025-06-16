@@ -131,7 +131,7 @@ const MENUS = {
       subMenu: [
         { url: '/financialcal/npscal', menu: 'NPS Calculator' },
       ],
-    },
+    }
   ],
 };
 
