@@ -1,15 +1,43 @@
+'use client';
+import { useEffect, useState } from 'react';
 import CardOverview from './items/CardOverview';
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import Sales_and_Purchase from './items/Sales_and_Purchase';
 import DataState from './items/DataState';
+import userAxios from '@/lib/userbackAxios';
 
 export default function Normal_dashboard() {
+  const [invoices, setInvoices] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchInvoices = async () => {
+      try {
+        const { data } = await userAxios.get(
+          `/invoice/invoices?page=1&limit=1000`,
+        );
+        setInvoices(data.invoices);
+      } catch (err) {
+        console.error('Error fetching invoices', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchInvoices();
+  }, []);
+
   return (
     <div className="p-4 grid xl:grid-cols-12 gap-8">
-      <CardOverview className="col-span-12 xl:col-span-7" />
-      <Sales_and_Purchase />
+      {!loading && (
+        <CardOverview
+          invoices={invoices}
+          className="col-span-12 xl:col-span-7"
+        />
+      )}
+      <Sales_and_Purchase invoices={invoices}/>
 
-     <DashSection
+      {/* <DashSection
         className={'col-span-12 xl:col-span-7'}
         title={'Income & Expense'}
         titleRight={'current year - 2025'}
@@ -94,11 +122,11 @@ export default function Normal_dashboard() {
         className={'col-span-12 xl:col-span-7'}
         title={'Expense By Category'}
         titleRight={'Year - 2025'}
-      >
-        <div className="p-4">
+      > */}
+      {/* <div className="p-4">
           <DataState />
         </div>
-      </DashSection>
+      </DashSection> */}
     </div>
   );
 }
