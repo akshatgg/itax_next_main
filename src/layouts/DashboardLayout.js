@@ -5,7 +5,7 @@ import useAuth from '@/hooks/useAuth';
 import { USER_ROLES } from '@/utils/globals';
 import { usePathname } from 'next/navigation';
 import { DashboardSidebarItemsData } from './staticData.js';
-import TopNavbar from '@/components/partials/topNavbar/TopNavbar';
+import TopNavbar from '@/components/partials/topNavbar/Navbar';
 import BackButton from '@/components/pagesComponents/dashboard/BackButton';
 import SideBar from '@/components/pagesComponents/dashboard/sidebar/SideBar';
 

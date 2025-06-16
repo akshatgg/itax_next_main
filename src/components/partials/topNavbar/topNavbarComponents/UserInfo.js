@@ -54,7 +54,7 @@ function UserMenu(prop) {
   };
   return (
     <ul
-      className={` flex gap-1 flex-col z-50 dir-col bg-white shadow-md rounded-md p-3 border absolute left-auto right-[1.5rem] lg:top-[4.5rem] top-[3.7rem] ${className} `}
+      className={` flex gap-1 flex-col z-50 dir-col bg-white shadow-md rounded-md p-3 border absolute left-auto right-[1.5rem] top-[3.7rem] ${className} `}
     >
       <li className=" mx-auto">
         <Link
