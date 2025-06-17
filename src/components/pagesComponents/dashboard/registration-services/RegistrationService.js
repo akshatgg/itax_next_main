@@ -19,6 +19,67 @@ const generatedLimitOptions = Array.from({ length: 5 }).map((k, i) => ({
   value: (i + 1) * 5,
 }));
 
+// Add this helper function to determine file type
+const getFileType = (url) => {
+  if (!url) return null;
+  const extension = url.split('.').pop()?.toLowerCase();
+  
+  const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+  const pdfTypes = ['pdf'];
+  
+  if (imageTypes.includes(extension)) return 'image';
+  if (pdfTypes.includes(extension)) return 'pdf';
+  return 'other';
+};
+
+// Add this component to render different file types
+const DocumentViewer = ({ url, alt, width = 250, height = 250 }) => {
+  if (!url) {
+    return (
+      <div className="text-center text-gray-500">
+        No {alt} Available
+      </div>
+    );
+  }
+
+  const fileUrl = url.includes('http') 
+    ? url 
+    : `http://localhost:8000/uploads/${url.split('uploads/').pop()}`;
+  
+  const fileType = getFileType(url);
+
+  switch (fileType) {
+    case 'image':
+      return (
+        <Image
+          src={fileUrl}
+          width={width}
+          height={height}
+          className="max-w-[250px]"
+          alt={alt}
+        />
+      );
+    
+    case 'pdf':
+      return (
+        <div className="border-2 border-dashed border-gray-300 p-4 text-center">
+          <div className="text-6xl text-red-500 mb-2">📄</div>
+          <div className="text-sm text-gray-600">PDF Document</div>
+          <div className="text-xs text-gray-500 mt-1">Click download to view</div>
+        </div>
+      );
+    
+    default:
+      return (
+        <div className="border-2 border-dashed border-gray-300 p-4 text-center">
+          <div className="text-6xl text-blue-500 mb-2">📎</div>
+          <div className="text-sm text-gray-600">Document</div>
+          <div className="text-xs text-gray-500 mt-1">Click download to view</div>
+        </div>
+      );
+  }
+};
+
 const Insurance = () => {
   const [data, setData] = useState([]);
   const [isCopied, setIsCopied] = useState(false);
@@ -233,9 +294,6 @@ const Insurance = () => {
           <h2 className="md:text-3xl text-xl font-medium text-slate-800">
             Applications for registrations
           </h2>
-          {/* <Button onClick={toggleModal} size={BTN_SIZES['sm']}>
-            Add Application
-          </Button> */}
         </div>
 
         {/* Modal */}
@@ -254,21 +312,10 @@ const Insurance = () => {
             <div className="grid md:grid-cols-2 gap-4">
               <div className="flex flex-col gap-2 items-center border p-2 shadow-sm">
                 <span className="text-xl font-medium">Photo</span>
-                {editModalData.photo ? (
-                  <Image
-                    src={editModalData.photo.includes('http') 
-                      ? editModalData.photo 
-                      : `http://localhost:8000/uploads/${editModalData.photo.split('uploads/').pop()}`}
-                    width={250}
-                    height={250}
-                    className="max-w-[250px]"
-                    alt="photo"
-                  />
-                ) : (
-                  <div className="text-center text-gray-500">
-                    No Photo Available
-                  </div>
-                )}
+                <DocumentViewer 
+                  url={editModalData.photo} 
+                  alt="photo" 
+                />
                 <Button
                   onClick={() => handleDownload(editModalData.photo, 'photo')}
                   disabled={!editModalData.photo}
@@ -276,23 +323,13 @@ const Insurance = () => {
                   Download
                 </Button>
               </div>
+              
               <div className="flex flex-col gap-2 items-center border p-2 shadow-sm">
                 <span className="text-xl font-medium">Aadhaar Card</span>
-                {editModalData.aadhaarCard ? (
-                  <Image
-                    src={editModalData.aadhaarCard.includes('http') 
-                      ? editModalData.aadhaarCard 
-                      : `http://localhost:8000/uploads/${editModalData.aadhaarCard.split('uploads/').pop()}`}
-                    width={250}
-                    height={250}
-                    className="max-w-[250px]"
-                    alt="aadhaarCard"
-                  />
-                ) : (
-                  <div className="text-center text-gray-500">
-                    No Aadhaar Card Available
-                  </div>
-                )}
+                <DocumentViewer 
+                  url={editModalData.aadhaarCard} 
+                  alt="aadhaarCard" 
+                />
                 <Button
                   onClick={() => handleDownload(editModalData.aadhaarCard, 'aadhaarCard')}
                   disabled={!editModalData.aadhaarCard}
@@ -300,23 +337,13 @@ const Insurance = () => {
                   Download
                 </Button>
               </div>
+              
               <div className="flex flex-col gap-2 items-center border p-2 shadow-sm">
                 <span className="text-xl font-medium">Pan Card</span>
-                {editModalData.panCard ? (
-                  <Image
-                    src={editModalData.panCard.includes('http') 
-                      ? editModalData.panCard 
-                      : `http://localhost:8000/uploads/${editModalData.panCard.split('uploads/').pop()}`}
-                    width={250}
-                    height={250}
-                    className="max-w-[250px]"
-                    alt="panCard"
-                  />
-                ) : (
-                  <div className="text-center text-gray-500">
-                    No Pan Card Available
-                  </div>
-                )}
+                <DocumentViewer 
+                  url={editModalData.panCard} 
+                  alt="panCard" 
+                />
                 <Button
                   onClick={() => handleDownload(editModalData.panCard, 'panCard')}
                   disabled={!editModalData.panCard}
@@ -324,23 +351,13 @@ const Insurance = () => {
                   Download
                 </Button>
               </div>
+              
               <div className="flex flex-col gap-2 items-center border p-2 shadow-sm">
                 <span className="text-xl font-medium">Gst Certificate</span>
-                {editModalData.gstCertificate ? (
-                  <Image
-                    src={editModalData.gstCertificate.includes('http') 
-                      ? editModalData.gstCertificate 
-                      : `http://localhost:8000/uploads/${editModalData.gstCertificate.split('uploads/').pop()}`}
-                    width={250}
-                    height={250}
-                    className="max-w-[250px]"
-                    alt="gstCertificate"
-                  />
-                ) : (
-                  <div className="text-center text-gray-500">
-                    No GST Certificate Available
-                  </div>
-                )}
+                <DocumentViewer 
+                  url={editModalData.gstCertificate} 
+                  alt="gstCertificate" 
+                />
                 <Button
                   onClick={() => handleDownload(editModalData.gstCertificate, 'gstCertificate')}
                   disabled={!editModalData.gstCertificate}

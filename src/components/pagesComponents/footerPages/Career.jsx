@@ -5,7 +5,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import PageContainer from "../pageLayout/PageContainer.jsx"
 import userAxios from "@/lib/userbackAxios.js"
-import { Loader2, MapPin, Phone, Mail, Globe, CheckCircle } from "lucide-react"
+import { Loader2, MapPin, Phone, Mail, Globe, CheckCircle, Upload, User, MapPinIcon, FileText } from "lucide-react"
 
 const Career = () => {
   const [success, setSuccess] = useState(true)
@@ -86,331 +86,294 @@ const Career = () => {
 
   return (
     <PageContainer className="p-0">
-      <div className="mx-auto max-w-7xl bg-gradient-to-br from-white to-blue-50 dark:from-gray-800 dark:to-gray-900 dark:text-gray-50 border border-blue-100 dark:border-gray-700 ease-in-out text-black rounded-lg shadow-2xl overflow-hidden">
-        {/* Header bar with aligned titles */}
-        <div className="flex flex-col lg:flex-row border-b border-blue-200 dark:border-gray-700">
-          <div className="lg:w-2/3 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-gray-700 dark:to-gray-800 p-5 flex justify-center items-center">
-            <h1 className="text-2xl font-bold text-white">
-              <span className="border-b-2 border-white pb-1">Career Application</span>
-            </h1>
-          </div>
-          <div className="lg:w-1/3 bg-gradient-to-r from-blue-700 to-blue-800 dark:from-gray-800 dark:to-gray-900 p-5 flex justify-center items-center">
-            <h2 className="text-2xl font-bold text-white">
-              <span className="border-b-2 border-red-400 pb-1">Con</span>tact us
-            </h2>
-          </div>
+      <div className="mx-auto max-w-7xl h-screen bg-gradient-to-br from-blue-50 to-sky-100 rounded-lg shadow-lg overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-[#3C7CDD] to-[#5B9EF0] px-6 py-4 text-center">
+          <h1 className="text-2xl font-bold text-white">Career Application Portal</h1>
         </div>
 
-        <div className="flex flex-col lg:flex-row min-h-[600px]">
-          {/* Form Section - Takes 2/3 of the space */}
-          <div className="lg:w-2/3 bg-white dark:bg-gray-800 dark:text-gray-50 text-gray-800 p-6 relative">
+        <div className="flex h-[calc(100vh-80px)]">
+          {/* Form Section - 70% */}
+          <div className="w-[70%] p-6 overflow-y-auto">
             {submitted ? (
-              <div className="h-full flex flex-col items-center justify-center text-center p-8">
-                <div className="bg-green-100 dark:bg-green-900/30 p-6 rounded-full mb-6">
-                  <CheckCircle className="w-20 h-20 text-green-600 dark:text-green-400" />
+              <div className="h-full flex flex-col items-center justify-center text-center">
+                <div className="bg-green-50 p-6 rounded-full mb-4 border border-green-200">
+                  <CheckCircle className="w-16 h-16 text-green-500" />
                 </div>
-                <h3 className="text-3xl font-bold text-green-600 dark:text-green-400 mb-4">Application Submitted!</h3>
-                <p className="text-gray-600 dark:text-gray-300 max-w-md mb-8 text-lg">
-                  Thank you for your interest in joining our team. We have received your application and will review it
-                  shortly.
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">Application Submitted!</h3>
+                <p className="text-gray-600 max-w-md mb-6">
+                  Thank you for your interest. We'll review your application and get back to you soon.
                 </p>
                 <button
                   onClick={() => setSubmitted(false)}
-                  className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md text-lg font-medium"
+                  className="px-6 py-2 bg-[#3C7CDD] hover:bg-[#2A5EBB] text-white rounded-lg transition-colors"
                 >
                   Submit Another Application
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit(onSubmit)} id="formName" className="relative z-10 h-full flex flex-col">
-                <h3 className="text-xl font-bold text-blue-700 dark:text-blue-400 mb-6 pb-2 border-b border-blue-200 dark:border-blue-700">
-                  Career Application Form
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4 flex-grow">
-                  {/* Personal Information */}
+              <form onSubmit={handleSubmit(onSubmit)} id="formName" className="h-full">
+                <div className="grid grid-cols-3 gap-6 h-full">
+                  {/* Personal Info Column */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-3">
-                      Personal Information
-                    </h3>
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="p-1.5 bg-[#E8F2FF] rounded-lg">
+                        <User className="w-4 h-4 text-[#3C7CDD]" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Personal Info</h3>
+                    </div>
 
                     <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Full Name *</label>
                       <input
                         type="text"
                         name="name"
-                        placeholder="Full Name"
-                        id="name"
-                        className="bg-gray-50 transition-all duration-300 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700/90 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                        placeholder="Enter your name"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C7CDD] focus:border-[#3C7CDD] bg-white"
                         {...register("name", { required: true })}
                         aria-invalid={errors.name ? "true" : "false"}
                       />
                       {errors.name?.type === "required" && (
-                        <p className="text-red-500 text-xs mt-1 pl-1 font-medium" role="alert">
-                          Name is required
-                        </p>
+                        <p className="text-red-500 text-xs mt-1" role="alert">Name required</p>
                       )}
                     </div>
 
                     <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Email *</label>
                       <input
-                        placeholder="Email Address"
                         type="email"
                         name="email"
-                        id="email"
-                        className="bg-gray-50 transition-all duration-300 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700/90 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                        placeholder="your@email.com"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C7CDD] focus:border-[#3C7CDD] bg-white"
                         {...register("email", { required: true })}
                         aria-invalid={errors.email ? "true" : "false"}
                       />
                       {errors.email?.type === "required" && (
-                        <p className="text-red-500 text-xs mt-1 pl-1 font-medium" role="alert">
-                          Email is required
-                        </p>
+                        <p className="text-red-500 text-xs mt-1" role="alert">Email required</p>
                       )}
                     </div>
 
                     <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Phone *</label>
                       <input
                         type="text"
                         name="mobile"
-                        placeholder="Phone Number"
-                        id="mobile"
-                        className="bg-gray-50 transition-all duration-300 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700/90 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                        placeholder="Phone number"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C7CDD] focus:border-[#3C7CDD] bg-white"
                         {...register("mobile", { required: true })}
                         aria-invalid={errors.mobile ? "true" : "false"}
                       />
                       {errors.mobile?.type === "required" && (
-                        <p className="text-red-500 text-xs mt-1 pl-1 font-medium" role="alert">
-                          Phone required
-                        </p>
+                        <p className="text-red-500 text-xs mt-1" role="alert">Phone required</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Gender *</label>
+                      <select
+                        name="gender"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C7CDD] focus:border-[#3C7CDD] bg-white"
+                        {...register("gender", { required: true })}
+                        aria-invalid={errors.gender ? "true" : "false"}
+                      >
+                        <option value="" disabled selected hidden>Select</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="others">Others</option>
+                      </select>
+                      {errors.gender?.type === "required" && (
+                        <p className="text-red-500 text-xs mt-1" role="alert">Required</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Application Type *</label>
+                      <select
+                        name="role"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C7CDD] focus:border-[#3C7CDD] bg-white"
+                        {...register("role", { required: true })}
+                        aria-invalid={errors.role ? "true" : "false"}
+                      >
+                        <option value="" disabled selected hidden>Select</option>
+                        <option value="job">Job</option>
+                        <option value="internship">Internship</option>
+                      </select>
+                      {errors.role?.type === "required" && (
+                        <p className="text-red-500 text-xs mt-1" role="alert">Required</p>
                       )}
                     </div>
                   </div>
 
-                  {/* Location Information */}
+                  {/* Location Column */}
                   <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-3">
-                      Location Details
-                    </h3>
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="p-1.5 bg-[#E8F2FF] rounded-lg">
+                        <MapPinIcon className="w-4 h-4 text-[#3C7CDD]" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Location</h3>
+                    </div>
 
                     <div>
-                      <input
-                        type="text"
+                      <label className="block text-xs font-medium text-gray-700 mb-1">Address *</label>
+                      <textarea
                         name="address"
-                        id="address"
-                        placeholder="Complete Address"
-                        className="bg-gray-50 transition-all duration-300 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700/90 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                        rows="4"
+                        placeholder="Complete address"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C7CDD] focus:border-[#3C7CDD] bg-white resize-none"
                         {...register("address", { required: true })}
                         aria-invalid={errors.address ? "true" : "false"}
                       />
                       {errors.address?.type === "required" && (
-                        <p className="text-red-500 text-xs mt-1 pl-1 font-medium" role="alert">
-                          Address is required
-                        </p>
+                        <p className="text-red-500 text-xs mt-1" role="alert">Address required</p>
                       )}
                     </div>
 
                     <div>
+                      <label className="block text-xs font-medium text-gray-700 mb-1">PIN Code *</label>
                       <input
                         type="text"
-                        placeholder="PIN Code"
-                        className="bg-gray-50 transition-all duration-300 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700/90 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                        placeholder="PIN code"
+                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C7CDD] focus:border-[#3C7CDD] bg-white"
                         {...register("pin", { required: true })}
                         aria-invalid={errors.pin ? "true" : "false"}
                       />
                       {errors.pin?.type === "required" && (
-                        <p className="text-red-500 text-xs mt-1 pl-1 font-medium" role="alert">
-                          PIN required
-                        </p>
+                        <p className="text-red-500 text-xs mt-1" role="alert">PIN required</p>
                       )}
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <div>
-                        <select
-                          className="bg-gray-50 transition-all duration-300 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700/90 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                          name="gender"
-                          id="gender"
-                          {...register("gender", { required: true })}
-                          aria-invalid={errors.gender ? "true" : "false"}
-                        >
-                          <option value="" disabled selected hidden>
-                            Gender
-                          </option>
-                          <option value="male">Male</option>
-                          <option value="female">Female</option>
-                          <option value="others">Others</option>
-                        </select>
-                        {errors.gender?.type === "required" && (
-                          <p className="text-red-500 text-xs mt-1 pl-1 font-medium" role="alert">
-                            Required
-                          </p>
+                    {/* Form Actions */}
+                    <div className="pt-4 space-y-3">
+                      <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full px-4 py-2.5 bg-[#3C7CDD] hover:bg-[#2A5EBB] disabled:bg-[#A3C7F0] text-white rounded-lg transition-colors font-medium text-sm flex items-center justify-center gap-2"
+                      >
+                        {loading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          "Submit Application"
                         )}
-                      </div>
+                      </button>
 
-                      <div>
-                        <select
-                          name="role"
-                          className="bg-gray-50 transition-all duration-300 border border-gray-200 text-gray-900 text-sm rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700/90 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-                          id="role"
-                          {...register("role", { required: true })}
-                          aria-invalid={errors.role ? "true" : "false"}
-                        >
-                          <option value="" disabled selected hidden>
-                            Role
-                          </option>
-                          <option value="job">Job</option>
-                          <option value="internship">Internship</option>
-                        </select>
-                        {errors.role?.type === "required" && (
-                          <p className="text-red-500 text-xs mt-1 pl-1 font-medium" role="alert">
-                            Required
-                          </p>
-                        )}
-                      </div>
+                      <button
+                        type="reset"
+                        className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors font-medium text-sm"
+                      >
+                        Reset Form
+                      </button>
                     </div>
-                  </div>
 
-                  {/* Resume Upload */}
-                  <div className="space-y-4">
-                    <h3 className="text-sm font-semibold text-blue-700 dark:text-blue-400 uppercase tracking-wider mb-3">
-                      Resume Upload
-                    </h3>
-
-                    <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                      <div className="flex flex-col gap-2 mb-2">
-                        <label htmlFor="resume" className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                          Upload your CV/Resume:
-                        </label>
-                        <div className="relative w-full">
-                          <input
-                            type="file"
-                            name="cv"
-                            id="cv"
-                            className="block w-full text-sm text-gray-900 bg-white transition-all duration-300 border border-gray-200 rounded-lg cursor-pointer dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 p-2 file:mr-2 file:py-1 file:px-2 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                            {...register("cv", { required: true })}
-                            aria-invalid={errors.cv ? "true" : "false"}
-                          />
-                          {errors.cv?.type === "required" && (
-                            <p className="text-red-500 text-xs mt-1 pl-1 font-medium" role="alert">
-                              CV / Resume is required
-                            </p>
-                          )}
-                        </div>
+                    {message && (
+                      <div
+                        className={`text-center text-xs p-2 rounded-lg ${
+                          success
+                            ? "bg-green-50 text-green-700 border border-green-200"
+                            : "bg-red-50 text-red-700 border border-red-200"
+                        }`}
+                      >
+                        {message}
                       </div>
-                      <p className="text-xs text-blue-700 dark:text-blue-300 mt-2 flex items-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                          className="w-4 h-4 mr-1"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a.75.75 0 000 1.5h.253a.25.25 0 01.244.304l-.459 2.066A1.75 1.75 0 0010.747 15H11a.75.75 0 000-1.5h-.253a.25.25 0 01-.244-.304l.459-2.066A1.75 1.75 0 009.253 9H9z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        Only PDF files less than 1MB are accepted
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-between mt-6">
-                  <button
-                    type="reset"
-                    form="formName"
-                    name="reset"
-                    id="reset"
-                    className="px-5 py-2.5 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg transition-colors shadow-sm hover:shadow focus:ring-2 focus:ring-gray-300 focus:outline-none text-sm font-medium"
-                  >
-                    Reset Form
-                  </button>
-
-                  <button
-                    className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm hover:shadow focus:ring-2 focus:ring-blue-300 focus:outline-none flex items-center justify-center min-w-[120px] text-sm font-medium"
-                    type="submit"
-                    name="submit"
-                    disabled={loading}
-                    id="submit"
-                  >
-                    {loading ? (
-                      <span className="flex items-center">
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Submitting...
-                      </span>
-                    ) : (
-                      "Submit Application"
                     )}
-                  </button>
-                </div>
-
-                {message && (
-                  <div
-                    className={`text-center font-medium mt-1 p-2 rounded-md text-sm ${
-                      success
-                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
-                    }`}
-                  >
-                    {message}
                   </div>
-                )}
+
+                  {/* Resume Upload Column */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="p-1.5 bg-[#E8F2FF] rounded-lg">
+                        <FileText className="w-4 h-4 text-[#3C7CDD]" />
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900">Resume</h3>
+                    </div>
+
+                    <div className="border-2 border-dashed border-[#A3C7F0] rounded-lg p-6 text-center bg-[#F8FBFF] hover:border-[#3C7CDD] transition-colors">
+                      <Upload className="w-8 h-8 text-[#3C7CDD] mx-auto mb-3" />
+                      <label htmlFor="cv" className="cursor-pointer">
+                        <span className="text-sm font-medium text-gray-900 block mb-1">Upload CV/Resume</span>
+                        <span className="text-xs text-gray-500 block mb-3">PDF only, max 1MB</span>
+                        <input
+                          type="file"
+                          name="cv"
+                          id="cv"
+                          className="hidden"
+                          accept=".pdf"
+                          {...register("cv", { required: true })}
+                          aria-invalid={errors.cv ? "true" : "false"}
+                        />
+                        <span className="inline-flex items-center px-3 py-1.5 bg-[#3C7CDD] text-white rounded-md hover:bg-[#2A5EBB] transition-colors text-xs">
+                          Choose File
+                        </span>
+                      </label>
+                      {errors.cv?.type === "required" && (
+                        <p className="text-red-500 text-xs mt-2" role="alert">Resume required</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
               </form>
             )}
           </div>
 
-          {/* Contact Section - Takes 1/3 of the space */}
-          <div className="lg:w-1/3 bg-gradient-to-br from-blue-700 to-blue-800 dark:from-gray-800 dark:to-gray-900 text-white p-6 flex flex-col justify-between">
-            <div>
-              <h3 className="text-xl font-bold mb-6 border-b border-blue-500 pb-2">Get In Touch</h3>
-              <div className="space-y-5 mt-4">
-                <div className="flex items-start gap-4 group">
-                  <div className="bg-blue-600/50 dark:bg-blue-900/50 p-2.5 rounded-full text-white group-hover:bg-blue-500/70 dark:group-hover:bg-blue-800/70 transition-colors">
-                    <MapPin className="w-5 h-5" />
+          {/* Contact Section - 30% */}
+          <div className="w-[30%] bg-gradient-to-b from-[#F0F7FF] to-[#E8F2FF] p-6 border-l border-[#D1E5FF]">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Contact Info</h3>
+            <div className="space-y-4">
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-[#E8F2FF]">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-[#E8F2FF] rounded-lg">
+                    <MapPin className="w-4 h-4 text-[#3C7CDD]" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-xs text-blue-200 uppercase tracking-wider">ADDRESS</h3>
-                    <p className="text-sm mt-1 text-white/90">
+                    <h4 className="font-semibold text-gray-900 text-sm mb-1">Address</h4>
+                    <p className="text-gray-600 text-xs leading-relaxed">
                       G - 41, Gandhi Nagar, Near Defense Colony, Padav Gwalior 474002 (M.P)
                     </p>
                   </div>
                 </div>
+              </div>
 
-                <div className="flex items-start gap-4 group">
-                  <div className="bg-blue-600/50 dark:bg-blue-900/50 p-2.5 rounded-full text-white group-hover:bg-blue-500/70 dark:group-hover:bg-blue-800/70 transition-colors">
-                    <Phone className="w-5 h-5" />
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-[#E8F2FF]">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-[#E8F2FF] rounded-lg">
+                    <Phone className="w-4 h-4 text-[#3C7CDD]" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-xs text-blue-200 uppercase tracking-wider">PHONE</h3>
-                    <p className="text-sm mt-1 text-white/90">8770877270</p>
+                    <h4 className="font-semibold text-gray-900 text-sm mb-1">Phone</h4>
+                    <p className="text-gray-600 text-xs">8770877270</p>
                   </div>
                 </div>
+              </div>
 
-                <div className="flex items-start gap-4 group">
-                  <div className="bg-blue-600/50 dark:bg-blue-900/50 p-2.5 rounded-full text-white group-hover:bg-blue-500/70 dark:group-hover:bg-blue-800/70 transition-colors">
-                    <Mail className="w-5 h-5" />
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-[#E8F2FF]">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-[#E8F2FF] rounded-lg">
+                    <Mail className="w-4 h-4 text-[#3C7CDD]" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-xs text-blue-200 uppercase tracking-wider">EMAIL</h3>
-                    <p className="text-sm mt-1 text-white/90">support@itaxeasy.com</p>
+                    <h4 className="font-semibold text-gray-900 text-sm mb-1">Email</h4>
+                    <p className="text-gray-600 text-xs">support@itaxeasy.com</p>
                   </div>
                 </div>
+              </div>
 
-                <div className="flex items-start gap-4 group">
-                  <div className="bg-blue-600/50 dark:bg-blue-900/50 p-2.5 rounded-full text-white group-hover:bg-blue-500/70 dark:group-hover:bg-blue-800/70 transition-colors">
-                    <Globe className="w-5 h-5" />
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-[#E8F2FF]">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-[#E8F2FF] rounded-lg">
+                    <Globe className="w-4 h-4 text-[#3C7CDD]" />
                   </div>
                   <div>
-                    <h3 className="font-medium text-xs text-blue-200 uppercase tracking-wider">WEBSITE</h3>
-                    <p className="text-sm mt-1 text-white/90">https://itaxeasy.com/</p>
+                    <h4 className="font-semibold text-gray-900 text-sm mb-1">Website</h4>
+                    <p className="text-gray-600 text-xs">https://itaxeasy.com/</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="mt-6 pt-4 border-t border-blue-600/50 dark:border-gray-700">
-              <p className="text-sm text-blue-200 dark:text-gray-400 text-center">
+            <div className="mt-6 pt-4 border-t border-[#D1E5FF]">
+              <p className="text-xs text-gray-500 text-center">
                 © {new Date().getFullYear()} ITaxEasy. All rights reserved.
               </p>
             </div>

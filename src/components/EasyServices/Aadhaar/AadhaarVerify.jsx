@@ -98,7 +98,7 @@ const AadhaarVerify = () => {
       )
 
       if (response.data.success) {
-        setReferenceId(response.data.data.reference_id)
+        setReferenceId(response.data.data.data.reference_id)
         setResponse({
           message: "OTP sent successfully to your registered mobile number",
           type: "success",
