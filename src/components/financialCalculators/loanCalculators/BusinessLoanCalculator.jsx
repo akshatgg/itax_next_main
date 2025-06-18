@@ -76,6 +76,7 @@ const BusinessLoanCalculator = () => {
 
   useEffect(() => {
     calculateBusinessLoan()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleReset = () => {

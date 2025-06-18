@@ -54,6 +54,7 @@ const CompoundInterestCalculator = () => {
 
   useEffect(() => {
     calculateCompoundInterest()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleReset = () => {

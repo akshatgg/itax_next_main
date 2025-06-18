@@ -7,7 +7,7 @@ import userAxios from "@/lib/userbackAxios"
 import PayNowHandler from './PayNowHandler';
 import UseAuth from "../../../hooks/useAuth"
 import axios from "axios"
-
+import Image from 'next/image';
 const PaymentPageWrapper = ({ children }) => (
   <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 py-8 flex items-center justify-center">
     {children}
@@ -203,7 +203,7 @@ export default function CheckoutDetails({ cartItems = {} }) {
                 <span className="text-gray-600">Service</span>
                 <div className="font-medium text-gray-800">{item.title}</div>
                 {item.image && (
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.title}
                     className="mt-2 w-20 h-20 object-cover rounded-md"
@@ -227,7 +227,7 @@ export default function CheckoutDetails({ cartItems = {} }) {
                 <span className="text-gray-600">Startup Service</span>
                 <div className="font-medium text-gray-800">{item.title}</div>
                 {item.image && (
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.title}
                     className="mt-2 w-20 h-20 object-cover rounded-md"
@@ -253,7 +253,7 @@ export default function CheckoutDetails({ cartItems = {} }) {
                 <span className="text-gray-600">Registration Service</span>
                 <div className="font-medium text-gray-800">{item.title}</div>
                 {item.image && (
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.title}
                     className="mt-2 w-20 h-20 object-cover rounded-md"

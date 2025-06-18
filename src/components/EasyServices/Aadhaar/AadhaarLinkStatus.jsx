@@ -392,7 +392,7 @@ const AadhaarLinkStatus = () => {
                 <ol className="list-decimal list-inside text-gray-700 space-y-2">
                   <li>Enter your 12-digit Aadhaar number</li>
                   <li>Enter your 10-character PAN number</li>
-                  <li>Click "Check Status" to verify if they are linked</li>
+                  <li>Click &quot;Check Status&quot; to verify if they are linked</li>
                   <li>View the link status result</li>
                   <li>Download the result as PDF if needed</li>
                 </ol>

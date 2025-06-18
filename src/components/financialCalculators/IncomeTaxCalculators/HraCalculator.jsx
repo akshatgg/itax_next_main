@@ -54,6 +54,7 @@ const HRACalculator = () => {
 
   useEffect(() => {
     calculateHRA()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleReset = () => {

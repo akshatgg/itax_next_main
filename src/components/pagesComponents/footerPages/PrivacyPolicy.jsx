@@ -235,7 +235,7 @@ export default function PrivacyPolicy() {
             </div>
             <h3 className="text-2xl font-bold mb-4">Contact Us</h3>
             <p className="text-blue-100 leading-relaxed mb-6 max-w-2xl mx-auto">
-              If you have any questions or concerns about this Privacy Policy or our privacy practices, please don't
+If you have any questions or concerns about this Privacy Policy or our privacy practices, please don&apos;t
               hesitate to reach out to us.
             </p>
             <a

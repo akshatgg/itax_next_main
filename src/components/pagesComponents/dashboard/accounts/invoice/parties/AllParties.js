@@ -67,6 +67,7 @@ export default function AllParties(props) {
       console.error("Error fetching parties data:", error)
       toast.error("Failed to load parties data")
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type])
 
   const handleDeleteParty = async (id) => {

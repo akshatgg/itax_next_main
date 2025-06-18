@@ -45,6 +45,7 @@ export default function ApiDocs() {
       });
     }
     
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiName, router, token]);
 
   // Handle cart status change from AddToCart component
@@ -90,6 +91,7 @@ export default function ApiDocs() {
     if (data && token) {
       checkIfInCart();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data, token]);
 
   // Debug function to test if the data exists and has expected structure
