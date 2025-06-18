@@ -395,7 +395,7 @@ const IfscDetails = () => {
                 </h3>
                 <p className="text-sm text-yellow-700 mt-1">
                   You can find the IFSC code on your cheque book, bank passbook, bank statements, or by contacting your
-                  bank branch. It's also available on the official websites of most banks.
+                  bank branch. It&apos;s also available on the official websites of most banks.
                 </p>
               </div>
             </div>

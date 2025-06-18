@@ -421,7 +421,7 @@ export default function MergePdf() {
                 <div>
                   <h4 className="font-medium text-gray-800 mb-1">Upload Your PDFs</h4>
                   <p className="text-gray-600 text-sm">
-                    Drag and drop PDF files into the upload area, or click "Browse Files" to select them from your
+                    Drag and drop PDF files into the upload area, or click &quot;Browse Files&quot; to select them from your
                     device.
                   </p>
                 </div>
@@ -447,7 +447,7 @@ export default function MergePdf() {
                 <div>
                   <h4 className="font-medium text-gray-800 mb-1">Merge Your PDFs</h4>
                   <p className="text-gray-600 text-sm">
-                    Click the "Merge PDFs" button to combine all your files into a single PDF document.
+                    Click the &quot;Merge PDFs&quot; button to combine all your files into a single PDF document.
                   </p>
                 </div>
               </div>

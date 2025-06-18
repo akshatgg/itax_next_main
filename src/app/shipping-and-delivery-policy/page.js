@@ -86,7 +86,7 @@ export default function ShippingAndDeliveryPolicy() {
                 Digital Platform Access
               </h4>
               <p className="text-gray-700 text-sm">
-                All our services are delivered through our secure online platform. You'll receive instant access to your
+                All our services are delivered through our secure online platform. You&apos;ll receive instant access to your
                 dashboard and tools upon successful registration and payment.
               </p>
             </div>

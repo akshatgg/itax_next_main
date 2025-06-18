@@ -3,7 +3,7 @@ import ExportPDF from './ExportPDF';
 import { countryCodeTableHeaders } from './staticData';
 import { Suspense } from 'react';
 import Image from 'next/image';
-import { api } from '@/lib/axios';
+import { nodeAxios as api } from '@/lib/axios';
 
 async function getCountryCodes(date) {
   try {

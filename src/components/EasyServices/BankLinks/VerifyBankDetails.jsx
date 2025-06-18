@@ -563,8 +563,8 @@ const VerifyBankDetails = () => {
             <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100">
               <h3 className="font-medium text-blue-800 mb-2">About Bank Account Verification</h3>
               <p className="text-sm text-blue-700 mb-2">
-                Bank account verification confirms that the account details you've provided are valid and match the
-                account holder's information.
+                Bank account verification confirms that the account details you&apos;ve provided are valid and match the
+                account holder&apos;s information.
               </p>
               <ul className="list-disc list-inside text-sm text-blue-700 space-y-1">
                 <li>Ensures that payments are sent to the correct recipient</li>
@@ -601,9 +601,9 @@ const VerifyBankDetails = () => {
                 <ol className="list-decimal list-inside text-gray-700 space-y-2">
                   <li>Enter the account number you want to verify</li>
                   <li>Enter the IFSC code of the bank branch</li>
-                  <li>Enter the account holder's name exactly as it appears on the bank account</li>
+                  <li>Enter the account holder&apos;s name exactly as it appears on the bank account</li>
                   <li>Enter the mobile number linked to the bank account</li>
-                  <li>Click the "Verify Account" button</li>
+                  <li>Click the &quot;Verify Account&quot; button</li>
                   <li>View the verification result</li>
                 </ol>
               </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from "react";
 import Remuneration from "./BusinessProfession/AddBusiness/Remuneration";
 import IncomeUnder44AD from "./BusinessProfession/AddBusiness/IncomeUnder44AD";

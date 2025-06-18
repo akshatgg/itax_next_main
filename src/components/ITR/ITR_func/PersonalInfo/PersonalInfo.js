@@ -1,3 +1,5 @@
+"use client";
+
 import { useContext, useState, useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import { StoreContext } from "@/store/store-context";

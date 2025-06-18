@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from 'react';
 import { TAX_TYPES_BY_STATES, UT_STATE_CODES } from '../../invoice/staticData';
 import { formatINRCurrency } from '@/utils/utilityFunctions';

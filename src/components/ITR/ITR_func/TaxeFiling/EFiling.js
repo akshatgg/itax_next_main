@@ -1,3 +1,5 @@
+"use client";
+
 import { useContext, useEffect, useState } from "react";
 import { StoreContext } from "@/store/store-context";
 import { itr1 as itrObj } from "../../../../ITR_Template";

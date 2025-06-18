@@ -426,7 +426,7 @@ export default function Cart() {
               </div>
               <h2 className="text-2xl font-semibold text-gray-900">Your Cart is Empty</h2>
               <p className="text-gray-600 max-w-sm mx-auto">
-                Looks like you haven't added any services or startup packages to your cart yet.
+                Looks like you haven&apos;t added any services or startup packages to your cart yet.
               </p>
               <ButtonLink title="Browse Services" linkTo="/apis/all_apis" className="mt-4 px-6 py-2.5 text-base" />
             </div>
