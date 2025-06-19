@@ -25,6 +25,7 @@ function AddToCart({ item, alreadyInCart: propAlreadyInCart, onCartStatusChange 
       // Only check if we're not receiving the status as a prop
       checkCartStatus();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item, token, propAlreadyInCart]);
 
   // Function to check if the item is in cart

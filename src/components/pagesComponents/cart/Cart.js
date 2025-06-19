@@ -67,6 +67,7 @@ export default function Cart() {
       fetchServiceCart()
       fetchStartupCart()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, refreshKey])
 
   // Calculate totals

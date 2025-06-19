@@ -283,7 +283,10 @@ const About = () => {
               its emphasis on ethical behavior.
             </div>
             <div className="mission_image">
-              <Image src="/images/about.jpg" className="" width={7152} height={5000}/>
+
+             <Image src="/images/about.jpg" alt="Mission illustration" width={600} height={400} />
+
+
             </div>
           </div>
         </div>
@@ -332,7 +335,14 @@ const About = () => {
                 return (
                   <div className="w-80 mx-8 overflow-hidden" key={dev?.i}>
                     <div className="w-80 h-80 overflow-hidden">
-                      <img className="w-full rounded-t-2xl" src={dev?.photo} />
+                      <Image
+  className="w-full rounded-t-2xl"
+  src={`/${dev?.photo}`}
+  alt={`${dev?.name} - ${dev?.designation}`}
+  width={320}
+  height={320}
+/>
+
                     </div>
                     <div className="shadow-xl">
                       <div className=" bg-blue-50 text-center font-serif text-2xl ">

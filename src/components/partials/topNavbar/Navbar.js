@@ -372,6 +372,7 @@ export default function Navbar({ className = '' }) {
     if (isNavigating) {
       setIsNavigating(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   const fetchCartData = useCallback(async () => {

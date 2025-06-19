@@ -46,6 +46,7 @@ export default function SuperAdmin_Dashboard() {
       }
     };
     getAllUsers();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <div className="px-4 grid gap-8">

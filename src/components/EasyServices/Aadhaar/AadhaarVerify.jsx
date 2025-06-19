@@ -592,9 +592,11 @@ const AadhaarVerify = () => {
                 <h3 className="font-semibold text-blue-800 mb-2">How to verify your Aadhaar:</h3>
                 <ol className="list-decimal list-inside text-gray-700 space-y-2">
                   <li>Enter your 12-digit Aadhaar number</li>
-                  <li>Click &quot;Generate OTP&quot; to receive a one-time password on your registered mobile</li>
-                  <li>Enter the 6-digit OTP you received</li>
-                  <li>Click &quot;Verify OTP&quot; to complete the verification</li>
+
+      <li>Click &quot;Generate OTP&quot; to receive a one-time password on your registered mobile</li>
+<li>Enter the 6-digit OTP you received</li>
+<li>Click &quot;Verify OTP&quot; to complete the verification</li>
+
                   <li>View and download your verification details</li>
                 </ol>
               </div>

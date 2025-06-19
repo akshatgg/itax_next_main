@@ -24,6 +24,7 @@ export default function BlogIndividualPage({ params }) {
       }
     };
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleUpdate = async () => {

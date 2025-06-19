@@ -45,6 +45,7 @@ export default function useAuth() {
       // Token is expired, auto logout
       handleAutoLogout();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Set up axios interceptor to handle 401 responses
@@ -62,6 +63,7 @@ export default function useAuth() {
     return () => {
       axios.interceptors.response.eject(interceptor);
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogin = async (formData) => {

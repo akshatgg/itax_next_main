@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
 import React, { useContext, useEffect, useState } from "react";
 import {
@@ -127,6 +128,7 @@ const UploadForm16 = () => {
     if (form16Json) {
       setData();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form16Json]);
 
   const removeFileHandler = () => {

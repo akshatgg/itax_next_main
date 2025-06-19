@@ -199,16 +199,15 @@ export default function SoftwareLicense() {
                 <div className="flex-shrink-0 w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center mt-0.5 text-white font-bold text-xs">
                   4
                 </div>
-                <p className="text-gray-700">
-                  If any local law requires &quot;Customer&quot; to withhold any
-                  tax on amount payable to &quot;Licensor&quot;, then it shall
-                  withhold the tax and remit the balance amount to
-                  &quot;Licensor&quot;. For the Tax withheld,
-                  &quot;Customer&quot; shall provide to &quot;Licensor&quot;
-                  with the relevant Tax Certificate(s). In cases where customer
-                  fails to provide the relevant tax certificates on time, the
-                  customer shall pay the amount equivalent to the withheld tax.
-                </p>
+
+               <p className="text-gray-700">
+  If any local law requires &quot;Customer&quot; to withhold any tax on amount payable to &quot;Licensor&quot;, then it
+  shall withhold the tax and remit the balance amount to &quot;Licensor&quot;. For the tax withheld, &quot;Customer&quot;
+  shall provide to &quot;Licensor&quot; the relevant tax certificate(s). In cases where the customer fails to
+  provide the relevant tax certificates on time, the customer shall pay the amount equivalent to the
+  withheld tax.
+</p>
+
               </li>
             </ul>
           </div>
@@ -227,14 +226,15 @@ export default function SoftwareLicense() {
                 <div className="flex-shrink-0 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mt-0.5 text-white font-bold text-xs">
                   1
                 </div>
-                <p className="text-gray-700">
-                  Each Party and its subcontractors, affiliates and agents may
-                  have access to the Confidential Information. Parties agree
-                  that whether or not the Confidential Information has been
-                  designated as &quot;confidential&quot;, the same shall be
-                  deemed to be confidential in nature and shall hereinafter be
-                  referred to as &quot;Confidential Information&quot;.
-                </p>
+
+             <p className="text-gray-700">
+  Each Party and its subcontractors, affiliates and agents may have access to the Confidential
+  Information. Parties agree that whether or not the Confidential Information has been designated as
+  &quot;confidential&quot;, the same shall be deemed to be confidential in nature and shall hereinafter be
+  referred to as &quot;Confidential Information&quot;.
+</p>
+
+
               </li>
               <li className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center mt-0.5 text-white font-bold text-xs">
@@ -358,18 +358,17 @@ export default function SoftwareLicense() {
                 <div className="flex-shrink-0 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center mt-0.5 text-white font-bold text-xs">
                   1
                 </div>
-                <p className="text-gray-700">
-                  End User shall at its own expense, defend, indemnify and hold
-                  harmless(&quot;Indemnifying Party&quot;) Licensor and each of
-                  its Affiliates, officers, directors, employees,
-                  representatives, successors and permitted assigns(individually
-                  and collectively the &quot;Indemnified Parties&quot;),from and
-                  against all Losses, claims, costs and expenses and liabilities
-                  suffered by the Indemnified Parties arising directly on
-                  account of any wrongful actions of the indemnifying Party or
-                  the irrespective employees, agents and representatives or out
-                  of breach of this agreement.
-                </p>
+
+              <p className="text-gray-700">
+  End User shall at its own expense, defend, indemnify and hold harmless(&quot;Indemnifying Party&quot;) Licensor
+  and each of its Affiliates, officers, directors, employees, representatives, successors and permitted
+  assigns(individually and collectively the &quot;Indemnified Parties&quot;), from and against all Losses, claims,
+  costs and expenses and liabilities suffered by the Indemnified Parties arising directly on account of
+  any wrongful actions of the indemnifying Party or their respective employees, agents and
+  representatives or out of breach of this agreement.
+</p>
+
+
               </li>
               <li className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center mt-0.5 text-white font-bold text-xs">
@@ -677,11 +676,11 @@ export default function SoftwareLicense() {
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-5">
             <h4 className="font-semibold text-gray-800 mb-3">No Agency</h4>
             <p className="text-gray-700">
-              Nothing in this EULA shall create, evidence, or imply any agency,
-              partnership, or joint venture between the Parties. Neither Party
-              shall act or describe itself as the agent of the other, nor shall
-              it make or represent that it has authority to make any commitments
-              on the other&apos;s behalf.
+
+              Nothing in this EULA shall create, evidence, or imply any agency, partnership, or joint venture between
+              the Parties. Neither Party shall act or describe itself as the agent of the other, nor shall it make or
+represent that it has authority to make any commitments on the other&apos;s behalf.
+
             </p>
           </div>
 
@@ -750,37 +749,31 @@ export default function SoftwareLicense() {
         {/* Introduction */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 md:p-8 mb-8">
           <div className="prose max-w-none">
-            <p className="text-gray-700 leading-relaxed">
-              <strong>
-                This End-User License Agreement (&quot;EULA&quot;)
-              </strong>{' '}
-              is a legal agreement between
-              <strong> ITAX EASY PRIVATE LIMITED</strong> having its registered
-              office at G-41, Gandhi Nagar, Padav, Gwalior Madhya Pradesh, India
-              and Corporate Office at Logix Zest, Sat 1, Flat 811, Sector 143,
-              Noida, Uttar Pradesh bearing Corporate Identification No.
-              U74999MP2019PTC050453
-              <strong> (&quot;ITAX EASY/ Licensor&quot;)</strong> and user of
-              the Software
-              <strong> (&quot;End User/ Customer&quot;)</strong> has agreed to
-              avail such services, on the terms and conditions as set forth in
-              the agreement.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              ITAX EASY is engaged in the business of developing, owning,
-              implementing and providing GST (Goods Service Tax) software
-              products, services and solutions for various customers
-              (&quot;Software&quot;). The Licensor and the End User together
-              shall be referred to as the &quot;Parties&quot; and individually
-              shall be referred to as a &quot;Parties&quot;.
-            </p>
-            <p className="text-gray-700 leading-relaxed">
-              Customer&apos;s access to and use of the Service is conditioned on
-              its acceptance of and compliance with these Terms. By accessing or
-              using the Service, Customer agree to be bound by these Terms &
-              Conditions set out in this EULA. If Customer disagrees with any
-              part of the terms then it may not access the Service.
-            </p>
+
+           <p className="text-gray-700 leading-relaxed">
+  <strong>This End-User License Agreement (&quot;EULA&quot;)</strong> is a legal agreement between
+  <strong> ITAX EASY PRIVATE LIMITED</strong> having its registered office at G-41, Gandhi Nagar, Padav,
+  Gwalior Madhya Pradesh, India and Corporate Office at Logix Zest, Sat 1, Flat 811, Sector 143, Noida,
+  Uttar Pradesh bearing Corporate Identification No. U74999MP2019PTC050453
+  <strong> (&quot;ITAX EASY/ Licensor&quot;)</strong> and user of the Software
+  <strong> (&quot;End User/ Customer&quot;)</strong> has agreed to avail such services, on the terms and conditions as
+  set forth in the agreement.
+</p>
+
+<p className="text-gray-700 leading-relaxed">
+  ITAX EASY is engaged in the business of developing, owning, implementing and providing GST (Goods Service
+  Tax) software products, services and solutions for various customers (&quot;Software&quot;). The Licensor and the
+  End User together shall be referred to as the &quot;Parties&quot; and individually shall be referred to as a
+  &quot;Party&quot;.
+</p>
+
+<p className="text-gray-700 leading-relaxed">
+  Customer&apos;s access to and use of the Service is conditioned on its acceptance of and compliance with these
+  Terms. By accessing or using the Service, Customer agree to be bound by these Terms &amp; Conditions set out
+  in this EULA. If Customer disagrees with any part of the terms then it may not access the Service.
+</p>
+
+
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 my-6">
               <p className="text-blue-800 font-semibold">
                 IN CONSIDERATION OF THE MUTUAL COVENANTS AND CONDITIONS, IT IS

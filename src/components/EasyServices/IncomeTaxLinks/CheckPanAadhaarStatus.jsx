@@ -329,7 +329,10 @@ export default function CheckPanAadhaarStatus() {
                   <ol className="list-decimal list-inside text-gray-700 space-y-2">
                     <li>Enter your 10-character PAN number</li>
                     <li>Enter your 12-digit Aadhaar number</li>
-                    <li>Click the &quot;Verify Link Status&quot; button</li>
+
+                   <li>Click the &quot;Verify Link Status&quot; button</li>
+
+
                     <li>View the verification result</li>
                     <li>Download the result as PDF if needed</li>
                   </ol>

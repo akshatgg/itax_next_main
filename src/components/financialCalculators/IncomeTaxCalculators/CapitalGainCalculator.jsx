@@ -46,6 +46,7 @@ const CapitalGainsCalculator = () => {
 
   useEffect(() => {
     calculateCapitalGains()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleReset = () => {

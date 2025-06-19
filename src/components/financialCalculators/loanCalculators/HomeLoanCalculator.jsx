@@ -82,6 +82,7 @@ const HomeLoanCalculator = () => {
 
   useEffect(() => {
     calculateLoan()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleReset = () => {
