@@ -51,6 +51,7 @@ const SimpleInterestCalculator = () => {
 
   useEffect(() => {
     calculateSimpleInterest()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleReset = () => {
@@ -60,14 +61,15 @@ const SimpleInterestCalculator = () => {
     calculateSimpleInterest()
   }
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value)
-  }
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
+};
+
 
   return (
     <CalculatorLayout
@@ -93,9 +95,9 @@ const SimpleInterestCalculator = () => {
               <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="year" label={{ value: "Years", position: "insideBottomRight", offset: -5 }} />
-                <YAxis tickFormatter={(value) => `$${value}`} />
+                <YAxis tickFormatter={(value) => `₹${value}`} />
                 <Tooltip
-                  formatter={(value) => [`$${Number(value).toFixed(2)}`, undefined]}
+                  formatter={(value) => [`₹${Number(value).toFixed(2)}`, undefined]}
                   labelFormatter={(label) => `Year ${label}`}
                 />
                 <Legend />
@@ -115,7 +117,7 @@ const SimpleInterestCalculator = () => {
             value={principal}
             onChange={setPrincipal}
             type="number"
-            prefix="$"
+            prefix="₹"
             min={1}
             tooltip="The initial investment amount"
           />

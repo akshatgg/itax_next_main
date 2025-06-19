@@ -72,7 +72,7 @@ export default async function Page({ params }) {
       return (
         <div className="p-8 text-center">
           <h2 className="text-xl font-bold mb-2">Permission Error</h2>
-          <p>You don't have permission to view this invoice. Please verify your account has the necessary access rights.</p>
+          <p>You don&apos;t have permission to view this invoice. Please verify your account has the necessary access rights.</p>
           <p className="text-sm text-gray-500 mt-2">Error: {errorMessage}</p>
         </div>
       );

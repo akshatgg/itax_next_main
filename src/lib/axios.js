@@ -12,4 +12,12 @@ const userAxios = axios.create({
   },
 });
 
+export const nodeAxios = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
 export default userAxios;
+

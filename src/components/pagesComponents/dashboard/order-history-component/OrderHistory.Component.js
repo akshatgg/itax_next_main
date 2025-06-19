@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Image from 'next/image';
 
 const sharedButtonClasses = 'text-white px-4 py-2 rounded';
 const sharedTextClasses = 'text-sm text-zinc-500';
@@ -59,6 +60,7 @@ const OrderHistory = () => {
 
   useEffect(() => {
     fetchOrderData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -126,7 +128,7 @@ const OrderHistory = () => {
           <ul>
             {order.registrationStartup.map((startup, index) => (
               <li key={index} className="mb-2 flex">
-                <img
+                <Image
                   src={startup.image}
                   alt={startup.title}
                   className="rounded-lg mr-4"
@@ -145,7 +147,7 @@ const OrderHistory = () => {
           <ul>
             {order.registrationServices.map((service, index) => (
               <li key={index} className="mb-2 flex">
-                <img
+                <Image
                   src={service.image}
                   alt={service.title}
                   className="rounded-lg mr-4"
@@ -164,7 +166,7 @@ const OrderHistory = () => {
           <ul>
             {order.services.map((service, index) => (
               <li key={index} className="mb-2">
-                <img
+                <Image
                   src={service.image}
                   alt={service.title}
                   className="rounded-lg mr-4"

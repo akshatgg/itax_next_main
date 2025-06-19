@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Shield, Heart, Umbrella, Coins, Filter, ArrowLeft } from "lucide-react"
+import Image from "next/image"
 
 import DashSection from "@/components/pagesComponents/pageLayout/DashSection"
 
@@ -407,7 +408,7 @@ export default function ViewPlans() {
                 className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
               >
                 <div className="relative">
-                  <img
+                  <Image
                     className="w-full h-40 object-cover filter brightness-50"
                     src={plan.image || "/placeholder.svg"}
                     alt={`${plan.company} ${plan.name} Insurance Plan`}

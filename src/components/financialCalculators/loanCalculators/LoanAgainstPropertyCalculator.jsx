@@ -59,6 +59,7 @@ const LoanAgainstProperty = () => {
 
   useEffect(() => {
     calculateLoanDetails()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const handleReset = () => {

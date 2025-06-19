@@ -29,22 +29,30 @@ export default function DashboardLayout({ children }) {
   };
 
   return (
-    <>
-      <>
-        <SideBar
-          data={getSidebarByRole[userType]}
-          userType={userType}
-          isSidebarOpen={isSidebarOpen}
-          handleSidebar={handleSidebar}
-        />
-      </>
+    <div className="min-h-screen bg-gray-50">
+      {/* Sidebar - fixed */}
+      <SideBar
+        data={getSidebarByRole[userType]}
+        userType={userType}
+        isSidebarOpen={isSidebarOpen}
+        handleSidebar={handleSidebar}
+      />
+
+      {/* Top Navbar - full width, sticky */}
       <TopNavbar handleSidebar={handleSidebar} isSidebarOpen={isSidebarOpen} />
+
+      {/* Main content area - padded left based on sidebar */}
       <main
-        className={`${isSidebarOpen ? 'lg:pl-64 ' : 'lg:pl-16'} transition-[padding] duration-200`}
+        className={`
+          ${isSidebarOpen ? 'lg:pl-64' : 'lg:pl-16'}
+          pt-[60px]  /* adjust if your TopNavbar height differs */
+          px-4
+          transition-all duration-200
+        `}
       >
         <BackButton />
         {children}
       </main>
-    </>
+    </div>
   );
 }

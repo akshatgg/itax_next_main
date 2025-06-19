@@ -487,7 +487,8 @@ export default function VerifyPanDetails() {
                   <li>Enter your 10-character PAN number</li>
                   <li>Enter your name exactly as it appears on your PAN card</li>
                   <li>Enter your date of birth in DD/MM/YYYY format</li>
-                  <li>Click the "Verify PAN" button</li>
+                <li>Click the &quot;Verify PAN&quot; button</li>
+
                   <li>View your PAN details and verification status</li>
                 </ol>
               </div>

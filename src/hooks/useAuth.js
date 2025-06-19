@@ -10,13 +10,60 @@ export default function useAuth() {
   const [token, setToken] = useState(null);
   const [currentUser, setCurrentUser] = useState({});
 
+  // Function to check if token is expired
+  const isTokenExpired = (token) => {
+    if (!token) return true;
+    
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      return payload.exp < currentTime;
+    } catch (error) {
+      return true;
+    }
+  };
+
+  // Function to handle logout and redirect
+  const handleAutoLogout = () => {
+    deleteCookie('currentUser');
+    deleteCookie('token');
+    setToken(null);
+    setCurrentUser({});
+    router.replace('/login');
+  };
+
   useEffect(() => {
     // Access cookies safely on the client side
     const tokenCookie = getCookie('token');
     const userCookie = getCookie('currentUser');
     
-    setToken(tokenCookie || null);
-    setCurrentUser(userCookie ? JSON.parse(userCookie) : {});
+    // Check if token exists and is not expired
+    if (tokenCookie && !isTokenExpired(tokenCookie)) {
+      setToken(tokenCookie);
+      setCurrentUser(userCookie ? JSON.parse(userCookie) : {});
+    } else if (tokenCookie && isTokenExpired(tokenCookie)) {
+      // Token is expired, auto logout
+      handleAutoLogout();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Set up axios interceptor to handle 401 responses
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response?.status === 401) {
+          handleAutoLogout();
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleLogin = async (formData) => {
@@ -43,11 +90,7 @@ export default function useAuth() {
   };
 
   const handleLogOut = async () => {
-    deleteCookie('currentUser');
-    deleteCookie('token');
-    setToken(null);
-    setCurrentUser({});
-    router.replace('/login');
+    handleAutoLogout();
   };
 
   return {
@@ -56,5 +99,6 @@ export default function useAuth() {
     handleLogin,
     handleSignup,
     handleLogOut,
+    isTokenExpired: () => isTokenExpired(token),
   };
 }

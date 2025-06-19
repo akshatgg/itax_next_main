@@ -739,7 +739,7 @@ export default function ImgToPdf() {
                 <div>
                   <h4 className="font-medium text-gray-800 mb-1">Upload Your Images</h4>
                   <p className="text-gray-600 text-sm">
-                    Drag and drop image files into the upload area, or click "Browse Images" to select them from your
+Drag and drop image files into the upload area, or click &quot;Browse Images&quot; to select them from your
                     device.
                   </p>
                 </div>
@@ -778,7 +778,7 @@ export default function ImgToPdf() {
                 <div>
                   <h4 className="font-medium text-gray-800 mb-1">Generate and Download</h4>
                   <p className="text-gray-600 text-sm">
-                    Click "Generate PDF" to create your document, then download or print the resulting PDF file.
+Click &quot;Generate PDF&quot; to create your document, then download or print the resulting PDF file.
                   </p>
                 </div>
               </div>
@@ -854,10 +854,14 @@ export default function ImgToPdf() {
             </div>
             <div className="flex-1 overflow-auto p-4 flex items-center justify-center bg-gray-100">
               <div className="relative max-h-[70vh] max-w-full">
-                <img
+                <Image
                   src={previewImage.imageUrl || "/placeholder.svg"}
                   alt={previewImage.fileName}
+                  fill
                   className="max-h-[70vh] max-w-full object-contain"
+                  sizes="(max-width: 1024px) 90vw, 900px"
+                  style={{ objectFit: "contain", position: "relative" }}
+                  priority
                 />
               </div>
             </div>

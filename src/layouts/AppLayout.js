@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import TopNavbar from '@/components/partials/topNavbar/Navbar';
+import Navbar from '@/components/partials/topNavbar/Navbar';
 import Footer from '@/components/partials/footer/Footer';
 
 export default function AppLayout({ children }) {
@@ -21,7 +21,7 @@ export default function AppLayout({ children }) {
 
   return (
     <>
-      <TopNavbar />
+      <Navbar />
       {children}
       <Footer />
     </>

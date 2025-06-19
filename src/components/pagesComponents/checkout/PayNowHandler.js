@@ -9,7 +9,7 @@ import useAuth from '@/hooks/useAuth';
 import userAxios from '@/lib/userAxios';
 import { useRouter } from 'next/navigation';
 import { generateQueryFromObject } from '@/utils/utilityFunctions';
-import userAxiosNext from '@/lib/userNextAxios';
+import userAxiosNext from '@/lib/userbackAxios';
 
 const PayNowHandler = ({
   totalAmount,
@@ -45,11 +45,18 @@ const PayNowHandler = ({
 
   const createSubs = async () => {
     try {
-      const { status, data } = await userAxiosNext.post('/api/subscriptions', {
-        serviceIds: services.map((service) => service.id),
-        registerStartupIds: registrationStartup.map((service) => service.id),
-        registerServiceIds: registrationServices.map((service) => service.id),
-      });
+   const { status, data } = await axios.post(
+  `${process.env.NEXT_PUBLIC_URL}/api/subscriptions`,
+  {
+    serviceIds: services.map((service) => service.id),
+    registerStartupIds: registrationStartup.map((service) => service.id),
+    registerServiceIds: registrationServices.map((service) => service.id),
+  },
+  {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+);
+
 
       if (status === 201) {
         return data.data;

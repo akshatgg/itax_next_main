@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useState, useEffect, useRef } from "react";
 import { StoreContext } from "@/store/store-context";
 import Actions from "@/store/actions";

@@ -1,6 +1,6 @@
 import React from 'react';
 import CustomButton from './CustomButton';
-
+import Image from 'next/image';
 // NavigationLink Component
 function NavigationLink({ text, icon }) {
   return (
@@ -8,10 +8,11 @@ function NavigationLink({ text, icon }) {
       href="#"
       className="flex gap-1 items-center text-sm font-medium text-blue-700"
     >
-      <img
+      <Image
         loading="lazy"
         src={icon}
         alt=""
+        fill
         className="object-contain shrink-0 w-2.5 aspect-[0.83]"
       />
       <span>{text}</span>

@@ -35,7 +35,7 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="bg-zinc-100 border-t py-10">
+      <footer className="bg-zinc-100 border-t py-10 min-h-[150px]">
         <div className="max-w-7xl mx-auto pb-10">
           <div className="flex flex-col md:flex-row">
             <div className="flex flex-col max-w-xl items-start justify-between">
