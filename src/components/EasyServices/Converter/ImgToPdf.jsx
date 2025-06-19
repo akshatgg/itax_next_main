@@ -739,7 +739,9 @@ export default function ImgToPdf() {
                 <div>
                   <h4 className="font-medium text-gray-800 mb-1">Upload Your Images</h4>
                   <p className="text-gray-600 text-sm">
+
 Drag and drop image files into the upload area, or click &quot;Browse Images&quot; to select them from your
+
                     device.
                   </p>
                 </div>
@@ -778,7 +780,9 @@ Drag and drop image files into the upload area, or click &quot;Browse Images&quo
                 <div>
                   <h4 className="font-medium text-gray-800 mb-1">Generate and Download</h4>
                   <p className="text-gray-600 text-sm">
+
 Click &quot;Generate PDF&quot; to create your document, then download or print the resulting PDF file.
+
                   </p>
                 </div>
               </div>

@@ -346,8 +346,10 @@ const UpiVerify = () => {
                 <h3 className="font-semibold text-blue-800 mb-2">How to use:</h3>
                 <ol className="list-decimal list-inside text-gray-700 space-y-2">
                   <li>Enter the UPI address you want to verify (e.g., username@bankname)</li>
+
             <li>Enter the account holder&apos;s name exactly as registered with the UPI</li>
 <li>Click the &quot;Verify UPI&quot; button</li>
+
 
                   <li>View the verification result</li>
                   <li>Download the verification result as PDF if needed</li>

@@ -1,4 +1,4 @@
-import { api } from '@/lib/axios';
+import { nodeAxios as api } from '@/lib/axios';
 import Newcostinflationindex from '@/components/downloads/Newcostinflationindex';
 import { generateQueryFromObject } from '@/utils/utilityFunctions';
 import { Suspense } from 'react';

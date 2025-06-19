@@ -1,3 +1,4 @@
+"use client"
 import React, { useRef, useState, useContext } from "react";
 import axios from "axios";
 const LARAVEL_ITAX_URL = process.env.NEXT_PUBLIC_LARAVEL_ITAX_URL;
