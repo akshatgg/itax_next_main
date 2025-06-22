@@ -32,8 +32,8 @@ const PayNowHandler = ({
 
   const navigateToUrl = (url) => router.push(url);
 
-  const surl = `${process.env.NEXT_PUBLIC_URL}/checkout/payment-success`;
-  const furl = `${process.env.NEXT_PUBLIC_URL}/checkout/payment-failure`;
+  const surl = `${process.env.PAY_NEXT_PUBLIC_URL}/checkout/payment-success`;
+  const furl = `${process.env.PAY_NEXT_PUBLIC_URL}/checkout/payment-failure`;
 
   const paymentDetails = (txnid) => {
     return {

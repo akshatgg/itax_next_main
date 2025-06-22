@@ -320,6 +320,7 @@ import { Title, PaymentButton } from "@/components/Checkout/checkoutStyles";
 import { toast } from "react-toastify";
 import userAxios from "@/lib/userbackAxios";
 import PayNowHandler from "./PayNowHandler";
+import { iconList } from "../apiService/staticData";
 import UseAuth from "@/hooks/useAuth";
 import axios from "axios";
 import Image from "next/image";
@@ -442,15 +443,63 @@ export default function CheckoutDetails() {
               </div>
             ))}
 
+
           {[...services.map(item => ({ ...item, type: "Service", price: item.price })),
             ...registrationStartup.map(item => ({ ...item, type: "Startup", price: item.priceWithGst || item.price })),
             ...registrationServices.map(item => ({ ...item, type: "Registration", price: item.price }))
           ].map((item, idx) => (
             <div key={idx} className="bg-white border border-gray-100 shadow-sm rounded-lg px-4 py-3 flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">{item.type}</p>
-                <h3 className="font-semibold text-gray-800">{item.title}</h3>
-                {item.image && <Image src={item.image} alt={item.title} width={80} height={80} className="mt-2 rounded-md object-cover" />}
+              <div className="flex items-center gap-4">
+                <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+                  {/* For regular services - use iconList */}
+                  {item.type === "Service" && (
+                    <>
+                      {iconList[item.title]?.icon ? (
+                        <span className="h-8 w-8 text-blue-600">{iconList[item.title]?.icon}</span>
+                      ) : (
+                        <Image
+                          src={iconList[item.title]?.src || "/default-service.svg"}
+                          width={40}
+                          height={40}
+                          alt={item.title}
+                          className="object-contain"
+                        />
+                      )}
+                    </>
+                  )}
+                  
+                  {/* For startup services - use item.image directly */}
+                  {item.type === "Startup" && (
+                    <Image
+                      src={item.image || "/default-startup.svg"}
+                      width={40}
+                      height={40}
+                      alt={item.title}
+                      className="object-contain"
+                    />
+                  )}
+                  
+                  {/* For registration services - use iconList */}
+                  {item.type === "Registration" && (
+                    <>
+                      {iconList[item.title]?.icon ? (
+                        <span className="h-8 w-8 text-blue-600">{iconList[item.title]?.icon}</span>
+                      ) : (
+                        <Image
+                          src={iconList[item.title]?.src || "/default-service.svg"}
+                          width={40}
+                          height={40}
+                          alt={item.title}
+                          className="object-contain"
+                        />
+                      )}
+                    </>
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">{item.type}</p>
+                  <h3 className="font-semibold text-gray-800">{item.title}</h3>
+                </div>
               </div>
               <div className="text-right">
                 <span className="text-gray-800 font-medium">₹{item.price}</span>
@@ -460,6 +509,8 @@ export default function CheckoutDetails() {
               </div>
             </div>
           ))}
+
+
 
           <div className="border-t pt-4 space-y-2">
             <div className="flex justify-between text-sm text-gray-600">
