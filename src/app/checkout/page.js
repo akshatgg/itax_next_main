@@ -7,10 +7,11 @@ import CheckoutDetails from '@/components/pagesComponents/checkout/CheckoutDetai
 export const dynamic = 'force-dynamic';
 
 export default async function CheckoutPage() {
-  const cartItems = await getCartItems();
+  // const cartItems = await getCartItems();
   return (
     <Suspense fallback={<Loader />}>
-      <CheckoutDetails cartItems={cartItems} />
+      {/* <CheckoutDetails cartItems={cartItems} /> */}
+      <CheckoutDetails />
       {/* <Checkout cartItems={cartItems} /> */}
     </Suspense>
   );

@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
+import useAuth from '@/hooks/useAuth';
 
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 const sharedButtonClasses = 'text-white px-4 py-2 rounded';
 const sharedTextClasses = 'text-sm text-zinc-500';
 
@@ -15,13 +17,35 @@ const OrderHistory = () => {
   const [selectedHistory, setSelectedHistory] = useState('Past 3 Months');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [responseData, setResponseData] = useState(null);
+
+  const getAuthToken = async () => {
+    // In client-side component, we can't use the server-side cookies() function
+    // So we simulate getting the token from cookies or local storage
+    return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("token="))
+      ?.split("=")[1]
+  }
 
   const fetchOrderData = async () => {
     try {
       setIsLoading(true);
       setIsError(false);
 
-      const response = await axios.get('/api/subscriptions');
+      // const response = await axios.get('/api/subscriptions');
+      const token = await getAuthToken();
+        
+        if (!token) {
+          throw new Error("Authentication token not found");
+        }
+      const response = await axios.get(`${BASE_URL}/apis/subscription-user`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log('API response:', response);
+      setResponseData(response.data);
 
       const { data } = response;
 
@@ -34,6 +58,7 @@ const OrderHistory = () => {
       }
       setIsLoading(false);
     } catch (error) {
+      console.error('Error fetching order data:', error);
       setIsLoading(false);
       setIsError(true);
       setError(error);
@@ -93,11 +118,11 @@ const OrderHistory = () => {
   };
 
   if (selectedOrderId) {
-    return <Invoice orderId={selectedOrderId} onBack={handleBackToOrders} />;
+    return <Invoice orderId={selectedOrderId} onBack={handleBackToOrders} responseData={responseData} />;
   }
 
-  console.log(allOrders);
   const OrderCard = ({ order }) => {
+    console.log('OrderCard order:', order);
     return (
       <div className="order-card bg-white border border-zinc-300 rounded-lg p-4 mb-4 text-black">
         <div className="">
@@ -228,18 +253,33 @@ const OrderHistory = () => {
   );
 };
 
-const Invoice = ({ orderId, onBack }) => {
+const Invoice = ({ orderId, onBack , responseData}) => {
   const [orderDetails, setOrderDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState(null);
 
+  // const getAuthToken = async () => {
+  //   // In client-side component, we can't use the server-side cookies() function
+  //   // So we simulate getting the token from cookies or local storage
+  //   return document.cookie
+  //     .split("; ")
+  //     .find((row) => row.startsWith("token="))
+  //     ?.split("=")[1]
+  // }
+
   useEffect(() => {
-    const fetchOrderDetails = async () => {
-      console.log('order id', orderId);
+    const fetchOrderDetails = () => {
       try {
-        const response = await axios.get('/api/subscriptions');
-        const orders = response.data.data;
+        // const response = await axios.get('/api/subscriptions');
+        // const orders = response.data.data;
+        // const token = await getAuthToken();
+        // const response = await axios.get(`${BASE_URL}/apis/subscription-user`, {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //   },
+        // });
+        const orders = responseData.data;
         const order = orders.find((order) => order.id === orderId);
         if (order) {
           setOrderDetails(order);

@@ -11,6 +11,15 @@ import { useRouter } from 'next/navigation';
 import { generateQueryFromObject } from '@/utils/utilityFunctions';
 import userAxiosNext from '@/lib/userbackAxios';
 
+const getAuthToken = async () => {
+  // In client-side component, we can't use the server-side cookies() function
+  // So we simulate getting the token from cookies or local storage
+  return document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('token='))
+    ?.split('=')[1];
+};
+
 const PayNowHandler = ({
   totalAmount,
   services,
@@ -45,33 +54,62 @@ const PayNowHandler = ({
 
   const createSubs = async () => {
     try {
-   const { status, data } = await axios.post(
-  `${process.env.NEXT_PUBLIC_URL}/api/subscriptions`,
-  {
-    serviceIds: services.map((service) => service.id),
-    registerStartupIds: registrationStartup.map((service) => service.id),
-    registerServiceIds: registrationServices.map((service) => service.id),
-  },
-  {
-    headers: { Authorization: `Bearer ${token}` },
-  }
-);
+      // const { status, data } = await axios.post(
+      //   `${process.env.NEXT_PUBLIC_URL}/api/subscriptions`,
+      //   {
+      //     serviceIds: services.map((service) => service.id),
+      //     registerStartupIds: registrationStartup.map((service) => service.id),
+      //     registerServiceIds: registrationServices.map((service) => service.id),
+      //   },
+      //   {
+      //     headers: { Authorization: `Bearer ${token}` },
+      //   },
+      // );
 
+      // if (status === 201) {
+      //   return data.data;
+      // }
+      setIsLoading(true);
 
-      if (status === 201) {
-        return data.data;
+    const token = await getAuthToken(); // Get token from cookie
+
+    if (!token) {
+      toast.error('User not authenticated.');
+      return;
+    }
+
+    const payload = {
+      serviceIds: services.map((service) => service.id),
+      registerStartupIds: registrationStartup.map((service) => service.id),
+      registerServiceIds: registrationServices.map((service) => service.id),
+    };
+
+    const { data } = await userAxiosNext.post(
+      `/apis/create-subscription`,  // assuming your Express backend routes start from /api/subscriptions
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       }
+    );
+    console.log('Subscription created:', data);
+    return data.data; // Assuming the response structure contains the subscription data in data.data
     } catch (error) {
       return toast.error('Error creating subscription!');
     }
   };
 
   const payHandler = async (txnid) => {
+    console.log('Paying for txnid:', txnid);
     try {
+      const token = await getAuthToken();
       const { data, status } = await userAxios.post(
         `/payment/initiate_payment`,
         paymentDetails(txnid),
       );
+
+      console.log('Payment initiation response:', data);
 
       if (status === 200) {
         const key = data?.key;
@@ -91,12 +129,17 @@ const PayNowHandler = ({
               status,
             });
 
+            console.log('Payment response:', response);
             if (status === 'success') {
-              const updated = await userAxiosNext.put('/api/subscriptions', {
-                status,
-                txnid,
-                pid,
-              });
+              const updated = await userAxiosNext.put(
+                `/apis/update-subscription`,  // 👈 Your Express route
+                { status, txnid, pid },
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                }
+              );
 
               if (updated) {
                 toast.success('Payment Successfull!', {
@@ -110,7 +153,7 @@ const PayNowHandler = ({
               }
             }
 
-            if (status === 'userCancelled') {
+            if (status === 'failure') {
               toast.error('Payment Failed!', {
                 autoClose: 1000,
               });

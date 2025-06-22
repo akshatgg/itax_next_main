@@ -107,7 +107,7 @@ const getAuthToken = async () => {
     .find((row) => row.startsWith("token="))
     ?.split("=")[1]
 }
-
+fff
 export default function InvoiceTable() {
   const [loading, setLoading] = useState(true);
   const [invoices, setInvoices] = useState([]);

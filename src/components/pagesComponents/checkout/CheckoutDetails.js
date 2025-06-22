@@ -1,11 +1,10 @@
 'use client';
-
 import React, { useEffect, useState, useCallback } from 'react';
 import { Title, PaymentButton } from '@/components/Checkout/checkoutStyles';
 import { toast } from 'react-toastify';
 import userAxios from "@/lib/userbackAxios"
 import PayNowHandler from './PayNowHandler';
-import UseAuth from "../../../hooks/useAuth"
+import UseAuth from '@/hooks/useAuth';
 import axios from "axios"
 import Image from 'next/image';
 const PaymentPageWrapper = ({ children }) => (
@@ -20,7 +19,7 @@ const PaymentForm = ({ children }) => (
   </div>
 );
 
-export default function CheckoutDetails({ cartItems = {} }) {
+export default function CheckoutDetails() {
   const { token } = UseAuth();
   
   // State for cart items
@@ -40,7 +39,6 @@ export default function CheckoutDetails({ cartItems = {} }) {
   // Fetch cart data directly
   const fetchCartData = useCallback(async () => {
     if (!token) return;
-    
     try {
       setCartLoading(true);
       
@@ -53,6 +51,8 @@ export default function CheckoutDetails({ cartItems = {} }) {
       const startupResponse = await axios.get(`${process.env.NEXT_PUBLIC_BACK_URL}/cartStartup/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("Service Cart Data:", serviceResponse.data);
+      console.log("Startup Cart Data:", startupResponse.data);
       
       if (serviceResponse.status === 200 && serviceResponse.data) {
         setServices(serviceResponse.data.services || []);
@@ -75,9 +75,12 @@ export default function CheckoutDetails({ cartItems = {} }) {
       setIsLoading(true);
       
       const { data, status } = await userAxios.get(`/user/profile`)
+      console.log("User Details:", data.data.user);
       if (status === 200 && data && data.data && data.data.user) {
-        const { firstName, lastName, email, gst } = data.data.user;
-        setUserDetails({ firstName, lastName, email, gst });
+        // const { firstName, lastName, email, gst } = data.data.user;
+        // setUserDetails({ firstName, lastName, email, gst });
+        const { firstName, lastName, email } = data.data.user;
+        setUserDetails({ firstName, lastName, email });
       }
     } catch (error) {
       toast.error('Error fetching user details.');
@@ -87,11 +90,11 @@ export default function CheckoutDetails({ cartItems = {} }) {
   }, []);
 
   useEffect(() => {
-    if (token) {
-      getUserDetails();
-      fetchCartData();
-    }
+    if (!token) return; // Wait for token to be available
+    getUserDetails();
+    fetchCartData();
   }, [getUserDetails, fetchCartData, token]);
+  
 
   const calculateTotal = (
     services,

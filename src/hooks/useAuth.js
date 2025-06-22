@@ -6,6 +6,7 @@ import { getCookie, deleteCookie } from 'cookies-next';
 import { useState, useEffect } from 'react';
 
 export default function useAuth() {
+
   const router = useRouter();
   const [token, setToken] = useState(null);
   const [currentUser, setCurrentUser] = useState({});
