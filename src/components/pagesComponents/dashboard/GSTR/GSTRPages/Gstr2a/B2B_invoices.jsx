@@ -1,3 +1,4 @@
+"use client";
 import { IoMdDownload } from "react-icons/io";
 import ExcelJS from "exceljs";
 import userAxios from "@/lib/userAxios";

@@ -283,7 +283,9 @@ const About = () => {
               its emphasis on ethical behavior.
             </div>
             <div className="mission_image">
+
              <Image src="/images/about.jpg" alt="Mission illustration" width={600} height={400} />
+
 
             </div>
           </div>

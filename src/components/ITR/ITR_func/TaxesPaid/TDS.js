@@ -1,3 +1,5 @@
+"use client";
+
 import { useState } from 'react';
 import NonSalaryTDS from './TDS/NonSalaryTDS';
 import TDSonSale from './TDS/TDSonSale';

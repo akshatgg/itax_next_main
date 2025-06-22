@@ -1,4 +1,5 @@
 // src/chatbot/index.js
+"use client"
 import React, { useState, useEffect, useRef } from 'react';
 import ChatIcon from './components/ChatIcon';
 import ChatWindow from './components/ChatWindow';
