@@ -205,7 +205,7 @@ const DropdownMenu = ({ title, items, hasSubMenu = false, onNavigate }) => (
             className="py-3 px-5 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 group-one relative"
           >
             <span>{item.menu}</span>
-            <ul className="absolute hidden left-56 top-0 group-one-hover:flex flex-col bg-white dark:-bg--clr-neutral-900 shadow-md rounded-md border py-3 z-50">
+            <ul className="absolute hidden left-56 top-0 group-one-hover:flex flex-col bg-white dark:-bg--clr-neutral-900 shadow-md rounded-md border py-3 z-[1000">
               {item.subMenu.map((subItem) => (
                 <button
                   key={subItem.menu}
@@ -436,16 +436,16 @@ export default function Navbar({ className = '' }) {
 
   return (
     <div
-      className={`sticky top-0 left-0 right-0 z-20 bg-white border-b border-gray-200 transition-[padding] duration-200 ${className}`}
+      className={`sticky top-0 left-0 right-0 z-[1000] bg-white border-b border-gray-200 transition-[padding] duration-200 ${className}`}
     >
       {isNavigating && (
-        <div className="fixed inset-0 bg-white/60 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-white/60 flex justify-center items-center z-[1000]">
           <div className="flex h-[70vh] justify-center items-center">
             <Loader />
           </div>
         </div>
       )}
-      <nav className="max-w-7xl m-auto text-xs sticky top-0 min-h-10 z-50 py-1 px-5 flex items-center flex-wrap">
+      <nav className="max-w-7xl m-auto text-xs sticky top-0 min-h-10 py-1 px-5 flex items-center flex-wrap">
         {/* Logo */}
         <div>
           <Link
@@ -531,7 +531,7 @@ export default function Navbar({ className = '' }) {
 
       {/* Mobile Menu */}
       {hamburger && (
-        <div className="lg:hidden fixed top-15 left-0 w-full bg-black/50 min-h-screen h-full z-40 overflow-y-scroll">
+        <div className="lg:hidden fixed top-15 left-0 w-full bg-black/50 min-h-screen h-full z-[1000] overflow-y-scroll">
           <ul className="flex flex-col w-full bg-white dark:-bg--clr-neutral-900 shadow-md rounded-b-2xl px-5 pt-2 pb-5 mb-40">
             {mobileMenuItems.map((menuItem, index) => (
               <MobileMenuItem
