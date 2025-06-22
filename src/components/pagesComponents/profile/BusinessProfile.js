@@ -54,7 +54,7 @@ const BusinessProfile = () => {
       const { data, status } = await userAxios.post(`/gst/search/gstin`, { gstin })
       console.log("GST Profile:", data)
       if (status === 200 && data && data.data && data.data.data) {
-        setGstDetails(data.data.data)
+        setGstDetails(data.data.data.data)
         toast.success("GST details fetched successfully")
       }
     } catch (error) {
@@ -65,10 +65,12 @@ const BusinessProfile = () => {
   }, [])
 
   useEffect(() => {
+    console.log(gstDetails);
+    
     if (editable && regex.GSTIN.test(gstin) && isDirty) {
       getGstProfileByGstin(gstin)
     }
-  }, [editable, gstin, getGstProfileByGstin, isDirty])
+  }, [editable, gstin, getGstProfileByGstin, isDirty,gstDetails])
 
   // FETCHES AND SETS BUSINESS PROFILE
   const getBusinessProfile = useCallback(async () => {
@@ -167,6 +169,7 @@ const BusinessProfile = () => {
       }
     }
   }, [businessProfile, gstDetails, setValue])
+   
 
   return (
     <div className="container mx-auto px-4 py-6">

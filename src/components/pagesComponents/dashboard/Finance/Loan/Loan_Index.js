@@ -114,7 +114,7 @@ const Loan_Index = () => {
 				<GridContainer>
 					{LoanStatistics.map((item, index) => (
 						<Link href={item.linkTo || ""} key={index}>
-							<div className="relative min-w-full mx-auto  border border-bg_2/60 hover:border-primary rounded-xl overflow-hidden shadow p-4">
+							<div className="min-w-full mx-auto  border border-bg_2/60 hover:border-primary rounded-xl overflow-hidden shadow p-4">
 								<div>
 									<div className="flex justify-center">
 										<Icon
