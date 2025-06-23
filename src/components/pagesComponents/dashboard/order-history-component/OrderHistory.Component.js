@@ -28,42 +28,44 @@ const OrderHistory = () => {
       ?.split("=")[1]
   }
 
-  const fetchOrderData = async () => {
-    try {
-      setIsLoading(true);
-      setIsError(false);
+ const fetchOrderData = async () => {
+  try {
+    setIsLoading(true);
+    setIsError(false);
 
-      // const response = await axios.get('/api/subscriptions');
-      const token = await getAuthToken();
-        
-        if (!token) {
-          throw new Error("Authentication token not found");
-        }
-      const response = await axios.get(`${BASE_URL}/apis/subscription-user`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log('API response:', response);
-      setResponseData(response.data);
+    const token = await getAuthToken();
+    if (!token) throw new Error("Authentication token not found");
 
-      const { data } = response;
+    const response = await axios.get(`${BASE_URL}/apis/subscription-user`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-      if (data) {
-        setAllOrders(data.data);
-        filterOrders(data.data, selectedHistory);
-      } else {
-        setAllOrders([]);
-        console.error('Unexpected API response structure:', data);
-      }
-      setIsLoading(false);
-    } catch (error) {
-      console.error('Error fetching order data:', error);
-      setIsLoading(false);
-      setIsError(true);
-      setError(error);
+    const { data } = response;
+
+    if (data && Array.isArray(data.data)) {
+      const sortedOrders = [...data.data].sort(
+        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+      );
+
+      setAllOrders(sortedOrders);
+      filterOrders(sortedOrders, selectedHistory);
+    } else {
+      setAllOrders([]);
+      console.error('Unexpected API response structure:', data);
     }
-  };
+
+    setResponseData(response.data);
+    setIsLoading(false);
+  } catch (error) {
+    console.error('Error fetching order data:', error);
+    setIsLoading(false);
+    setIsError(true);
+    setError(error);
+  }
+};
+  
 
   const filterOrders = (orders, duration) => {
     const now = new Date();
