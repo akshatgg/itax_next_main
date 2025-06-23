@@ -7,13 +7,13 @@ export const DashboardSidebarItemsData = {
       iconName: 'material-symbols:dashboard',
       subMenu: false,
     },
-    {
-      upcoming: false,
-      title: 'Easy GST Return',
-      linkTo: '/dashboard/easy-gst-return',
-      iconName: 'carbon:finance',
-      subMenu: false,
-    },
+    // {
+    //   upcoming: false,
+    //   title: 'Easy GST Return',
+    //   linkTo: '/dashboard/easy-gst-return',
+    //   iconName: 'carbon:finance',
+    //   subMenu: false,
+    // },
     {
       upcoming: false,
       title: 'ITR',
@@ -149,7 +149,7 @@ export const DashboardSidebarItemsData = {
       upcoming: false,
       title: 'Transactions',
       iconName: 'clarity:two-way-arrows-line',
-      linkTo: '/dashboard/',
+      linkTo: '/dashboard/transactions',
       subMenu: false,
     },
     {
@@ -280,13 +280,13 @@ export const DashboardSidebarItemsData = {
         },
       ],
     },
-    {
-      upcoming: false,
-      title: 'Easy GST Return',
-      linkTo: 'gstr',
-      iconName: 'carbon:finance',
-      subMenu: false,
-    },
+    // {
+    //   upcoming: false,
+    //   title: 'Easy GST Return',
+    //   linkTo: 'gstr',
+    //   iconName: 'carbon:finance',
+    //   subMenu: false,
+    // },
     {
       upcoming: false,
       title: 'Invoice',
@@ -823,7 +823,8 @@ export const DashboardSidebarItemsData = {
       upcoming: false,
       title: 'Order History',
       iconName: 'clarity:two-way-arrows-line',
-      linkTo: '/dashboard/order-history/OrderHistory.js',
+      // linkTo: '/dashboard/order-history/OrderHistory.js',
+          linkTo: '/dashboard/order-history',
       subMenu: false,
     },
 
