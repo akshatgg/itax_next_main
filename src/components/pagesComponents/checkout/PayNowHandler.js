@@ -109,6 +109,7 @@ const PayNowHandler = ({
         paymentDetails(txnid),
       );
 
+      console.log(surl, furl);
       console.log('Payment initiation response:', data);
 
       if (status === 200) {
