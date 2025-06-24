@@ -119,7 +119,7 @@ export default function TransactionOverview({ invoices = [], className }) {
   return (
     <DashSection
       className="mt-4"
-      title="Transaction Overview"
+      title="Recent Transactions"
       titleRight={
         <div>
           <Button
