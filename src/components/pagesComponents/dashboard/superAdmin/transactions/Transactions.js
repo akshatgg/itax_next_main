@@ -186,7 +186,7 @@ const SuperAdminTransactionHistory = () => {
   const calculateGroupTotals = (transactions) => {
     return {
       count: transactions.length,
-      total: transactions.reduce((sum, t) => sum + t.amountForServices, 0),
+      total: transactions.reduce((sum, t) => sum + ((t.amountForServices*100)/118), 0),
       items: transactions.reduce((sum, t) => sum + (t.services?.length || 0), 0)
     };
   };
@@ -280,7 +280,7 @@ const SuperAdminTransactionHistory = () => {
 
 const TransactionDetails = ({ transaction }) => {
   const subtotal = (transaction.amountForServices * 100) / 118;
-  const gstAmount = transaction.amountForServices - subtotal;
+  const gstAmount = 0;
 
   return (
     <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -310,7 +310,7 @@ const TransactionDetails = ({ transaction }) => {
         </div>
         <div className="text-right">
           <p className="text-lg font-bold text-gray-800">
-            ₹{transaction.amountForServices.toFixed(2)}
+            ₹{((transaction.amountForServices*100)/118).toFixed(2)}
           </p>
           <p className="text-xs text-gray-500">incl. GST</p>
         </div>
@@ -430,9 +430,9 @@ const TransactionDetails = ({ transaction }) => {
 
       {/* Payment Breakdown */}
       <div className="mt-3 pt-3 border-t border-gray-200">
-        <div className="text-xs space-y-1 text-gray-600">
+        <div className="text-xs space-y-1 text-gray-600 ">
           <div className="flex justify-between">
-            <span>Subtotal (excl. GST):</span>
+            <span>Subtotal (incl. GST):</span>
             <span>₹{subtotal.toFixed(2)}</span>
           </div>
           <div className="flex justify-between">
@@ -449,7 +449,7 @@ const TransactionDetails = ({ transaction }) => {
   const UserCard = ({ userKey, userData }) => {
     const { userInfo, pending, success } = userData;
     const totalTransactions = pending.length + success.length;
-    const totalSuccessAmount = success.reduce((sum, t) => sum + t.amountForServices, 0);
+    const totalSuccessAmount = success.reduce((sum, t) => sum + ((t.amountForServices*100)/118), 0);
 
     return (
       <div className="bg-white border border-slate-200 rounded-2xl mb-6 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
@@ -503,7 +503,7 @@ const TransactionDetails = ({ transaction }) => {
   // Calculate summary stats
   const summaryStats = {
     totalTransactions: allTransactions.length,
-    totalRevenue: allTransactions.filter(t => t.status === 'success').reduce((sum, t) => sum + t.amountForServices, 0),
+    totalRevenue: allTransactions.filter(t => t.status === 'success').reduce((sum, t) => sum + ((t.amountForServices*100)/118), 0),
     completedCount: allTransactions.filter(t => t.status === 'success').length,
     pendingCount: allTransactions.filter(t => t.status === 'pending').length,
     totalUsers: Object.keys(filteredGroups).length

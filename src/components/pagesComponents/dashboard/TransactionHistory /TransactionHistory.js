@@ -107,6 +107,7 @@ const TransactionHistory = () => {
   const filteredAndSearchedTransactions = searchTransactions(filteredTransactions, searchQuery);
 
   const calculateTotalItems = (transaction) => {
+    
     return transaction.registrationStartup.length + 
            transaction.registrationServices.length + 
            transaction.services.length;
@@ -115,7 +116,7 @@ const TransactionHistory = () => {
   const TransactionCard = ({ transaction }) => {
     const totalItems = calculateTotalItems(transaction);
     const subtotal = (transaction.amountForServices * 100) / 118;
-    const gstAmount = transaction.amountForServices - subtotal;
+    const gstAmount = 0;
 
     return (
       <div className="transaction-card bg-white border border-zinc-200 rounded-xl p-6 mb-6 text-black shadow-lg hover:shadow-xl transition-all duration-300">
@@ -143,7 +144,7 @@ const TransactionHistory = () => {
             </div>
             <div className="text-right">
               <p className="text-2xl font-bold text-zinc-800">
-                ₹{transaction.amountForServices.toFixed(2)}
+                ₹{subtotal.toFixed(2)}
               </p>
               <p className="text-xs text-zinc-500">
                 {totalItems} {totalItems === 1 ? 'item' : 'items'}
@@ -157,16 +158,16 @@ const TransactionHistory = () => {
           <h4 className="text-sm font-semibold text-zinc-700 mb-3">Payment Breakdown</h4>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-zinc-600">Subtotal (excl. GST):</span>
+              <span className="text-zinc-600">Subtotal (incl. GST):</span>
               <span className="font-mono">₹{subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-zinc-600">GST (18%):</span>
+              <span className="text-zinc-600"></span>
               <span className="font-mono">₹{gstAmount.toFixed(2)}</span>
             </div>
             <div className="border-t border-zinc-200 pt-2 flex justify-between font-semibold">
               <span>Total Paid:</span>
-              <span className="font-mono text-zinc-800">₹{transaction.amountForServices.toFixed(2)}</span>
+              <span className="font-mono text-zinc-800">₹{subtotal.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -287,7 +288,7 @@ const TransactionHistory = () => {
         {allTransactions.length > 0 && (
           <div className="mt-2 p-3 bg-slate-100 rounded-lg">
             <p className="text-sm text-zinc-700">
-              💰 Total amount transacted: <span className="font-bold">₹{allTransactions.reduce((sum, t) => sum + t.amountForServices, 0).toFixed(2)}</span>
+              💰 Total amount transacted: <span className="font-bold">₹{allTransactions.reduce((sum, t) => sum + (t.amountForServices*100)/118, 0).toFixed(2)}</span>
             </p>
           </div>
         )}
