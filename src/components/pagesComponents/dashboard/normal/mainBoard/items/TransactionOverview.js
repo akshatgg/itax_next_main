@@ -11,15 +11,12 @@ import axios from 'axios';
 import { Invoice } from '../../../order-history-component/OrderHistory.Component';
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export default function TransactionOverview({ invoices = [], className }) {
+export default function TransactionOverview({ invoices = [], onSelectInvoice, className }) {
   const router = useRouter();
-  const [isNavigating, setIsNavigating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState(null);
   const [allOrders, setAllOrders] = useState([]);
-
-  const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [responseData, setResponseData] = useState(null);
 
   const total = invoices.length;
@@ -73,13 +70,12 @@ export default function TransactionOverview({ invoices = [], className }) {
               0,
             ) || 0;
 
-          const totalPriceWithGst = parseFloat((basePrice * 1.18).toFixed(2)); // 18% GST
 
           return {
             id: order.id,
             orderDate: formattedDate,
             titles: serviceTitles,
-            totalPrice: totalPriceWithGst,
+            totalPrice: basePrice.toFixed(2), // Ensure total price is a string with two decimal places
             fullData: order, // save full order data for Invoice view
           };
         });
@@ -109,78 +105,65 @@ export default function TransactionOverview({ invoices = [], className }) {
   }, []);
 
   const handleClick = (order) => {
-    setSelectedOrderId(order.id);
+    if (onSelectInvoice) {
+      onSelectInvoice(order.id, responseData);
+    }
   };
 
-  const handleBackToOrders = () => {
-    setSelectedOrderId(null);
-  };
 
   return (
     <DashSection
-      className="mt-4"
-      title="Recent Transactions"
-      titleRight={
-        <div>
-          <Button
-            size="sm"
-            className="m-2"
-            onClick={() => router.push('/dashboard/order-history')}
+    className="mt-4"
+    title="Recent Transactions"
+    titleRight={
+      <Button
+        size="sm"
+        className="m-2"
+        onClick={() => router.push('/dashboard/order-history')}
+      >
+        View More
+      </Button>
+    }
+  >
+    {isLoading ? (
+      <Loader />
+    ) : isError ? (
+      <div className="text-red-500">Failed to load transactions.</div>
+    ) : (
+      <ul className="space-y-4">
+        {allOrders.map((order) => (
+          <li
+            key={order.id}
+            onClick={() => handleClick(order)}
+            className="cursor-pointer"
           >
-            View More
-          </Button>
-        </div>
-      }
-    >
-      {isNavigating && (
-        <div className="fixed inset-0 bg-white/60 flex justify-center items-center z-50">
-          <div className="flex h-[70vh] justify-center items-center">
-            <Loader />
-          </div>
-        </div>
-      )}
-
-      {selectedOrderId ? (
-        <Invoice
-          orderId={selectedOrderId}
-          onBack={handleBackToOrders}
-          responseData={responseData}
-        />
-      ) : (
-        <ul className="space-y-4">
-          {allOrders.map((order) => (
-            <li
-              key={order.id}
-              onClick={() => handleClick(order)}
-              className="cursor-pointer"
-            >
-              <GridItem href="#">
-                <div className='mr-4'> 
-                  <Icon
-                    icon="material-symbols:account-circle-outline"
-                    className="rounded-xl sm:h-16 sm:w-16 sm:p-3 h-14 w-14 p-3 text-blue-500 bg-blue-100 dark:text-blue-100 dark:bg-blue-500"
-                  />
+            <GridItem href="#">
+              <div className="mr-4">
+                <Icon
+                  icon="material-symbols:account-circle-outline"
+                  className="rounded-xl sm:h-16 sm:w-16 sm:p-3 h-14 w-14 p-3 text-blue-500 bg-blue-100 dark:text-blue-100 dark:bg-blue-500"
+                />
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-start mb-1">
+                  <span className="text-sm font-medium text-txt">
+                    {order.orderDate}
+                  </span>
+                  <span className="text-base font-semibold text-green-600">
+                    ₹{order.totalPrice}
+                  </span>
                 </div>
-                <div className="flex-1 ">
-                  <div className="flex justify-between items-start mb-1">
-                    <span className="text-sm font-medium text-txt">
-                      {order.orderDate}
-                    </span>
-                    <span className="text-base font-semibold text-green-600">
-                      ₹{order.totalPrice}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="text-sm text-txt/70 leading-snug">
-                      {order.titles.join(', ')}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-sm text-txt/70 leading-snug">
+                    {order.titles.join(', ')}
+                  </p>
                 </div>
-              </GridItem>
-            </li>
-          ))}
-        </ul>
-      )}
-    </DashSection>
+              </div>
+            </GridItem>
+          </li>
+        ))}
+      </ul>
+    )}
+  </DashSection>
   );
 }
