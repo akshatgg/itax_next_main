@@ -621,17 +621,17 @@ export const Invoice = ({ orderId, onBack , responseData}) => {
                 <div className="w-full max-w-md">
                   <div className="space-y-3">
                     <div className="flex justify-between items-center py-2">
-                      <span className="text-zinc-600">Subtotal (excl. GST):</span>
+                      <span className="text-zinc-600">Subtotal (incl. GST):</span>
                       <span className="font-mono">₹{((amountForServices * 100) / 118).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center py-2">
                       <span className="text-zinc-600">GST (18%):</span>
-                      <span className="font-mono">₹{(amountForServices - (amountForServices * 100) / 118).toFixed(2)}</span>
+                      <span className="font-mono">₹ 0.00</span>
                     </div>
                     <div className="border-t border-zinc-300 pt-3">
                       <div className="flex justify-between items-center">
                         <span className="text-xl font-bold text-zinc-800">Total Amount:</span>
-                        <span className="text-2xl font-bold text-blue-600 font-mono">₹{amountForServices.toFixed(2)}</span>
+                        <span className="text-2xl font-bold text-blue-600 font-mono">₹{((amountForServices * 100) / 118).toFixed(2)}</span>
                       </div>
                     </div>
                   </div>

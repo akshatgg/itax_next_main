@@ -7,10 +7,14 @@ import DataState from './items/DataState';
 import userAxios from '@/lib/userbackAxios';
 import Loader from '@/components/partials/loading/Loader';
 import TransactionOverview from './items/TransactionOverview';  
+import { Invoice } from '../../order-history-component/OrderHistory.Component';
 
 export default function Normal_dashboard() {
   const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
+  const [invoiceData, setInvoiceData] = useState(null);
 
   useEffect(() => {
     const fetchInvoices = async () => {
@@ -37,11 +41,24 @@ export default function Normal_dashboard() {
     );
   }
 
+  if (selectedOrderId) {
+    return (
+      <Invoice
+        orderId={selectedOrderId}
+        responseData={invoiceData}
+        onBack={() => setSelectedOrderId(null)}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col lg:flex-row gap-4">
       <div className="w-full lg:basis-[60%]">
         <CardOverview invoices={invoices} className="" />
-        <TransactionOverview invoices={invoices} className="" />
+        <TransactionOverview invoices={invoices} onSelectInvoice={(id, data) => {
+            setSelectedOrderId(id);
+            setInvoiceData(data);
+          }} className="" />
       </div>
       <div className="w-full lg:basis-[40%]">
         <Sales_and_Purchase invoices={invoices} />
