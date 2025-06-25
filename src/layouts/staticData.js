@@ -819,14 +819,14 @@ export const DashboardSidebarItemsData = {
       linkTo: '/dashboard/transactions',
       subMenu: false,
     },
-    {
-      upcoming: false,
-      title: 'Order History',
-      iconName: 'clarity:two-way-arrows-line',
-      // linkTo: '/dashboard/order-history/OrderHistory.js',
-          linkTo: '/dashboard/order-history',
-      subMenu: false,
-    },
+    // {
+    //   upcoming: false,
+    //   title: 'Order History',
+    //   iconName: 'clarity:two-way-arrows-line',
+    //   // linkTo: '/dashboard/order-history/OrderHistory.js',
+    //       linkTo: '/dashboard/order-history',
+    //   subMenu: false,
+    // },
 
     {
       upcoming: false,

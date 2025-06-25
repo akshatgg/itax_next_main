@@ -124,7 +124,7 @@ const TransactionHistory = () => {
           <div className="flex justify-between items-start mb-3">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
+                <span className="bg-zinc-100 text-zinc-700 px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1">
                   ✅ Success
                 </span>
                 <span className="text-xs text-zinc-400 uppercase tracking-wide font-medium">
@@ -142,7 +142,7 @@ const TransactionHistory = () => {
               </p>
             </div>
             <div className="text-right">
-              <p className="text-2xl font-bold text-green-600">
+              <p className="text-2xl font-bold text-zinc-800">
                 ₹{transaction.amountForServices.toFixed(2)}
               </p>
               <p className="text-xs text-zinc-500">
@@ -153,7 +153,7 @@ const TransactionHistory = () => {
         </div>
 
         {/* Payment Breakdown */}
-        <div className="bg-green-50 rounded-lg p-4 mb-4">
+        <div className="bg-zinc-50 rounded-lg p-4 mb-4">
           <h4 className="text-sm font-semibold text-zinc-700 mb-3">Payment Breakdown</h4>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
@@ -164,9 +164,9 @@ const TransactionHistory = () => {
               <span className="text-zinc-600">GST (18%):</span>
               <span className="font-mono">₹{gstAmount.toFixed(2)}</span>
             </div>
-            <div className="border-t border-green-200 pt-2 flex justify-between font-semibold">
+            <div className="border-t border-zinc-200 pt-2 flex justify-between font-semibold">
               <span>Total Paid:</span>
-              <span className="font-mono text-green-600">₹{transaction.amountForServices.toFixed(2)}</span>
+              <span className="font-mono text-zinc-800">₹{transaction.amountForServices.toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -178,7 +178,7 @@ const TransactionHistory = () => {
           {transaction.registrationStartup?.length > 0 && (
             <div className="space-y-3">
               {transaction.registrationStartup.map((startup, index) => (
-                <div key={index} className="flex items-center p-3 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                <div key={index} className="flex items-center p-3 bg-slate-50 rounded-lg border border-slate-200">
                   <div className="flex-shrink-0 mr-4">
                     <Image
                       src={startup.image}
@@ -190,10 +190,10 @@ const TransactionHistory = () => {
                   </div>
                   <div className="flex-grow">
                     <h5 className="font-medium text-zinc-800 mb-1">{startup.title}</h5>
-                    <span className="text-xs text-blue-600 font-medium">Startup Registration</span>
+                    <span className="text-xs text-slate-600 font-medium">Startup Registration</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold text-blue-600">
+                    <span className="text-lg font-bold text-zinc-800">
                       ₹{startup.priceWithGst.toFixed(2)}
                     </span>
                     <p className="text-xs text-zinc-500">incl. GST</p>
@@ -206,7 +206,7 @@ const TransactionHistory = () => {
           {transaction.registrationServices?.length > 0 && (
             <div className="space-y-3">
               {transaction.registrationServices.map((service, index) => (
-                <div key={index} className="flex items-center p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="flex-shrink-0 mr-4">
                     <Image
                       src={service.image}
@@ -218,10 +218,10 @@ const TransactionHistory = () => {
                   </div>
                   <div className="flex-grow">
                     <h5 className="font-medium text-zinc-800 mb-1">{service.title}</h5>
-                    <span className="text-xs text-green-600 font-medium">Registration Service</span>
+                    <span className="text-xs text-gray-600 font-medium">Registration Service</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold text-green-600">
+                    <span className="text-lg font-bold text-zinc-800">
                       ₹{service.price.toFixed(2)}
                     </span>
                     <p className="text-xs text-zinc-500">incl. GST</p>
@@ -234,10 +234,10 @@ const TransactionHistory = () => {
           {transaction.services?.length > 0 && (
             <div className="space-y-3">
               {transaction.services.map((service, index) => (
-                <div key={index} className="flex items-center p-3 bg-purple-50 rounded-lg border-l-4 border-purple-400">
+                <div key={index} className="flex items-center p-3 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="flex-shrink-0 mr-4 flex items-center justify-center w-[50px] h-[50px] bg-white rounded-lg">
                     {iconList[service.title]?.icon ? (
-                      <span className="h-6 w-6 text-purple-600">{iconList[service.title]?.icon}</span>
+                      <span className="h-6 w-6 text-blue-600">{iconList[service.title]?.icon}</span>
                     ) : (
                       <Image
                         src={iconList[service.title]?.src || "/default-service.svg"}
@@ -250,10 +250,10 @@ const TransactionHistory = () => {
                   </div>
                   <div className="flex-grow">
                     <h5 className="font-medium text-zinc-800 mb-1">{service.title}</h5>
-                    <span className="text-xs text-purple-600 font-medium">Service</span>
+                    <span className="text-xs text-blue-600 font-medium">Service</span>
                   </div>
                   <div className="text-right">
-                    <span className="text-lg font-bold text-purple-600">
+                    <span className="text-lg font-bold text-blue-600">
                       ₹{service.price.toFixed(2)}
                     </span>
                     <p className="text-xs text-zinc-500">incl. GST</p>
@@ -276,7 +276,7 @@ const TransactionHistory = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 bg-gradient-to-br from-blue-50 to-blue-300 py-10 text-black min-h-screen">
+    <div className="container mx-auto p-6 bg-gradient-to-br from-slate-50 to-blue-100 py-10 text-black min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2 text-zinc-800 flex items-center gap-3">
           💳 Transaction History
@@ -285,8 +285,8 @@ const TransactionHistory = () => {
           {filteredAndSearchedTransactions.length} successful {filteredAndSearchedTransactions.length === 1 ? 'transaction' : 'transactions'} found
         </p>
         {allTransactions.length > 0 && (
-          <div className="mt-2 p-3 bg-green-100 rounded-lg">
-            <p className="text-sm text-green-700">
+          <div className="mt-2 p-3 bg-slate-100 rounded-lg">
+            <p className="text-sm text-zinc-700">
               💰 Total amount transacted: <span className="font-bold">₹{allTransactions.reduce((sum, t) => sum + t.amountForServices, 0).toFixed(2)}</span>
             </p>
           </div>
