@@ -148,48 +148,52 @@ const Blogs = () => {
                 Get to know us
               </Link>
             </div>
-            <div className="w-full bg-white shadow flex flex-col my-4 p-6">
-              <p className="text-xl font-semibold pb-5">Related Post</p>
+         {/* <div className="w-full bg-white shadow flex flex-col my-4 p-6">
+  <p className="text-xl font-semibold pb-5">Related Post</p>
 
-              <div>
-                <a
-                  href="#"
-                  className="flex flex-col items-center bg-white  shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
-                >
-                  <Image
-                    className="object-cover w-full  h-96 md:h-20 md:w-48 "
-                    src="https://source.unsplash.com/random/?accounts"
-                    alt="demo image"
-                    height={200}
-                    width={400}
-                  />
-                  <div className="flex flex-col justify-between p-4 leading-normal">
-                    <p className="mb-3 font-semibold text-gray-700 text-xs dark:text-gray-400">
-                      Here are the biggest enterprise technology acquisitions of
-                      2021 so far, in reverse chronological order.
-                    </p>
-                  </div>
-                </a>
-                <a
-                  href="#"
-                  className="flex flex-col items-center bg-white  shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
-                >
-                  <Image
-                    className="object-cover w-full  h-96 md:h-20 md:w-48 "
-                    src="https://source.unsplash.com/random/?court"
-                    alt="demo image"
-                    height={200}
-                    width={400}
-                  />
-                  <div className="flex flex-col justify-between p-4 leading-normal">
-                    <p className="mb-3 font-semibold text-gray-700 text-xs dark:text-gray-400">
-                      HC Allows Liquidator’s Plea to Dissolve Co. As There Were
-                      No Recoverable Assets for Remittance of ...
-                    </p>
-                  </div>
-                </a>
-              </div>
-            </div>
+  <div className="space-y-4">
+    <a
+      href="#"
+      className="flex flex-col items-center bg-white border rounded-lg md:flex-row hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 transition"
+    >
+      <div className="relative w-full md:w-48 h-48 md:h-24">
+        <Image
+          src="https://source.unsplash.com/400x300/?accounts"
+          alt="related post image"
+          fill
+          className="object-cover rounded-l-lg"
+          unoptimized
+        />
+      </div>
+      <div className="flex flex-col justify-between p-4 leading-normal">
+        <p className="mb-3 font-semibold text-gray-700 text-sm dark:text-gray-400">
+          Here are the biggest enterprise technology acquisitions of 2021 so far, in reverse chronological order.
+        </p>
+      </div>
+    </a>
+
+    <a
+      href="#"
+      className="flex flex-col items-center bg-white border rounded-lg md:flex-row hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700 transition"
+    >
+      <div className="relative w-full md:w-48 h-48 md:h-24">
+        <Image
+          src="https://source.unsplash.com/400x300/?court"
+          alt="related post image"
+          fill
+          className="object-cover rounded-l-lg"
+          unoptimized
+        />
+      </div>
+      <div className="flex flex-col justify-between p-4 leading-normal">
+        <p className="mb-3 font-semibold text-gray-700 text-sm dark:text-gray-400">
+          HC Allows Liquidator’s Plea to Dissolve Co. As There Were No Recoverable Assets for Remittance of ...
+        </p>
+      </div>
+    </a>
+  </div>
+</div> */}
+
           </aside>
         </>
       </div>

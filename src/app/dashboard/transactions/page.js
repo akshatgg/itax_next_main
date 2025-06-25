@@ -9,14 +9,13 @@ const page = () => {
 
 
 
-  switch(userType) {
-
- 
-    case "admin":   return <Transactions_Admin/>;
-    case "superadmin": return <SuperAdminTransactionHistory />;
+    switch(userType) {
+     
     
-
-    default:      return <TransactionHistory />;
+    // case "admin":   return <Transactions_Admin/>;
+    case "admin": return <Transactions_Admin/>;
+    case "superadmin": return <SuperAdminTransactionHistory />;
+    default: return <TransactionHistory />;
   }
 };
 

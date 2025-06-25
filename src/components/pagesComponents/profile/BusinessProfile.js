@@ -234,14 +234,15 @@ const BusinessProfile = () => {
                 </div>
                 <div className="flex justify-end items-center py-4 gap-3">
                   {!editable ? (
-                    <Button
-                      type="button"
-                      onClick={() => router.push("/")}
-                      size={"md-1"}
-                      className="flex items-center gap-2"
-                    >
-                      <ArrowLeft size={16} /> Back
-                    </Button>
+                    // <Button
+                    //   type="button"
+                    //   onClick={() => router.push("/")}
+                    //   size={"md-1"}
+                    //   className="flex items-center gap-2"
+                    // >
+                    //   <ArrowLeft size={16} /> Back
+                    // </Button>
+                    <>  </>
                   ) : (
                     <>
                       <button

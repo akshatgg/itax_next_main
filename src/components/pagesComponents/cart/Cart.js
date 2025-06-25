@@ -9,7 +9,7 @@ import { iconList } from "../apiService/staticData";
 import { formatINRCurrency } from "@/utils/utilityFunctions";
 import UseAuth from "../../../hooks/useAuth";
 import axios from "axios";
-import { ShoppingCart, Package, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ShoppingCart, Package, ArrowRight, CheckCircle2, ShoppingBag } from "lucide-react";
 import { toast } from "react-toastify";
 
 export default function Cart() {
@@ -66,16 +66,13 @@ export default function Cart() {
     }
   }, [token, refreshKey]);
 
+  // Calculate totals (all prices are GST inclusive now)
   const serviceSubtotal = cartItems.reduce((total, item) => total + (item.price || 0), 0);
   const startupSubtotal = startupcartItems.reduce(
     (total, item) => total + (item.price ? item.price : item.priceWithGst || 0),
     0
   );
-  const gstRate = 0.18;
-  const gstAmount = serviceSubtotal * gstRate;
-  const serviceTotalWithGST = serviceSubtotal + gstAmount;
-  const subtotal = serviceSubtotal + startupSubtotal;
-  const totalWithGst = serviceTotalWithGST + startupSubtotal;
+  const totalAmount = serviceSubtotal + startupSubtotal;
 
   const handlePayment = () => {
     if (!token) {
@@ -105,6 +102,61 @@ export default function Cart() {
   }
 
   const hasItems = (cartItems.length > 0 || startupcartItems.length > 0);
+
+  // Empty cart state
+  if (!hasItems) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="text-center py-20 px-8">
+              <div className="flex justify-center mb-8">
+                <div className="relative p-4 bg-gray-50 rounded-full">
+                  <ShoppingCart className="h-16 w-16 text-gray-400" strokeWidth={1.5} />
+                </div>
+              </div>
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Your Cart is Empty</h2>
+              <p className="text-gray-600 mb-10 max-w-lg mx-auto leading-relaxed text-base">
+                You haven't added any items to your cart yet. Browse our comprehensive range of services and startup solutions to get started.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                <button
+                  onClick={() => router.push("/apis/all_apis")}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+                >
+                  <Package className="h-4 w-4" />
+                  Browse Services
+                </button>
+                <button
+                  onClick={() => router.push("/register-startup")}
+                  className="flex-1 bg-white hover:bg-gray-50 text-gray-700 border border-gray-300 px-6 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-sm hover:shadow-md"
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  Startup Packages
+                </button>
+              </div>
+              <div className="mt-12 pt-8 border-t border-gray-100">
+                <div className="flex items-center justify-center gap-8 text-sm text-gray-500">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <span>Secure Payments</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <span>Expert Support</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <span>Quick Processing</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -158,9 +210,7 @@ export default function Cart() {
                         </div>
                         <div className="flex-shrink-0 flex flex-col items-end">
                           <span className="font-medium text-gray-900">{formatINRCurrency(item.price)}</span>
-                          <span className="text-xs text-gray-500 mt-1">
-                            +{formatINRCurrency(item.price * 0.18)} GST
-                          </span>
+                          <span className="text-xs text-gray-500 mt-1">(GST included)</span>
                         </div>
                       </div>
                     </div>
@@ -216,9 +266,7 @@ export default function Cart() {
                           <span className="font-medium text-gray-900">
                             {formatINRCurrency(item.priceWithGst || item.price)}
                           </span>
-                          {item.price !== item.priceWithGst && (
-                            <span className="text-xs text-gray-500 mt-1">(GST included)</span>
-                          )}
+                          <span className="text-xs text-gray-500 mt-1">(GST included)</span>
                         </div>
                       </div>
                     </div>
@@ -237,12 +285,12 @@ export default function Cart() {
               <div className="p-5 space-y-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Subtotal</span>
-                  <span className="font-medium">{formatINRCurrency(subtotal)}</span>
+                  <span className="font-medium">{formatINRCurrency(totalAmount)}</span>
                 </div>
 
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">GST (18%)</span>
-                  <span className="font-medium">{formatINRCurrency(gstAmount)}</span>
+                  <span className="font-medium">{formatINRCurrency(0)}</span>
                 </div>
 
                 <div className="mt-4 flex items-start gap-2">
@@ -264,10 +312,10 @@ export default function Cart() {
                 <div className="border-t border-gray-200 pt-4 mt-2">
                   <div className="flex justify-between">
                     <span className="text-lg font-semibold text-gray-900">Total</span>
-                    <span className="text-lg font-bold text-blue-700">{formatINRCurrency(totalWithGst)}</span>
+                    <span className="text-lg font-bold text-blue-700">{formatINRCurrency(totalAmount)}</span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    GST is applied only to services, not to startup items with included GST
+                    All prices are inclusive of GST
                   </p>
                 </div>
 

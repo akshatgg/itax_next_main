@@ -186,7 +186,7 @@ const SuperAdminTransactionHistory = () => {
   const calculateGroupTotals = (transactions) => {
     return {
       count: transactions.length,
-      total: transactions.reduce((sum, t) => sum + t.amountForServices, 0),
+      total: transactions.reduce((sum, t) => sum + ((t.amountForServices*100)/118), 0),
       items: transactions.reduce((sum, t) => sum + (t.services?.length || 0), 0)
     };
   };
@@ -278,97 +278,178 @@ const SuperAdminTransactionHistory = () => {
     );
   };
 
-  const TransactionDetails = ({ transaction }) => {
-    const subtotal = (transaction.amountForServices * 100) / 118;
-    const gstAmount = transaction.amountForServices - subtotal;
+const TransactionDetails = ({ transaction }) => {
+  const subtotal = (transaction.amountForServices * 100) / 118;
+  const gstAmount = 0;
 
-    return (
-      <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-        <div className="flex justify-between items-start mb-3">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs text-gray-500 font-mono">
-                #{transaction.id.slice(-8).toUpperCase()}
-              </span>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                transaction.status === 'success' 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-amber-100 text-amber-700'
-              }`}>
-                {transaction.status === 'success' ? 'Completed' : 'Pending'}
-              </span>
-            </div>
-            <p className="text-sm text-gray-600">
-              {new Date(transaction.createdAt).toLocaleDateString('en-IN', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              })}
-            </p>
+  return (
+    <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-xs text-gray-500 font-mono">
+              #{transaction.id.slice(-8).toUpperCase()}
+            </span>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+              transaction.status === 'success' 
+                ? 'bg-green-100 text-green-700' 
+                : 'bg-amber-100 text-amber-700'
+            }`}>
+              {transaction.status === 'success' ? 'Completed' : 'Pending'}
+            </span>
           </div>
-          <div className="text-right">
-            <p className="text-lg font-bold text-gray-800">
-              ₹{transaction.amountForServices.toFixed(2)}
-            </p>
-            <p className="text-xs text-gray-500">incl. GST</p>
+          <p className="text-sm text-gray-600">
+            {new Date(transaction.createdAt).toLocaleDateString('en-IN', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-lg font-bold text-gray-800">
+            ₹{((transaction.amountForServices*100)/118).toFixed(2)}
+          </p>
+          <p className="text-xs text-gray-500">incl. GST</p>
+        </div>
+      </div>
+
+      {/* API Services */}
+      {transaction.services?.length > 0 && (
+        <div className="space-y-2 mb-4">
+          <h6 className="text-xs font-semibold text-blue-700 uppercase tracking-wide flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+            </svg>
+            API Services
+          </h6>
+          <div className="grid gap-2">
+            {transaction.services.map((service, index) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-white rounded-md border border-blue-100">
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 bg-blue-50 rounded-md">
+                    {iconList[service.title]?.icon ? (
+                      <span className="h-4 w-4 text-blue-600">{iconList[service.title]?.icon}</span>
+                    ) : (
+                      <Image
+                        src={iconList[service.title]?.src || "/default-service.svg"}
+                        width={16}
+                        height={16}
+                        alt={service.title}
+                        className="object-contain"
+                      />
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">{service.title}</span>
+                    <p className="text-xs text-gray-500">{service.category}</p>
+                  </div>
+                </div>
+                <span className="text-sm font-semibold text-gray-800">
+                  ₹{service.price?.toFixed(2) || '0.00'}
+                </span>
+              </div>
+            ))}
           </div>
         </div>
+      )}
 
-        {/* Services */}
-        {transaction.services?.length > 0 && (
-          <div className="space-y-2">
-            <h6 className="text-xs font-semibold text-gray-700 uppercase tracking-wide">Services</h6>
-            <div className="grid gap-2">
-              {transaction.services.map((service, index) => (
-                <div key={index} className="flex items-center justify-between p-2 bg-white rounded-md border border-gray-100">
-                  <div className="flex items-center space-x-2">
-                    <div className="flex items-center justify-center w-8 h-8 bg-blue-50 rounded-md">
-                      {iconList[service.title]?.icon ? (
-                        <span className="h-4 w-4 text-blue-600">{iconList[service.title]?.icon}</span>
-                      ) : (
-                        <Image
-                          src={iconList[service.title]?.src || "/default-service.svg"}
-                          width={16}
-                          height={16}
-                          alt={service.title}
-                          className="object-contain"
-                        />
-                      )}
-                    </div>
-                    <span className="text-sm font-medium text-gray-700">{service.title}</span>
+      {/* Registration/Startup Services */}
+      {transaction.registrationStartup?.length > 0 && (
+        <div className="space-y-2 mb-4">
+          <h6 className="text-xs font-semibold text-green-700 uppercase tracking-wide flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </svg>
+            Registration & Startup Services
+          </h6>
+          <div className="grid gap-2">
+            {transaction.registrationStartup.map((startup, index) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-white rounded-md border border-green-100">
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 bg-green-50 rounded-md">
+                    <Image
+                      src={startup.image || "/default-startup.svg"}
+                      width={16}
+                      height={16}
+                      alt={startup.title}
+                      className="object-contain"
+                    />
                   </div>
-                  <span className="text-sm font-semibold text-gray-800">
-                    ₹{service.price?.toFixed(2) || '0.00'}
-                  </span>
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">{startup.title}</span>
+                    <p className="text-xs text-gray-500 capitalize">{startup.categories}</p>
+                  </div>
                 </div>
-              ))}
-            </div>
+                <span className="text-sm font-semibold text-gray-800">
+                  ₹{startup.priceWithGst?.toFixed(2) || '0.00'}
+                </span>
+              </div>
+            ))}
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Payment Breakdown */}
-        <div className="mt-3 pt-3 border-t border-gray-200">
-          <div className="text-xs space-y-1 text-gray-600">
-            <div className="flex justify-between">
-              <span>Subtotal (excl. GST):</span>
-              <span>₹{subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>GST (18%):</span>
-              <span>₹{gstAmount.toFixed(2)}</span>
-            </div>
+      {/* Registration Services (if any) */}
+      {transaction.registrationServices?.length > 0 && (
+        <div className="space-y-2 mb-4">
+          <h6 className="text-xs font-semibold text-purple-700 uppercase tracking-wide flex items-center gap-2">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Registration Services
+          </h6>
+          <div className="grid gap-2">
+            {transaction.registrationServices.map((regService, index) => (
+              <div key={index} className="flex items-center justify-between p-2 bg-white rounded-md border border-purple-100">
+                <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-center w-8 h-8 bg-purple-50 rounded-md">
+                    <span className="text-purple-600 text-xs font-bold">RS</span>
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">{regService.title}</span>
+                </div>
+                <span className="text-sm font-semibold text-gray-800">
+                  ₹{regService.price?.toFixed(2) || '0.00'}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Show message if no services */}
+      {(!transaction.services || transaction.services.length === 0) && 
+       (!transaction.registrationStartup || transaction.registrationStartup.length === 0) && 
+       (!transaction.registrationServices || transaction.registrationServices.length === 0) && (
+        <div className="text-center py-4 text-gray-500">
+          <p className="text-sm">No services found for this transaction</p>
+        </div>
+      )}
+
+      {/* Payment Breakdown */}
+      <div className="mt-3 pt-3 border-t border-gray-200">
+        <div className="text-xs space-y-1 text-gray-600 ">
+          <div className="flex justify-between">
+            <span>Subtotal (incl. GST):</span>
+            <span>₹{subtotal.toFixed(2)}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>GST (18%):</span>
+            <span>₹{gstAmount.toFixed(2)}</span>
           </div>
         </div>
       </div>
-    );
-  };
+    </div>
+  );
+};
+
 
   const UserCard = ({ userKey, userData }) => {
     const { userInfo, pending, success } = userData;
     const totalTransactions = pending.length + success.length;
-    const totalSuccessAmount = success.reduce((sum, t) => sum + t.amountForServices, 0);
+    const totalSuccessAmount = success.reduce((sum, t) => sum + ((t.amountForServices*100)/118), 0);
 
     return (
       <div className="bg-white border border-slate-200 rounded-2xl mb-6 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
@@ -422,7 +503,7 @@ const SuperAdminTransactionHistory = () => {
   // Calculate summary stats
   const summaryStats = {
     totalTransactions: allTransactions.length,
-    totalRevenue: allTransactions.filter(t => t.status === 'success').reduce((sum, t) => sum + t.amountForServices, 0),
+    totalRevenue: allTransactions.filter(t => t.status === 'success').reduce((sum, t) => sum + ((t.amountForServices*100)/118), 0),
     completedCount: allTransactions.filter(t => t.status === 'success').length,
     pendingCount: allTransactions.filter(t => t.status === 'pending').length,
     totalUsers: Object.keys(filteredGroups).length

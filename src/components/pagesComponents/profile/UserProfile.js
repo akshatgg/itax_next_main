@@ -615,10 +615,10 @@ const UserProfile = () => {
               <div className="flex gap-3 justify-end mt-8 border-t pt-6">
                 {!editable ? (
                   <>
-                    <Button type="button" onClick={() => router.push("/")} size={"md-1"} className="flex items-center">
+                    {/* <Button type="button" onClick={() => router.push("/")} size={"md-1"} className="flex items-center">
                       <ArrowLeft size={16} className="mr-2" />
                       Back
-                    </Button>
+                    </Button> */}
                   </>
                 ) : (
                   <>

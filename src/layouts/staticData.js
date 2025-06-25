@@ -209,13 +209,13 @@ export const DashboardSidebarItemsData = {
         {
           title: 'User Account',
           iconName: 'lets-icons:subttasks-alt-fill',
-          upcoming: true,
+          upcoming: false,
           linkTo: '/profile',
         },
         {
           title: 'Business profile',
           iconName: 'lets-icons:subttasks-alt-fill',
-          linkTo: '/dashboard/profile/business',
+          linkTo: '/profile',
         },
       ],
     },
@@ -819,14 +819,14 @@ export const DashboardSidebarItemsData = {
       linkTo: '/dashboard/transactions',
       subMenu: false,
     },
-    {
-      upcoming: false,
-      title: 'Order History',
-      iconName: 'clarity:two-way-arrows-line',
-      // linkTo: '/dashboard/order-history/OrderHistory.js',
-          linkTo: '/dashboard/order-history',
-      subMenu: false,
-    },
+    // {
+    //   upcoming: false,
+    //   title: 'Order History',
+    //   iconName: 'clarity:two-way-arrows-line',
+    //   // linkTo: '/dashboard/order-history/OrderHistory.js',
+    //       linkTo: '/dashboard/order-history',
+    //   subMenu: false,
+    // },
 
     {
       upcoming: false,

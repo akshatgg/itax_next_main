@@ -164,7 +164,7 @@ const OrderHistory = () => {
             <div className="text-right">
               <span className="text-xs text-zinc-400 uppercase tracking-wide font-medium">Total Amount</span>
               <p className="text-xl font-bold text-blue-600 mt-1">
-                ₹{order.amountForServices.toFixed(2)}
+                ₹{((order.amountForServices * 100) / 118).toFixed(2)}
               </p>
             </div>
           </div>

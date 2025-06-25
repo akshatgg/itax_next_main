@@ -324,21 +324,24 @@ import { iconList } from "../apiService/staticData";
 import UseAuth from "@/hooks/useAuth";
 import axios from "axios";
 import Image from "next/image";
+import { ArrowLeft, ShoppingCart, CheckCircle2, CreditCard } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const PaymentPageWrapper = ({ children }) => (
-  <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-200 py-10 px-4 flex items-center justify-center">
+  <div className="min-h-screen bg-gray-50 py-8 px-4">
     {children}
   </div>
 );
 
 const PaymentForm = ({ children }) => (
-  <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-8 space-y-6">
+  <div className="w-full max-w-6xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
     {children}
   </div>
 );
 
 export default function CheckoutDetails() {
   const { token } = UseAuth();
+  const router = useRouter();
   const [services, setServices] = useState([]);
   const [registrationStartup, setRegistrationStartup] = useState([]);
   const [registrationServices, setRegistrationServices] = useState([]);
@@ -388,20 +391,34 @@ export default function CheckoutDetails() {
     fetchCartData();
   }, [token, getUserDetails, fetchCartData]);
 
+  // Calculate totals (all prices are GST inclusive)
   const serviceTotal = services.reduce((acc, item) => acc + (item.price || 0), 0);
   const regServiceTotal = registrationServices.reduce((acc, item) => acc + (item.price || 0), 0);
   const startupTotal = registrationStartup.reduce((acc, item) => acc + (item.priceWithGst || item.price || 0), 0);
-  const gstAmount = (serviceTotal + regServiceTotal) * 0.18;
-  const netTotalAmount = serviceTotal + regServiceTotal + startupTotal + gstAmount;
+  const totalAmount = serviceTotal + regServiceTotal + startupTotal;
+
+  const goBackToCart = () => {
+    router.push('/cart');
+  };
 
   if (isLoading || cartLoading || !userDetails.email) {
     return (
       <PaymentPageWrapper>
         <PaymentForm>
-          <Title>Checkout</Title>
-          <div className="flex flex-col items-center gap-4">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="text-gray-600">Loading details...</p>
+          <div className="p-8">
+            <div className="flex items-center gap-4 mb-6">
+              <button
+                onClick={goBackToCart}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              >
+                <ArrowLeft className="h-5 w-5 text-gray-600" />
+              </button>
+              <h1 className="text-2xl font-semibold text-gray-800">Checkout</h1>
+            </div>
+            <div className="flex flex-col items-center gap-4 py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <p className="text-gray-600">Loading checkout details...</p>
+            </div>
           </div>
         </PaymentForm>
       </PaymentPageWrapper>
@@ -412,14 +429,32 @@ export default function CheckoutDetails() {
     return (
       <PaymentPageWrapper>
         <PaymentForm>
-          <Title>Checkout</Title>
-          <div className="text-center py-10">
-            <div className="text-5xl mb-3">🛒</div>
-            <h2 className="text-lg font-semibold text-gray-700 mb-2">Your cart is empty</h2>
-            <p className="text-gray-500">Add some items to continue checkout.</p>
-            <button onClick={() => window.history.back()} className="mt-5 bg-blue-600 text-white px-5 py-2 rounded hover:bg-blue-700">
-              Go Back to Shopping
-            </button>
+          <div className="p-8">
+            <div className="flex items-center gap-4 mb-6">
+              <button
+                onClick={goBackToCart}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              >
+                <ArrowLeft className="h-5 w-5 text-gray-600" />
+              </button>
+              <h1 className="text-2xl font-semibold text-gray-800">Checkout</h1>
+            </div>
+            <div className="text-center py-16">
+              <div className="flex justify-center mb-6">
+                <div className="p-4 bg-gray-50 rounded-full">
+                  <ShoppingCart className="h-12 w-12 text-gray-400" strokeWidth={1.5} />
+                </div>
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800 mb-3">Your cart is empty</h2>
+              <p className="text-gray-600 mb-8">Add some items to your cart to continue with checkout.</p>
+              <button 
+                onClick={goBackToCart}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 mx-auto"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Cart
+              </button>
+            </div>
           </div>
         </PaymentForm>
       </PaymentPageWrapper>
@@ -429,112 +464,198 @@ export default function CheckoutDetails() {
   return (
     <PaymentPageWrapper>
       <PaymentForm>
-        <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-800">Checkout Summary</h1>
+        {/* Header with Back Button */}
+        <div className="bg-gradient-to-r from-blue-50 to-gray-50 p-6 border-b border-gray-200">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={goBackToCart}
+              className="p-2 hover:bg-white hover:shadow-sm rounded-lg transition-all duration-200 flex items-center gap-2 text-gray-600 hover:text-gray-800"
+            >
+              <ArrowLeft className="h-5 w-5" />
+           
+            </button>
+            <div className="flex-1">
+              <h1 className="text-2xl font-semibold text-gray-800">Checkout</h1>
+              <p className="text-sm text-gray-600 mt-1">Complete your purchase securely</p>
+            </div>
+          </div>
         </div>
 
-        <div className="space-y-4">
-          {[{ label: "Name", value: `${userDetails.firstName} ${userDetails.lastName}` }, { label: "Email", value: userDetails.email }, userDetails.gst && { label: "GST", value: userDetails.gst }]
-            .filter(Boolean)
-            .map(({ label, value }) => (
-              <div key={label} className="flex justify-between items-center bg-gray-50 px-4 py-2 rounded-md">
-                <span className="text-sm text-gray-500">{label}</span>
-                <span className="font-medium text-gray-800">{value}</span>
-              </div>
-            ))}
-
-
-          {[...services.map(item => ({ ...item, type: "Service", price: item.price })),
-            ...registrationStartup.map(item => ({ ...item, type: "Startup", price: item.priceWithGst || item.price })),
-            ...registrationServices.map(item => ({ ...item, type: "Registration", price: item.price }))
-          ].map((item, idx) => (
-            <div key={idx} className="bg-white border border-gray-100 shadow-sm rounded-lg px-4 py-3 flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
-                  {/* For regular services - use iconList */}
-                  {item.type === "Service" && (
-                    <>
-                      {iconList[item.title]?.icon ? (
-                        <span className="h-8 w-8 text-blue-600">{iconList[item.title]?.icon}</span>
-                      ) : (
-                        <Image
-                          src={iconList[item.title]?.src || "/default-service.svg"}
-                          width={40}
-                          height={40}
-                          alt={item.title}
-                          className="object-contain"
-                        />
-                      )}
-                    </>
-                  )}
-                  
-                  {/* For startup services - use item.image directly */}
-                  {item.type === "Startup" && (
-                    <Image
-                      src={item.image || "/default-startup.svg"}
-                      width={40}
-                      height={40}
-                      alt={item.title}
-                      className="object-contain"
-                    />
-                  )}
-                  
-                  {/* For registration services - use iconList */}
-                  {item.type === "Registration" && (
-                    <>
-                      {iconList[item.title]?.icon ? (
-                        <span className="h-8 w-8 text-blue-600">{iconList[item.title]?.icon}</span>
-                      ) : (
-                        <Image
-                          src={iconList[item.title]?.src || "/default-service.svg"}
-                          width={40}
-                          height={40}
-                          alt={item.title}
-                          className="object-contain"
-                        />
-                      )}
-                    </>
-                  )}
+        {/* Main Content - Two Column Layout */}
+        <div className="lg:grid lg:grid-cols-3 lg:gap-8 p-6">
+          {/* Left Column - Customer Details & Order Items */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Customer Details */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-semibold text-sm">1</span>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">{item.type}</p>
-                  <h3 className="font-semibold text-gray-800">{item.title}</h3>
+                Customer Information
+              </h2>
+              <div className="grid md:grid-cols-2 gap-4">
+                {[
+                  { label: "Name", value: `${userDetails.firstName} ${userDetails.lastName}` },
+                  { label: "Email", value: userDetails.email },
+                  ...(userDetails.gst ? [{ label: "GST Number", value: userDetails.gst }] : [])
+                ].map(({ label, value }) => (
+                  <div key={label} className="flex justify-between items-center bg-white px-4 py-3 rounded-lg border border-gray-100">
+                    <span className="text-sm font-medium text-gray-600">{label}</span>
+                    <span className="text-gray-800 text-sm">{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Order Items */}
+            <div className="bg-white border border-gray-200 rounded-lg p-6">
+              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 font-semibold text-sm">2</span>
                 </div>
+                Order Items
+              </h2>
+              <div className="space-y-3">
+                {[
+                  ...services.map(item => ({ ...item, type: "Service", price: item.price })),
+                  ...registrationStartup.map(item => ({ ...item, type: "Startup", price: item.priceWithGst || item.price })),
+                  ...registrationServices.map(item => ({ ...item, type: "Registration", price: item.price }))
+                ].map((item, idx) => (
+                  <div key={idx} className="bg-gray-50 border border-gray-100 rounded-lg p-4 flex items-center justify-between hover:shadow-sm transition-shadow duration-200">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0 w-12 h-12 bg-white rounded-lg flex items-center justify-center border border-gray-200">
+                        {/* Icon logic remains the same */}
+                        {item.type === "Service" && (
+                          <>
+                            {iconList[item.title]?.icon ? (
+                              <span className="h-6 w-6 text-blue-600">{iconList[item.title]?.icon}</span>
+                            ) : (
+                              <Image
+                                src={iconList[item.title]?.src || "/default-service.svg"}
+                                width={24}
+                                height={24}
+                                alt={item.title}
+                                className="object-contain"
+                              />
+                            )}
+                          </>
+                        )}
+                        
+                        {item.type === "Startup" && (
+                          <Image
+                            src={item.image || "/default-startup.svg"}
+                            width={24}
+                            height={24}
+                            alt={item.title}
+                            className="object-contain"
+                          />
+                        )}
+                        
+                        {item.type === "Registration" && (
+                          <>
+                            {iconList[item.title]?.icon ? (
+                              <span className="h-6 w-6 text-blue-600">{iconList[item.title]?.icon}</span>
+                            ) : (
+                              <Image
+                                src={iconList[item.title]?.src || "/default-service.svg"}
+                                width={24}
+                                height={24}
+                                alt={item.title}
+                                className="object-contain"
+                              />
+                            )}
+                          </>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className="font-medium text-gray-800">{item.title}</h3>
+                          <span className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-full font-medium">
+                            {item.type}
+                          </span>
+                        </div>
+                        {item.aboutService && (
+                          <p className="text-sm text-gray-500 line-clamp-2">{item.aboutService}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="text-right flex-shrink-0 ml-4">
+                      <div className="text-lg font-semibold text-gray-800">₹{item.price.toLocaleString()}</div>
+                      <div className="text-xs text-gray-500">GST included</div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="text-right">
-                <span className="text-gray-800 font-medium">₹{item.price}</span>
-                {item.type === "Startup" && item.priceWithGst && (
-                  <div className="text-xs text-gray-500">(GST included)</div>
-                )}
-              </div>
-            </div>
-          ))}
-
-
-
-          <div className="border-t pt-4 space-y-2">
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>Subtotal</span>
-              <span>₹{(serviceTotal + regServiceTotal + startupTotal).toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>GST (18%)</span>
-              <span>₹{gstAmount.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center text-lg font-semibold text-gray-800 bg-blue-50 px-4 py-2 rounded-lg">
-              <span>Total Amount</span>
-              <span className="text-blue-600">₹{netTotalAmount.toFixed(2)}</span>
             </div>
           </div>
 
-          <div className="pt-6 text-center">
-            <PayNowHandler
-              totalAmount={netTotalAmount.toFixed(2)}
-              services={services}
-              registrationStartup={registrationStartup}
-              registrationServices={registrationServices}
-              className="bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 font-semibold shadow"
-            />
+          {/* Right Column - Checkout Summary & Payment */}
+          <div className="lg:col-span-1 mt-6 lg:mt-0">
+            <div className="sticky top-6 space-y-6">
+              {/* Checkout Summary */}
+              <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+                <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span className="text-blue-600 font-semibold text-sm">3</span>
+                  </div>
+                  Order Summary
+                </h2>
+                
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between items-center text-gray-600">
+                    <span>Subtotal</span>
+                    <span className="font-medium">₹{totalAmount.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-gray-600">
+                    <span>GST (18%)</span>
+                    <span className="font-medium">₹0.00</span>
+                  </div>
+                  <div className="border-t border-gray-200 pt-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-semibold text-gray-800">Total Amount</span>
+                      <span className="text-2xl font-bold text-blue-600">₹{totalAmount.toLocaleString()}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2 text-center">All prices are inclusive of GST</p>
+                  </div>
+                </div>
+
+                {/* Payment Button */}
+                <div className="space-y-4">
+                  <PayNowHandler
+                    totalAmount={totalAmount.toFixed(2)}
+                    services={services}
+                    registrationStartup={registrationStartup}
+                    registrationServices={registrationServices}
+                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 px-6 rounded-lg font-semibold transition-all duration-200 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    <CreditCard className="h-5 w-5" />
+                    Complete Payment
+                  </PayNowHandler>
+                  
+                  {/* Security Features */}
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-800">Secure Payment</span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-2 text-xs text-green-700">
+                      <div className="flex items-center gap-1">
+                        <CheckCircle2 className="h-3 w-3" />
+                        <span>256-bit SSL Encryption</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <CheckCircle2 className="h-3 w-3" />
+                        <span>PCI DSS Compliant</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <CheckCircle2 className="h-3 w-3" />
+                        <span>Money Back Guarantee</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </PaymentForm>
