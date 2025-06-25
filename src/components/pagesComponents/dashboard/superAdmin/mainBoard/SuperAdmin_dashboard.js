@@ -57,10 +57,10 @@ export default function SuperAdmin_Dashboard() {
           }),
           amount: txn.amountForServices,
           status: txn.status,
+          id: txn.txnid,
         }));
 
         setTransactions(parsed);
-        console.log('Recent Transactions:', parsed);
       } else {
         setTransactions([]);
         setIsError(true);
@@ -641,6 +641,10 @@ export default function SuperAdmin_Dashboard() {
                 </th>
 
                 <th scope="col" className={tableClassName.headTH}>
+                  Transaction_Id
+                </th>
+
+                <th scope="col" className={tableClassName.headTH}>
                 Date & Time
                 </th>
                 <th scope="col" className={tableClassName.headTH}>
@@ -663,6 +667,15 @@ export default function SuperAdmin_Dashboard() {
                       class="block w-full p-3 text-gray-900 border border-gray-300  bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     />
                   </td>
+                  <td className="border border-slate-600">
+                    <input
+                      type="text"
+                      id="small-input"
+                      value={txn.id}
+                      class="block w-full p-3 text-gray-900 border border-gray-300  bg-gray-50 sm:text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                    />
+                  </td>
+
                   <td className="border border-slate-600">
                     <input
                       type="text"
