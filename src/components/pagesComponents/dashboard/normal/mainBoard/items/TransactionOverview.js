@@ -50,6 +50,8 @@ export default function TransactionOverview({ invoices = [], onSelectInvoice, cl
       const { data } = response;
       setResponseData(data);
 
+      console.log('Fetched order data:', data);
+
       if (data && Array.isArray(data.data)) {
         const formattedOrders = data.data.map((order) => {
           const createdDate = new Date(order.createdAt);
@@ -61,14 +63,22 @@ export default function TransactionOverview({ invoices = [], onSelectInvoice, cl
             })
             .toUpperCase(); // "JUN 24, 2025"
 
-          const serviceTitles =
-            order.services?.map((service) => service.title) || [];
-
-          const basePrice =
-            order.services?.reduce(
-              (sum, service) => sum + (service.price || 0),
-              0,
-            ) || 0;
+            const services = order.services || [];
+            const registrationServices = order.registrationServices || [];
+            const registrationStartup = order.registrationStartup || [];
+          
+            const allServices = [
+              ...services,
+              ...registrationServices,
+              ...registrationStartup,
+            ];
+            console.log('All services:', allServices);
+          
+            const serviceTitles = allServices.map((service) => service.title);
+            const basePrice = allServices.reduce(
+              (sum, service) => sum + (service.price || service.priceWithGst || 0),
+              0
+            );
 
 
           return {

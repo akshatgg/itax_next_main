@@ -17,7 +17,7 @@ export default function SubSubSubmenu(props) {
     return (
         <div className=" p-4 pl-8">
             <Link href={linkTo}>
-                <button className={` ${(upcoming)?"opacity-50":"opacity-100"} flex font-thin`}>
+                <button disabled={upcoming} className={` ${(upcoming)?"opacity-50 cursor-not-allowed":"opacity-100"} flex font-thin`}>
                     <span><Icon icon={iconName} className='w-6 h-6 ml-1 mr-2  bg-blue-500 text-neutral-50 rounded-2xl p-1'/></span>
                     {title==="Super Admin" ?( <button className="ml-6 font-semibold text-left block text-sm bg-blue-600">
           {title} 
