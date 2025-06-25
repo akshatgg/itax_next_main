@@ -209,13 +209,13 @@ export const DashboardSidebarItemsData = {
         {
           title: 'User Account',
           iconName: 'lets-icons:subttasks-alt-fill',
-          upcoming: true,
+          upcoming: false,
           linkTo: '/profile',
         },
         {
           title: 'Business profile',
           iconName: 'lets-icons:subttasks-alt-fill',
-          linkTo: '/dashboard/profile/business',
+          linkTo: '/profile',
         },
       ],
     },

@@ -38,8 +38,7 @@ export default function TransactionOverview({ invoices = [], onSelectInvoice, cl
       const token = await getAuthToken();
       if (!token) throw new Error('Authentication token not found');
 
-      const response = await axios.get(
-        `${BASE_URL}/apis/subscription-user/?limit=3`,
+      const response = await axios.get(`${BASE_URL}/apis/subscription-user/?limit=3`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -69,7 +68,9 @@ export default function TransactionOverview({ invoices = [], onSelectInvoice, cl
               (sum, service) => sum + (service.price || 0),
               0,
             ) || 0;
+console.log(order.services, 'order.services');
 
+console.log(basePrice, 'basePrice');
 
           return {
             id: order.id,

@@ -19,8 +19,7 @@ export default function Normal_dashboard() {
   useEffect(() => {
     const fetchInvoices = async () => {
       try {
-        const { data } = await userAxios.get(
-          `/invoice/invoices?page=1&limit=1000`,
+        const { data } = await userAxios.get(`/invoice/invoices?page=1&limit=1000`,
         );
         setInvoices(data.invoices);
       } catch (err) {
