@@ -115,7 +115,7 @@ const TransactionHistory = () => {
 
   const TransactionCard = ({ transaction }) => {
     const totalItems = calculateTotalItems(transaction);
-    const subtotal = (transaction.amountForServices * 100) / 118;
+    const subtotal = (transaction.amountForServices);
     const gstAmount = 0;
 
     return (
@@ -288,7 +288,7 @@ const TransactionHistory = () => {
         {allTransactions.length > 0 && (
           <div className="mt-2 p-3 bg-slate-100 rounded-lg">
             <p className="text-sm text-zinc-700">
-              💰 Total amount transacted: <span className="font-bold">₹{allTransactions.reduce((sum, t) => sum + (t.amountForServices*100)/118, 0).toFixed(2)}</span>
+              💰 Total amount transacted: <span className="font-bold">₹{allTransactions.reduce((sum, t) => sum + (t.amountForServices), 0).toFixed(2)}</span>
             </p>
           </div>
         )}
