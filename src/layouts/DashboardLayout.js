@@ -5,7 +5,7 @@ import useAuth from '@/hooks/useAuth';
 import { USER_ROLES } from '@/utils/globals';
 import { usePathname } from 'next/navigation';
 import { DashboardSidebarItemsData } from './staticData.js';
-import TopNavbar from '@/components/partials/topNavbar/TopNavbar';
+import Navbar from '@/components/partials/topNavbar/Navbar.js';
 import BackButton from '@/components/pagesComponents/dashboard/BackButton';
 import SideBar from '@/components/pagesComponents/dashboard/sidebar/SideBar';
 
@@ -39,7 +39,7 @@ export default function DashboardLayout({ children }) {
       />
 
       {/* Top Navbar - full width, sticky */}
-      <TopNavbar handleSidebar={handleSidebar} isSidebarOpen={isSidebarOpen} />
+      <Navbar handleSidebar={handleSidebar} isSidebarOpen={isSidebarOpen} />
 
       {/* Main content area - padded left based on sidebar */}
       <main
