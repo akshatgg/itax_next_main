@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useAuth from '@/hooks/useAuth';
 import { USER_ROLES } from '@/utils/globals';
 import { usePathname } from 'next/navigation';
@@ -8,17 +8,24 @@ import { DashboardSidebarItemsData } from './staticData.js';
 import Navbar from '@/components/partials/topNavbar/Navbar.js';
 import BackButton from '@/components/pagesComponents/dashboard/BackButton';
 import SideBar from '@/components/pagesComponents/dashboard/sidebar/SideBar';
+import Loader from '@/components/partials/loading/Loader.js';
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const { currentUser } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const handleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
   if (pathname.startsWith('/dashboard/accounts/invoice')) {
     return <>{children}</>;
   }
+
+  // Reset loader after navigation completes
+  useEffect(() => {
+    setIsNavigating(false);
+  }, [pathname]);
 
   const userType = currentUser?.userType;
 
@@ -31,11 +38,20 @@ export default function DashboardLayout({ children }) {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar - fixed */}
+
+      {/* Global loader overlay */}
+      {isNavigating && (
+        <div className="fixed inset-0 bg-white/60 z-50 flex items-center justify-center">
+          <Loader />
+        </div>
+      )}
+
       <SideBar
         data={getSidebarByRole[userType]}
         userType={userType}
         isSidebarOpen={isSidebarOpen}
         handleSidebar={handleSidebar}
+        setIsNavigating={setIsNavigating}
       />
 
       {/* Top Navbar - full width, sticky */}

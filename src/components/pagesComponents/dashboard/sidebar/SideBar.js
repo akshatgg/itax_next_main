@@ -27,8 +27,9 @@ function SidebarToggle({ isSidebarOpen, handleSidebar }) {
   );
 }
 export default function SideBar(prop) {
-  const { data, isSidebarOpen, handleSidebar } = prop;
+  const { data, isSidebarOpen, handleSidebar, setIsNavigating } = prop;
   const [activeItem, setActiveItem] = useState(0);
+
   const handleActive = (e) => {
     if (activeItem == e) {
       return setActiveItem(null);
@@ -67,6 +68,7 @@ export default function SideBar(prop) {
                 {...item}
                 handleActive={handleActive}
                 activeItem={activeItem}
+                setIsNavigating={setIsNavigating}
               />
             ))}
           </ul>
