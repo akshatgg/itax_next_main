@@ -72,7 +72,7 @@ export default function SuperAdmin_Dashboard() {
             dateStyle: 'medium',
             timeStyle: 'short',
           }),
-          amount: txn.amountForServices,
+          amount: (txn.amountForServices*100)/118,
           status: txn.status,
           id: txn.txnid,
         }));

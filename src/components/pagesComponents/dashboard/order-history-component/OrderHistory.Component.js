@@ -164,7 +164,7 @@ const OrderHistory = () => {
             <div className="text-right">
               <span className="text-xs text-zinc-400 uppercase tracking-wide font-medium">Total Amount</span>
               <p className="text-xl font-bold text-blue-600 mt-1">
-                ₹{((order.amountForServices )).toFixed(2)}
+                ₹{((order.amountForServices*100 )/118).toFixed(2)}
               </p>
             </div>
           </div>
@@ -622,7 +622,7 @@ export const Invoice = ({ orderId, onBack , responseData}) => {
                   <div className="space-y-3">
                     <div className="flex justify-between items-center py-2">
                       <span className="text-zinc-600">Subtotal (incl. GST):</span>
-                      <span className="font-mono">₹{((amountForServices)).toFixed(2)}</span>
+                      <span className="font-mono">₹{((amountForServices*100)/118).toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center py-2">
                       <span className="text-zinc-600">GST (18%):</span>
@@ -631,7 +631,7 @@ export const Invoice = ({ orderId, onBack , responseData}) => {
                     <div className="border-t border-zinc-300 pt-3">
                       <div className="flex justify-between items-center">
                         <span className="text-xl font-bold text-zinc-800">Total Amount:</span>
-                        <span className="text-2xl font-bold text-blue-600 font-mono">₹{((amountForServices)).toFixed(2)}</span>
+                        <span className="text-2xl font-bold text-blue-600 font-mono">₹{((amountForServices*100)/118).toFixed(2)}</span>
                       </div>
                     </div>
                   </div>
