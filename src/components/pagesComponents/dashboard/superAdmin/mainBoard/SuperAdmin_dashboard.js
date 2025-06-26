@@ -38,16 +38,33 @@ export default function SuperAdmin_Dashboard() {
       const token = await getAuthToken();
       if (!token) throw new Error('Auth token missing');
 
-      const response = await axios.get(`${BASE_URL}/apis/get-all-subscriptions?limit=3`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const response = await axios.get(
+        `${BASE_URL}/apis/get-all-subscriptions?limit=3`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       const { data } = response;
+      console.log('Fetched recent transactions:', data);
 
-      if (data.success && Array.isArray(data.subscriptions)) {
-        const parsed = data.subscriptions.map(txn => ({
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to fetch transactions.');
+      }
+
+      //No Records Found
+      if (
+        Array.isArray(data.subscriptions) &&
+        data.subscriptions.length === 0
+      ) {
+        setTransactions([]);
+        return;
+      }
+
+      if (Array.isArray(data.subscriptions)) {
+        const parsed = data.subscriptions.map((txn) => ({
           transactionLabel: txn.user?.email
             ? `Payment from ${txn.user.email}`
             : 'Payment',
@@ -76,7 +93,6 @@ export default function SuperAdmin_Dashboard() {
   useEffect(() => {
     fetchRecentTransactions();
   }, []);
-
 
   useEffect(() => {
     const getAllUsers = async () => {
@@ -211,7 +227,7 @@ export default function SuperAdmin_Dashboard() {
         </div>
       </DashSection>
 
-      <DashSection
+      {/* <DashSection
         title={'Financial Details'}
         titleRight={'current year - 2025'}
       >
@@ -442,7 +458,7 @@ export default function SuperAdmin_Dashboard() {
             className="col-span-1"
           />
         </div>
-      </DashSection>
+      </DashSection> */}
       {/* <DashSection
         title={'Recent Transactions'}
         titleRight={'current year - 2025'}
@@ -466,7 +482,7 @@ export default function SuperAdmin_Dashboard() {
                   </th>
                 </tr>
               </thead> */}
-              {/* <tbody>
+      {/* <tbody>
                 <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                   <th className="border border-slate-600">
                     <input
@@ -561,7 +577,7 @@ export default function SuperAdmin_Dashboard() {
                   </td>
                 </tr>
               </tbody> */}
-              {/* <tbody className='bg-white divide-y divide-gray-200'> 
+      {/* <tbody className='bg-white divide-y divide-gray-200'> 
               {isLoading ? (<tr>
                   <td colSpan={4} className="text-center py-4">
                     Loading...
@@ -645,7 +661,7 @@ export default function SuperAdmin_Dashboard() {
                 </th>
 
                 <th scope="col" className={tableClassName.headTH}>
-                Date & Time
+                  Date & Time
                 </th>
                 <th scope="col" className={tableClassName.headTH}>
                   Amount
@@ -657,7 +673,7 @@ export default function SuperAdmin_Dashboard() {
               </tr>
             </thead>
             <tbody className=" bg-white divide-y divide-gray-200 ">
-              {transactions.map((txn,index) => (
+              {transactions.map((txn, index) => (
                 <tr key={index}>
                   <td className="border border-slate-600">
                     <input
@@ -695,24 +711,24 @@ export default function SuperAdmin_Dashboard() {
                   </td>
 
                   <td className="border border-slate-600 p-2">
-                        <span
-                          className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
-                            txn.status === 'success'
-                              ? 'bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300'
-                              : txn.status === 'failure'
-                              ? 'bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300'
-                              : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
-                          }`}
-                        >
-                          {txn.status.charAt(0).toUpperCase() + txn.status.slice(1)}
-                        </span>
-                      </td>
+                    <span
+                      className={`text-xs font-medium px-2.5 py-0.5 rounded-full ${
+                        txn.status === 'success'
+                          ? 'bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300'
+                          : txn.status === 'failure'
+                            ? 'bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300'
+                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+                      }`}
+                    >
+                      {txn.status.charAt(0).toUpperCase() + txn.status.slice(1)}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          {users.length <= 0 ? (
+          {transactions.length <= 0 ? (
             <div className="py-4 flex flex-col items-center gap-4 justify-center mb-2 max-w-6xl mx-auto">
               {isLoading ? (
                 'loading'
@@ -727,14 +743,14 @@ export default function SuperAdmin_Dashboard() {
                     />
                     <p className="text-center">No Record Found</p>
                   </div>
-                  <Link href={'link to create user'}>
+                  {/* <Link href={'link to create user'}>
                     <button
                       type="button"
                       className="capitalize flex items-center focus:outline-none text-white bg-blue-400 hover:bg-blue-500 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2  "
                     >
                       create user
                     </button>
-                  </Link>
+                  </Link> */}
                 </>
               )}
             </div>
@@ -743,7 +759,6 @@ export default function SuperAdmin_Dashboard() {
           )}
         </div>
       </DashSection>
-      
     </div>
   );
 }

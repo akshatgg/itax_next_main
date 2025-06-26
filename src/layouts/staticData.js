@@ -175,7 +175,7 @@ export const DashboardSidebarItemsData = {
       ],
     },
     {
-      upcoming: false,
+      upcoming: true,
       title: 'Bill Payment',
       iconName: 'mingcute:paper-fill',
       subMenu: true,

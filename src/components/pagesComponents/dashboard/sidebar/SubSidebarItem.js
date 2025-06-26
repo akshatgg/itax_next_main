@@ -7,7 +7,7 @@ export default function SubSideBarItem(props) {
     if (subMenu) {
         return (
         <div className={` py-4 pl-1 grid gap-2 transition-grid-rows duration-300 grid-rows-[0fr_0fr] ${subActiveItem===index?"grid-rows-[0fr_1fr]":""}`}>
-            <button onClick={()=>subHandleActive(index)} className={`${(upcoming)?"opacity-50":"opacity-100"} flex font-semibold`}>
+            <button onClick={()=>subHandleActive(index)} disabled={upcoming} className={`${(upcoming)?"opacity-50 cursor-not-allowed":"opacity-100"} flex font-semibold`}>
                 <span><Icon icon={iconName} className='w-6 h-6 ml-1 mr-2  bg-blue-500 text-neutral-50 rounded-md p-1'/></span>
                 <span className="ml-6 font-semibold text-left block text-md">
                     {title}
@@ -27,7 +27,7 @@ export default function SubSideBarItem(props) {
     return (
         <div className="capitalize py-4 pl-1">
             <Link href={linkTo}>
-                <button className={`${(upcoming)?"opacity-50":"opacity-100"} flex font-bold`}>
+                <button disabled={upcoming} className={`${(upcoming)?"opacity-50 cursor-not-allowed":"opacity-100"} flex font-bold`}>
                     <span><Icon icon={iconName} className='w-6 h-6 ml-1 mr-2  bg-blue-500 text-neutral-50 rounded-md p-1'/></span>
 					<span className="ml-6 font-semibold text-left block text-sm">
 						{title}

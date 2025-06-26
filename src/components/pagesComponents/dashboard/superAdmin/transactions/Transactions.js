@@ -186,7 +186,7 @@ const SuperAdminTransactionHistory = () => {
   const calculateGroupTotals = (transactions) => {
     return {
       count: transactions.length,
-      total: transactions.reduce((sum, t) => sum + ((t.amountForServices*100)/118), 0),
+      total: transactions.reduce((sum, t) => sum + ((t.amountForServices)), 0),
       items: transactions.reduce((sum, t) => sum + (t.services?.length || 0), 0)
     };
   };
@@ -279,7 +279,7 @@ const SuperAdminTransactionHistory = () => {
   };
 
 const TransactionDetails = ({ transaction }) => {
-  const subtotal = (transaction.amountForServices * 100) / 118;
+  const subtotal = (transaction.amountForServices) ;
   const gstAmount = 0;
 
   return (
@@ -310,7 +310,7 @@ const TransactionDetails = ({ transaction }) => {
         </div>
         <div className="text-right">
           <p className="text-lg font-bold text-gray-800">
-            ₹{((transaction.amountForServices*100)/118).toFixed(2)}
+            ₹{((transaction.amountForServices)).toFixed(2)}
           </p>
           <p className="text-xs text-gray-500">incl. GST</p>
         </div>
@@ -449,7 +449,7 @@ const TransactionDetails = ({ transaction }) => {
   const UserCard = ({ userKey, userData }) => {
     const { userInfo, pending, success } = userData;
     const totalTransactions = pending.length + success.length;
-    const totalSuccessAmount = success.reduce((sum, t) => sum + ((t.amountForServices*100)/118), 0);
+    const totalSuccessAmount = success.reduce((sum, t) => sum + ((t.amountForServices)), 0);
 
     return (
       <div className="bg-white border border-slate-200 rounded-2xl mb-6 shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
@@ -503,7 +503,7 @@ const TransactionDetails = ({ transaction }) => {
   // Calculate summary stats
   const summaryStats = {
     totalTransactions: allTransactions.length,
-    totalRevenue: allTransactions.filter(t => t.status === 'success').reduce((sum, t) => sum + ((t.amountForServices*100)/118), 0),
+    totalRevenue: allTransactions.filter(t => t.status === 'success').reduce((sum, t) => sum + ((t.amountForServices)), 0),
     completedCount: allTransactions.filter(t => t.status === 'success').length,
     pendingCount: allTransactions.filter(t => t.status === 'pending').length,
     totalUsers: Object.keys(filteredGroups).length
