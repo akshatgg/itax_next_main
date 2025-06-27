@@ -7,13 +7,13 @@ export const DashboardSidebarItemsData = {
       iconName: 'material-symbols:dashboard',
       subMenu: false,
     },
-    {
-      upcoming: false,
-      title: 'Easy GST Return',
-      linkTo: '/dashboard/easy-gst-return',
-      iconName: 'carbon:finance',
-      subMenu: false,
-    },
+    // {
+    //   upcoming: false,
+    //   title: 'Easy GST Return',
+    //   linkTo: '/dashboard/easy-gst-return',
+    //   iconName: 'carbon:finance',
+    //   subMenu: false,
+    // },
     {
       upcoming: false,
       title: 'ITR',
@@ -149,7 +149,7 @@ export const DashboardSidebarItemsData = {
       upcoming: false,
       title: 'Transactions',
       iconName: 'clarity:two-way-arrows-line',
-      linkTo: '/dashboard/',
+      linkTo: '/dashboard/transactions',
       subMenu: false,
     },
     {
@@ -175,7 +175,7 @@ export const DashboardSidebarItemsData = {
       ],
     },
     {
-      upcoming: false,
+      upcoming: true,
       title: 'Bill Payment',
       iconName: 'mingcute:paper-fill',
       subMenu: true,
@@ -209,13 +209,13 @@ export const DashboardSidebarItemsData = {
         {
           title: 'User Account',
           iconName: 'lets-icons:subttasks-alt-fill',
-          upcoming: true,
+          upcoming: false,
           linkTo: '/profile',
         },
         {
           title: 'Business profile',
           iconName: 'lets-icons:subttasks-alt-fill',
-          linkTo: '/dashboard/profile/business',
+          linkTo: '/profile',
         },
       ],
     },
@@ -280,13 +280,13 @@ export const DashboardSidebarItemsData = {
         },
       ],
     },
-    {
-      upcoming: false,
-      title: 'Easy GST Return',
-      linkTo: 'gstr',
-      iconName: 'carbon:finance',
-      subMenu: false,
-    },
+    // {
+    //   upcoming: false,
+    //   title: 'Easy GST Return',
+    //   linkTo: 'gstr',
+    //   iconName: 'carbon:finance',
+    //   subMenu: false,
+    // },
     {
       upcoming: false,
       title: 'Invoice',
@@ -819,13 +819,14 @@ export const DashboardSidebarItemsData = {
       linkTo: '/dashboard/transactions',
       subMenu: false,
     },
-    {
-      upcoming: false,
-      title: 'Order History',
-      iconName: 'clarity:two-way-arrows-line',
-      linkTo: '/dashboard/order-history/OrderHistory.js',
-      subMenu: false,
-    },
+    // {
+    //   upcoming: false,
+    //   title: 'Order History',
+    //   iconName: 'clarity:two-way-arrows-line',
+    //   // linkTo: '/dashboard/order-history/OrderHistory.js',
+    //       linkTo: '/dashboard/order-history',
+    //   subMenu: false,
+    // },
 
     {
       upcoming: false,

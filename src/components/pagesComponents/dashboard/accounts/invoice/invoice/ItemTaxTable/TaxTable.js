@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { TAX_TYPES_BY_STATES } from '../staticData';
 import ReactTable from '@/components/ui/ReactTable';

@@ -23,6 +23,7 @@ export default function CardOverview({ invoices = [], className }) {
         'p-3 mr-4 text-purple-500 bg-purple-100 rounded-full dark:text-purple-100 dark:bg-purple-500',
       linkTo: '',
     },
+    
   ];
 
   const handleClick = async (link) => {
@@ -63,6 +64,7 @@ export default function CardOverview({ invoices = [], className }) {
             </GridItem>
           </li>
         ))}
+        
       </ul>
     </div>
   );

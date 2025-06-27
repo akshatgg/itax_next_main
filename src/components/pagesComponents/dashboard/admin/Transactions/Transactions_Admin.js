@@ -1,7 +1,7 @@
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection'
 
 
-const Transactions_Admin = () => {
+const   Transactions_Admin = () => {
   return (
     <DashSection title={"Transactions"} titleRight={"current year - 2024"}>
     <div className="p-4">

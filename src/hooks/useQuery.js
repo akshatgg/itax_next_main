@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 function useFetchData(fetchFunction) {
 	const [data, setData] = useState(null);

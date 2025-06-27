@@ -248,31 +248,31 @@ export default function CreateInvoice({
   const isCredit = watch('credit');
 
   // setting state of supply
-useEffect(() => {
-  if (regex.GSTIN.test(gstin)) {
-    const code = gstin.slice(0, 2);
-    setValue('stateOfSupply', code);
+  useEffect(() => {
+    if (regex.GSTIN.test(gstin)) {
+      const code = gstin.slice(0, 2);
+      setValue('stateOfSupply', code);
 
-    if (UT_STATE_CODES.includes(code)) {
-      return setTaxType(TAX_TYPES_BY_STATES.ut);
-    }
+      if (UT_STATE_CODES.includes(code)) {
+        return setTaxType(TAX_TYPES_BY_STATES.ut);
+      }
 
-    // Add null check for businessProfile and gstin
-    if (!businessProfile || !businessProfile.gstin) {
-      // If businessProfile or its gstin property is undefined, default to inter-state
+      // Add null check for businessProfile and gstin
+      if (!businessProfile || !businessProfile.gstin) {
+        // If businessProfile or its gstin property is undefined, default to inter-state
+        return setTaxType(TAX_TYPES_BY_STATES.inter);
+      }
+
+      const enteredcode = gstin.slice(0, 2);
+      const businessgstcode = businessProfile.gstin.slice(0, 2);
+
+      if (enteredcode === businessgstcode) {
+        return setTaxType(TAX_TYPES_BY_STATES.intra);
+      }
+
       return setTaxType(TAX_TYPES_BY_STATES.inter);
     }
-
-    const enteredcode = gstin.slice(0, 2);
-    const businessgstcode = businessProfile.gstin.slice(0, 2);
-
-    if (enteredcode === businessgstcode) {
-      return setTaxType(TAX_TYPES_BY_STATES.intra);
-    }
-
-    return setTaxType(TAX_TYPES_BY_STATES.inter);
-  }
-}, [gstin, setValue, businessProfile]);
+  }, [gstin, setValue, businessProfile]);
   useEffect(() => {
     if (isCredit === true) {
       setValue('status', 'unpaid');

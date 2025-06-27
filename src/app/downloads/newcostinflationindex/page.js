@@ -1,4 +1,4 @@
-import { api } from '@/lib/axios';
+import { nodeAxios as api } from '@/lib/axios';
 import Image from 'next/image';
 import { Suspense } from 'react';
 import { generateQueryFromObject } from '@/utils/utilityFunctions';

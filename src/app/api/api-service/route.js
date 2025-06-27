@@ -1,10 +1,10 @@
 import db from '@/lib/db';
 import { errorHandler } from '@/helper/api/error-handler';
-import {
-  BASE_URL,
+// import {
+//   BASE_URL,
 
-  token,c
-} from '../../Home/staticData'
+//   token
+// } from '../../Home/staticData'
 export async function GET(req, res) {
   try {
     const apiServices = await db.apiService.findMany();

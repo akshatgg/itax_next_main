@@ -1,4 +1,5 @@
 // src/chatbot/hooks/useGeminiAPI.js
+"use client"
 import { useState } from 'react';
 
 const useGeminiAPI = () => {

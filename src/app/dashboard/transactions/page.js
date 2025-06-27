@@ -1,5 +1,6 @@
 import Transactions_Admin from "@/components/pagesComponents/dashboard/admin/Transactions/Transactions_Admin";
-import Transactions from "@/components/pagesComponents/dashboard/superAdmin/transactions/Transactions";
+import SuperAdminTransactionHistory from "@/components/pagesComponents/dashboard/superAdmin/transactions/Transactions";
+import TransactionHistory from "@/components/pagesComponents/dashboard/TransactionHistory /TransactionHistory";
 import { cookies } from "next/headers";
 const page = () => {
   const cookieStore = cookies();
@@ -8,14 +9,13 @@ const page = () => {
 
 
 
-  switch(userType) {
-
- 
-    case "admin":   return <Transactions_Admin/>;
-    case "superadmin": return <Transactions />;
-  
-
-    default:      return <h1>No project match</h1>
+    switch(userType) {
+     
+    
+    // case "admin":   return <Transactions_Admin/>;
+    case "admin": return <Transactions_Admin/>;
+    case "superadmin": return <SuperAdminTransactionHistory />;
+    default: return <TransactionHistory />;
   }
 };
 

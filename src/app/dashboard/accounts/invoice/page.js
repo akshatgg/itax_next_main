@@ -8,12 +8,13 @@ import { USER_ROLES } from '@/utils/globals';
 
 export default async function InvoicePage() {
   const user = getUserOnServer();
+  console.log('user', user);
   const businessProfile = await getBusinessProfile();
 
   const isSuperAdmin = user?.userType === USER_ROLES.superAdmin;
 
   return (
-    <ClientWrapper>
+    <>
       {isSuperAdmin ? (
         <Invoice_Dashboard />
       ) : (
@@ -21,6 +22,6 @@ export default async function InvoicePage() {
           businessProfile={businessProfile?.response?.data?.profile}
         />
       )}
-    </ClientWrapper>
+    </>
   );
 }

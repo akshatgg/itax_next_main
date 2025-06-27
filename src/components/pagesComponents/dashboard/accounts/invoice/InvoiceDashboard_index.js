@@ -4,7 +4,7 @@ import InvoiceDashboardNavItem from './InvoiceDashboardNavItem.jsx';
 import OverviewDashboard from './OverviewDashboard.jsx';
 import OverviewTable from './OverviewTable.jsx';
 import userAxios from '@/lib/userbackAxios.js';
-import { use, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image.js';
 import moment from 'moment';
 import Modal from '@/components/ui/Modal.js';
@@ -139,13 +139,13 @@ item: items || [],
     setModal(false);
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center min-h-[75vh]">
-        <Loader />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="flex justify-center items-center min-h-[75vh]">
+  //       <Loader />
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="py-8">

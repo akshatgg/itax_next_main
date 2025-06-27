@@ -1,4 +1,5 @@
 // src/chatbot/components/ChatInput.jsx
+"use client"
 import React, { useState } from 'react';
 
 const ChatInput = ({ onSendMessage, isLoading }) => {

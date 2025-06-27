@@ -1,5 +1,5 @@
 import Statuswiseincometaxcodepan from '@/components/downloads/Statuswiseincometaxcodepan';
-import { api } from '@/lib/axios';
+import { nodeAxios as api } from '@/lib/axios';
 import { generateQueryFromObject } from '@/utils/utilityFunctions';
 import Image from 'next/image';
 import { Suspense } from 'react';

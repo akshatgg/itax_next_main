@@ -301,7 +301,9 @@ export default function CreateItem() {
           <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-4">
             <p className="font-bold">⚠️ Backend Limitation</p>
             <p>The backend only supports updating the item name. Other fields cannot be updated.</p>
+
 <p className="mt-2">To update all fields, use the &quot;Create New &amp; Delete Old&quot; button below.</p>
+
           </div>
         )}
 
