@@ -18,14 +18,13 @@ export default function DashboardLayout({ children }) {
 
   const handleSidebar = () => setIsSidebarOpen((prev) => !prev);
 
-  if (pathname.startsWith('/dashboard/accounts/invoice')) {
-    return <>{children}</>;
-  }
-
-  // Reset loader after navigation completes
   useEffect(() => {
     setIsNavigating(false);
   }, [pathname]);
+
+  if (pathname.startsWith('/dashboard/accounts/invoice')) {
+    return <>{children}</>;
+  }
 
   const userType = currentUser?.userType;
 

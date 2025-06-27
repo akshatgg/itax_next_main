@@ -4,7 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Head from 'next/head';
 import { Icon } from '@iconify/react';
-
+import { useRouter } from 'next/navigation'; // For App Router (Next.js 13+)
+import { usePathname } from 'next/navigation'; // For App Router (Next.js 13+)
 // Components
 import Chatbot from '@/components/chatbot/index.jsx';
 import Hero from './Hero';
@@ -16,6 +17,8 @@ import Card from '../styles/cardStyles';
 // Config
 import { BACKEND_URL, token } from './staticData';
 import userbackAxios from '@/lib/userbackAxios';
+import page from '../about/page';
+import { Router } from 'lucide-react';
 
 // Constants
 const SCROLL_OFFSET = 100;
@@ -27,12 +30,19 @@ const SectionDivider = () => (
 
 function Home() {
   // State
+  const router = useRouter();
+
   const [pageData, setPageData] = useState({
     navcards: [],
     cards: [],
     ongoingPro: [],
     corporatePro: []
   });
+  useEffect(()=>{
+    console.log(pageData);
+    console.log("ids", pageData.navcards.map((el) => el.name));
+    
+  },[pageData]);
   const [loading, setLoading] = useState(true);
   const [allUsers, setAllUsers] = useState({
     totalUsers: 0,
@@ -136,7 +146,9 @@ function Home() {
       console.error('Error fetching visitor count:', err);
     }
   }, []);
-
+  const handleClick=(name)=>{
+     router.push(`/${name}`);
+  }
   const fetchCmsStats = useCallback(async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/cms/stats`, {
@@ -253,10 +265,12 @@ function Home() {
                           <div className="flex justify-end bg-zinc-100 px-5 gap-5 items-center">
                             <Link
                               href={element.link || ''}
-                              target="_blank"
+                              target=""
                               className="py-5 text-xs link hover:text-primary"
                             >
-                              <p className="flex flex-row items-center gap-1">
+                              <p className="flex flex-row items-center gap-1"
+                               onClick={() => handleClick(element.name)}
+                              >
                                 Continue <Icon icon="tabler:arrow-right" />
                               </p>
                             </Link>

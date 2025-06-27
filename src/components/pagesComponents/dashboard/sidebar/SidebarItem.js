@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Loader from '@/components/partials/loading/Loader';
 import SubSidebarItem from './SubSidebarItem';
 export default function SideBarItem(props) {
+  const [subActiveItem, setSubActiveItem] = useState(-1);
   const {
     upcoming,
     title,
@@ -19,7 +20,6 @@ export default function SideBarItem(props) {
     setIsNavigating,
   } = props;
 
-  const [subActiveItem, setSubActiveItem] = useState(-1);
   const router = useRouter();
 
   
