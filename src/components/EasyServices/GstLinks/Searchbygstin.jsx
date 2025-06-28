@@ -10,6 +10,7 @@ import FormComponent from "../Components/FormComponent"
 import ResultComponent from "../Components/ResultComponent"
 import { useDispatch } from "react-redux"
 const PDF_DOC = "PDF_DOC"
+import Button from "@/components/ui/Button"
 
 export default function Searchbygstin() {
   const { token } = useAuth()

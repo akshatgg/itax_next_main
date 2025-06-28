@@ -755,14 +755,14 @@ function NewTaxCalculator() {
                 setComparison(null);
               }}
               type="reset"
-              className="rounded bg-red-500 p-2 px-6 text-white hover:opacity-75"
+              className="rounded bg-red-600  hover:bg-red-700 p-2 px-6 text-white hover:opacity-75"
             >
               <span>Reset</span>
             </button>
 
             <button
               type="submit"
-              className="rounded bg-primary p-2 px-6 text-white hover:opacity-75"
+              className="rounded bg-blue-600 hover:bg-blue-700 p-2 px-6 text-white hover:opacity-75"
             >
               <span>Calculate</span>
             </button>

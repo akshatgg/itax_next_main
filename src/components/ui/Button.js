@@ -26,7 +26,7 @@ const Button = ({
 }) => {
   const btnVariant = {
     primary: 'bg-blue-600 text-white focus:ring-4 focus:ring-blue-300',
-    secondary: 'bg-gray-300 hover:bg-gray-400 text-slate-700',
+    secondary: 'bg-gray-200 hover:bg-gray-400 text-slate-700',
     ghost: 'hover:bg-gray-300 bg-transparent text-slate-700',
     outlined: 'border border-slate-700 bg-white text-slate-700',
     danger: 'bg-red-500 hover:bg-red-600 focus:ring-4 focus:ring-red-300',

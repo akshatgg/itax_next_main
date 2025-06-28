@@ -187,7 +187,9 @@ const CAGRCalculator = () => {
           </button>
           <button
             onClick={calculateCAGR}
-            className="px-4 py-2 bg-primary text-white rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+            // className="px-4 py-2 bg-primary text-white rounded-md flex items-center justify-center gap-2 hover:bg-primary/90"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md flex items-center justify-center gap-2 hover:bg-blue-700"
+
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
