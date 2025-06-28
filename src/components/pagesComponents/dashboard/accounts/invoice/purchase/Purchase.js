@@ -194,7 +194,7 @@
 //                         ))}
 //                     </tbody>
 //                 </table>
-//                 {purchaseData.purchaseData_body.length === 0 ? ( 
+//                 {purchaseData.purchaseData_body.length === 0 ? (
 //                 <div>
 //                     <Icon className="w-40 h-24 opacity-5 mx-auto" icon="ph:files-light" />
 //                     <p className="text-center">No Record Found</p>
@@ -255,7 +255,6 @@
 // 	);
 // }
 
-
 'use client';
 const formatDate = (timestamp) =>
   new Date(timestamp).toLocaleString('en-US', {
@@ -268,8 +267,9 @@ const formatDate = (timestamp) =>
   });
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import { Icon } from '@iconify/react';
-import Link from 'next/link';
 import { IoMdDownload } from 'react-icons/io';
+import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button';
 import ExcelJS from 'exceljs';
 const tableData = {
   'Party Name': 'partyName',
@@ -281,6 +281,7 @@ const tableData = {
 };
 
 export default function Purchase(props) {
+  const router = useRouter();
   const { salesInvoices, loading, error } = props;
   // const [invoiceFiltered, setInvoiceFiltered] = useState();
 
@@ -453,20 +454,31 @@ export default function Purchase(props) {
       title={'Purchase Invoice'}
       titleRight={
         <div className=" flex flex-row items-center gap-4 justify-center mb-2">
-          <Link
+          {/* <Link
             href="/dashboard/accounts/invoice/sales/create"
             className="inline-block px-4 py-1 rounded-md text-white bg-blue-500 hover:bg-blue-600 hover:scale-105 transition-[transform,_colors] duration-300"
           >
             create
-          </Link>
+          </Link> */}
 
-          <button
+          <Button
+            onClick={() =>
+              router.push('/dashboard/accounts/invoice/sales/create')
+            }
+            size={'sm'}
+            className={'m-2'}
+          >
+            Create Invoice
+          </Button>
+
+          <Button
             onClick={handleExport}
-            className=" flex items-center gap-1 justify-center px-4 py-1 rounded-md text-white bg-green-500 hover:bg-green-600 hover:scale-105 transition-[transform,_colors] duration-300"
+            size={'sm'}
+            className={'m-2 flex items-center gap-1 justify-center hover:scale-105 transition-[transform,_colors] duration-300'}
           >
             <IoMdDownload />
             <span>Excel</span>
-          </button>
+          </Button>
         </div>
       }
       className="py-0"

@@ -274,7 +274,7 @@ export default function CreateItem() {
     input:
       "bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
     button:
-      "w-full text-center mt-4 focus:outline-none text-white bg-blue-400 hover:bg-blue-500 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-4",
+      "w-full text-center mt-4 focus:outline-none text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-4",
     gridUL: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4",
     formSectionTitle: "text-lg mt-4 font-semibold text-gray-600 dark:text-gray-300",
   }

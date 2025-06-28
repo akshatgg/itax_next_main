@@ -10,8 +10,9 @@ const formatDate = (timestamp) =>
   });
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import { Icon } from '@iconify/react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { IoMdDownload } from 'react-icons/io';
+import Button from '@/components/ui/Button';
 import ExcelJS from 'exceljs';
 const tableData = {
   'Party Name': 'partyName',
@@ -22,7 +23,8 @@ const tableData = {
   Status: 'status',
 };
 
-export default function   Sales(props) {
+export default function Sales(props) {
+  const router = useRouter();
   const { salesInvoices, loading, error } = props;
   // const [invoiceFiltered, setInvoiceFiltered] = useState();
 
@@ -195,20 +197,39 @@ export default function   Sales(props) {
       title={'Sales Invoice'}
       titleRight={
         <div className=" flex flex-row items-center gap-4 justify-center mb-2">
-          <Link
+          {/* <Link
             href="/dashboard/accounts/invoice/sales/create"
             className="inline-block px-4 py-1 rounded-md text-white bg-blue-500 hover:bg-blue-600 hover:scale-105 transition-[transform,_colors] duration-300"
           >
             create
-          </Link>
+          </Link> */}
 
-          <button
+          <Button
+            onClick={() =>
+              router.push('/dashboard/accounts/invoice/sales/create')
+            }
+            size={'sm'}
+            className={'m-2'}
+          >
+            Create Invoice
+          </Button>
+
+          {/* <button
             onClick={handleExport}
             className=" flex items-center gap-1 justify-center px-4 py-1 rounded-md text-white bg-green-500 hover:bg-green-600 hover:scale-105 transition-[transform,_colors] duration-300"
           >
             <IoMdDownload />
             <span>Excel</span>
-          </button>
+          </button> */}
+
+          <Button
+            onClick={handleExport}
+            size={'sm'}
+            className={'m-2 flex items-center gap-1 justify-center hover:scale-105 transition-[transform,_colors] duration-300'}
+          >
+            <IoMdDownload />
+            <span>Excel</span>
+          </Button>
         </div>
       }
       className="py-0"

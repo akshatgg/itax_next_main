@@ -1670,14 +1670,18 @@ export default function AdvanceTaxCalc() {
               <section className="mt-8 flex justify-center gap-8">
                 <button
                   onClick={handleResetForm}
-                  className="rounded bg-red-500 p-3 px-8 text-white hover:opacity-75"
+                  // className="rounded bg-red-500 p-3 px-8 text-white hover:opacity-75"
+                  className="rounded bg-red-600 p-3 px-8 text-white hover:bg-red-700"
+
                 >
                   <span>Reset</span>
                 </button>
 
                 <button
                   type="submit"
-                  className="rounded bg-primary p-3 px-8 text-white hover:opacity-75"
+                  // className="rounded bg-primary p-3 px-8 text-white hover:opacity-75"
+                  className="rounded bg-blue-600 p-3 px-8 text-white hover:bg-blue-700"
+
                   onClick={formik.handleSubmit}
                 >
                   <span>Calculate</span>

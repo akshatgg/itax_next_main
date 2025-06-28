@@ -144,7 +144,7 @@ const Blogs = () => {
                 Corporate Laws, Tax Filing Software, AS, Income Tax Slab, GST
                 Rates on best tax professional blog in India.
               </p>
-              <Link href="/about" className="w-full btn-primary text-center">
+              <Link href="/about" className="w-full btn-primary bg-blue-600 hover:bg-blue-700 text-center">
                 Get to know us
               </Link>
             </div>
