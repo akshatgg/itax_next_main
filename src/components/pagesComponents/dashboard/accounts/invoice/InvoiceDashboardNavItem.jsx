@@ -15,7 +15,7 @@ function InvoiceDashboardNavItem({ navCardData }) {
       title="Invoice"
       titleRight="current year - 2025"
     >
-      <div className="grid grid-rows-1 grid-flow-col p-4">
+      {/* <div className="grid grid-rows-1 grid-flow-col p-4">
         {invoiceDashboardNavItems.map((el, key) => (
           <div key={key} href={`/dashboard/accounts/invoice/${el?.linkTo}`}>
             <div>
@@ -26,7 +26,7 @@ function InvoiceDashboardNavItem({ navCardData }) {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
       <GridContainer className=" p-4">
         {invoiceDashboardNavItems.map((el, key) => (
           <GridItem
