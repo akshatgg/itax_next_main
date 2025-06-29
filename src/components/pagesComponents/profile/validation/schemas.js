@@ -13,6 +13,8 @@ export const userCreate = {
   pan: '',
   phone: '',
   pin: '',
+  inventory: false,
+  isPanLinked: false,
 };
 
 export const userSchema = z.object({
@@ -31,6 +33,9 @@ export const userSchema = z.object({
   pin: z
     .string()
     .regex(regex.stringNumberRegex, 'A pin code must be in numbers'),
+
+  isPanLinked: z.boolean().optional(),
+  inventory: z.boolean().optional(),
 });
 
 export const bsProfileCreateSchema = z.object({

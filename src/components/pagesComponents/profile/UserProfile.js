@@ -2,7 +2,7 @@
 
 import Button from "@/components/ui/Button"
 import userAxios from "@/lib/userbackAxios"
-import { useCallback, useEffect, useState } from "react"
+import { use, useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import UserProfileCard from "./UserProfileCard"
 import { toast } from "react-toastify"
@@ -15,6 +15,7 @@ import useAuth from "@/hooks/useAuth"
 import axios from "axios"
 import { parseNonNullObject } from "@/utils/utilityFunctions"
 import { Edit2, ArrowLeft, Save, X, CheckCircle } from "lucide-react"
+import { set } from "lodash"
 
 const UserProfile = () => {
   const router = useRouter()
@@ -31,7 +32,7 @@ const UserProfile = () => {
   const [nameAsPan, setNameAsPan] = useState("")
   const [dateOfBirth, setDateOfBirth] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
-
+  const [isverify, setIsVerify] = useState(false)
   // HOOK FORM
   const [editable, setEditable] = useState(false)
   const {
@@ -67,44 +68,50 @@ const UserProfile = () => {
 
   // UPDATES USER DETAILS
   const submitHandler = async (data) => {
-    const formData = new FormData()
-    const BASE = process.env.NEXT_PUBLIC_BACK_URL
+   
+  const BASE = process.env.NEXT_PUBLIC_BACK_URL
 
-    // Properly handle form data creation
-    for (const key in data) {
-      if (key === "avatar" && data[key]?.[0]) {
-        formData.append(key, data[key][0])
-      } else if (data[key] !== undefined && data[key] !== null) {
-        formData.append(key, data[key])
-      }
-    }
-
-    try {
-      setIsSubmitting(true)
-      setIsLoading(true)
-      const response = await axios.put(`${BASE}/user/update`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-
-      if (response.status === 200) {
-        setEditable(false)
-        // Refresh user data after successful update
-        getUserDetails()
-        toast.success("Profile updated successfully!")
-      } else {
-        toast.error("Failed to update profile!")
-      }
-    } catch (error) {
-      console.error("Update error:", error)
-      toast.error(error.response?.data?.message || "Error updating profile")
-    } finally {
-      setIsLoading(false)
-      setIsSubmitting(false)
+  const formData = new FormData()
+  for (const key in data) {
+    if (key === "avatar" && data[key]?.[0]) {
+      formData.append(key, data[key][0])
+    } else if (data[key] !== undefined && data[key] !== null) {
+      formData.append(key, data[key])
     }
   }
+
+  // ✅ Add this line to include isPanLinked if PAN is verified
+ const isPanChanged = data?.pan !== panCard;
+
+formData.append("ispanlinked", JSON.stringify(isverify && !isPanChanged ? true : false));
+
+
+  try {
+    setIsSubmitting(true)
+    setIsLoading(true)
+    const response = await axios.put(`${BASE}/user/update`, formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    })
+
+    if (response.status === 200) {
+      setEditable(false)
+      getUserDetails()
+      toast.success("Profile updated successfully!")
+    } else {
+      toast.error("Failed to update profile!")
+    }
+  } catch (error) {
+    console.error("Update error:", error)
+    toast.error(error.response?.data?.message || "Error updating profile")
+  } finally {
+    setIsLoading(false)
+    setIsSubmitting(false)
+  }
+}
+
 
   // FETCHES USER DETAILS
   const getUserDetails = useCallback(async () => {
@@ -126,6 +133,14 @@ const UserProfile = () => {
       setIsLoading(false)
     }
   }, [reset])
+
+
+useEffect(() => {
+  if (panCard && data?.pan && panCard !== data.pan) {
+    setIsVerify(false)
+  }
+}, [panCard, data?.pan])
+
 
   // FETCHES PAN DETAILS WITH USER INPUT
   const handlePanDetails = useCallback(
@@ -160,6 +175,7 @@ const UserProfile = () => {
         if (data) {
           setPanDetails(data)
           toast.success("PAN details verified successfully")
+          setIsVerify(true);
 
           // Set form values from the response
           setValue("firstName", data.first_name || existingValues?.firstName)
@@ -169,7 +185,7 @@ const UserProfile = () => {
           setValue("address", data.address || existingValues?.address)
           setValue("gender", data.gender || existingValues?.gender)
           setValue("pin", data.pin || existingValues?.pin)
-
+          
           // Close the verification modal
           setPanVerificationOpen(false)
         } else {
@@ -317,6 +333,7 @@ const UserProfile = () => {
                         </>
                       ) : (
                         <>
+                        
                           <CheckCircle size={18} className="mr-2" />
                           Verify
                         </>
@@ -353,12 +370,20 @@ const UserProfile = () => {
                           />
                         </svg>
                       )}
-                      {panDetails && Object.keys(panDetails).length > 0 && (
-                        <div className="flex items-center text-green-500">
-                          <CheckCircle size={16} className="mr-1" />
-                          <span className="text-xs">Verified</span>
-                        </div>
-                      )}
+           {data?.ispanlinked ? (
+  <div className="flex items-center text-green-600">
+    <CheckCircle size={16} className="mr-1" />
+    <span className="text-xs font-medium">Verified</span>
+  </div>
+) : (
+   (
+    <span className="text-xs text-red-500 font-medium italic ml-2">
+      Not Verified
+    </span>
+  )
+)}
+
+
                     </div>
                   </div>
 
@@ -561,6 +586,24 @@ const UserProfile = () => {
                   {errors.pin && <p className="text-red-500 text-xs mt-1">{errors.pin.message}</p>}
                 </div>
 
+<div className="flex items-center mt-4">
+  <input
+    type="checkbox"
+    id="inventory"
+    {...register("inventory")}
+    checked={watch("inventory") || false}
+    onChange={(e) => setValue("inventory", e.target.checked)}
+    className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+    disabled={!editable} // <-- This line disables checkbox when not editable
+  />
+  <label htmlFor="inventory" className="text-sm text-gray-700">
+    Enable Inventory Access
+  </label>
+</div>
+  
+
+
+                 
                 <div className="w-full">
                   <label
                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
