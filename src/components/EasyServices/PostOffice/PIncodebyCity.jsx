@@ -107,7 +107,7 @@ const PIncodebyCity = () => {
                     onKeyDown={(event) =>
                     event.key === "Enter" ? handleSubmit() : ""
                     }
-                   className={`btn-primary ${loading?" cursor-not-allowed ":""}`}
+                   className={`btn-primary bg-blue-600 hover:bg-blue-700 ${loading?" cursor-not-allowed ":""}`}
                 >
                     {loading ? (<span className="spinner"></span>):("Search")}
                 </button>

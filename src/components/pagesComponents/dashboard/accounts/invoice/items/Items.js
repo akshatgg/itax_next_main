@@ -5,6 +5,7 @@ import ItemsTable from './ItemsTable';
 import { Suspense } from 'react';
 import ItemsFilters from './ItemsFilters';
 import Loader from '@/components/partials/loading/Loader';
+import Button from '@/components/ui/Button';
 
 export default async function Items() {
   const itemsData = await getInvoiceItems(); // server side fetch request
@@ -17,12 +18,15 @@ export default async function Items() {
           <div className="p-2">
             <div className="flex gap-2 justify-end mb-2 mx-auto">
               <Link href={linkToCreateSale}>
-                <button
+                {/* <button
                   type="button"
                   className="capitalize flex items-center focus:outline-none text-white bg-blue-400 hover:bg-blue-500 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2  "
                 >
                   create items
-                </button>
+                </button> */}
+                <Button size={'sm'} className={'m-2'}>
+                  Create Items
+                </Button>
               </Link>
             </div>
 
@@ -40,12 +44,15 @@ export default async function Items() {
                   <p className="text-center">No Record Found</p>
                 </div>
                 <Link href={linkToCreateSale}>
-                  <button
+                  {/* <button
                     type="button"
                     className="capitalize flex items-center focus:outline-none text-white bg-blue-400 hover:bg-blue-500 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2  "
                   >
                     create sales
-                  </button>
+                  </button> */}
+                  <Button size={'sm'} className={'m-2'}>
+                    Create Sales
+                  </Button>
                 </Link>
               </div>
             ) : (
@@ -57,5 +64,3 @@ export default async function Items() {
     </>
   );
 }
-
-

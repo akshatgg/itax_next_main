@@ -1,147 +1,161 @@
-"use client"
+'use client';
 
-import Link from "next/link"
-import { Icon } from "@iconify/react"
-import { useState, useEffect } from "react"
-import userAxios from "@/lib/userbackAxios"
-import { toast } from "react-toastify"
+import Link from 'next/link';
+import { Icon } from '@iconify/react';
+import { useState, useEffect } from 'react';
+import userAxios from '@/lib/userbackAxios';
+import { toast } from 'react-toastify';
+import Button from '@/components/ui/Button';
 
 // Define which columns to display by default
-const defaultVisibleColumns = ["partyName", "email", "phone", "gstin", "address"]
+const defaultVisibleColumns = [
+  'partyName',
+  'email',
+  'phone',
+  'gstin',
+  'address',
+];
 
 export default function AllParties(props) {
-  const { type = "customer" } = props
-  const [isLoading, setIsLoading] = useState(false)
-  const [isError, setIsError] = useState(null)
-  const [error, setError] = useState(null)
-  const [allParties, setAllParties] = useState()
-  const [searchTerm, setSearchTerm] = useState("")
-  const [filterValue, setFilterValue] = useState("5") // Default to last 30 days
-  const [visibleColumns, setVisibleColumns] = useState(defaultVisibleColumns)
-  const [showColumnSelector, setShowColumnSelector] = useState(false)
-  const [deleteConfirm, setDeleteConfirm] = useState(null)
+  const { type = 'customer' } = props;
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(null);
+  const [error, setError] = useState(null);
+  const [allParties, setAllParties] = useState();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterValue, setFilterValue] = useState('5'); // Default to last 30 days
+  const [visibleColumns, setVisibleColumns] = useState(defaultVisibleColumns);
+  const [showColumnSelector, setShowColumnSelector] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
   // All available columns
   const allColumns = [
-    "partyName",
-    "bankAccountNumber",
-    "bankBranch",
-    "bankIfsc",
-    "bankName",
-    "createdAt",
-    "email",
-    "gstin",
-    "id",
-    "pan",
-    "address",
-    "phone",
-    "tan",
-    "updatedAt",
-    "upi",
-    "userId",
-  ]
+    'partyName',
+    'bankAccountNumber',
+    'bankBranch',
+    'bankIfsc',
+    'bankName',
+    'createdAt',
+    'email',
+    'gstin',
+    'id',
+    'pan',
+    'address',
+    'phone',
+    'tan',
+    'updatedAt',
+    'upi',
+    'userId',
+  ];
 
   const fetchPartiesData = async () => {
     try {
-      setIsLoading(true)
-      setIsError(false)
+      setIsLoading(true);
+      setIsError(false);
 
       // Fetch parties based on the type prop
-      const response = await userAxios.get("/invoice/parties", {
+      const response = await userAxios.get('/invoice/parties', {
         params: { types: type },
-      })
-      setAllParties(response.data)
+      });
+      setAllParties(response.data);
 
-      setIsLoading(false)
+      setIsLoading(false);
     } catch (error) {
-      setIsLoading(false)
-      setIsError(true)
-      setError({ isError: true, error })
+      setIsLoading(false);
+      setIsError(true);
+      setError({ isError: true, error });
     }
-  }
+  };
 
   useEffect(() => {
     try {
-      fetchPartiesData()
+      fetchPartiesData();
     } catch (error) {
-      console.error("Error fetching parties data:", error)
-      toast.error("Failed to load parties data")
+      console.error('Error fetching parties data:', error);
+      toast.error('Failed to load parties data');
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [type])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [type]);
 
   const handleDeleteParty = async (id) => {
     try {
-      console.log(`Attempting to delete party with ID: ${id}`)
-      setIsLoading(true)
-      const resp = await userAxios.delete(`/invoice/parties/${id}`)
-      console.log("Delete API response:", resp)
+      console.log(`Attempting to delete party with ID: ${id}`);
+      setIsLoading(true);
+      const resp = await userAxios.delete(`/invoice/parties/${id}`);
+      console.log('Delete API response:', resp);
 
       if (resp.data.success) {
-        fetchPartiesData()
-        toast.success(`${type === "customer" ? "Customer" : "Supplier"} Deleted Successfully`)
-        setDeleteConfirm(null)
+        fetchPartiesData();
+        toast.success(
+          `${type === 'customer' ? 'Customer' : 'Supplier'} Deleted Successfully`,
+        );
+        setDeleteConfirm(null);
       } else {
-        console.error("Delete API returned unsuccessful response:", resp.data)
-        toast.error(`Something went wrong. ${type === "customer" ? "Customer" : "Supplier"} Not Deleted`)
+        console.error('Delete API returned unsuccessful response:', resp.data);
+        toast.error(
+          `Something went wrong. ${type === 'customer' ? 'Customer' : 'Supplier'} Not Deleted`,
+        );
       }
     } catch (error) {
-      console.error("Error deleting party:", error)
-      toast.error(`Failed to delete ${type === "customer" ? "customer" : "supplier"}.`)
+      console.error('Error deleting party:', error);
+      toast.error(
+        `Failed to delete ${type === 'customer' ? 'customer' : 'supplier'}.`,
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   const toggleColumnVisibility = (column) => {
     if (visibleColumns.includes(column)) {
       // Don't allow removing the last column
       if (visibleColumns.length > 1) {
-        setVisibleColumns(visibleColumns.filter((col) => col !== column))
+        setVisibleColumns(visibleColumns.filter((col) => col !== column));
       }
     } else {
-      setVisibleColumns([...visibleColumns, column])
+      setVisibleColumns([...visibleColumns, column]);
     }
-  }
+  };
 
   const resetColumns = () => {
-    setVisibleColumns(defaultVisibleColumns)
-  }
+    setVisibleColumns(defaultVisibleColumns);
+  };
 
   const showAllColumns = () => {
-    setVisibleColumns(allColumns)
-  }
+    setVisibleColumns(allColumns);
+  };
 
   // Filter parties based on search term and only show the selected type
   const filteredParties = allParties?.parties?.filter((party) => {
     // Only include parties of the selected type
-    if (party.type !== type) return false
+    if (party.type !== type) return false;
 
-    if (!searchTerm) return true
+    if (!searchTerm) return true;
 
-    const searchLower = searchTerm.toLowerCase()
+    const searchLower = searchTerm.toLowerCase();
     return (
-      (party.partyName && party.partyName.toLowerCase().includes(searchLower)) ||
+      (party.partyName &&
+        party.partyName.toLowerCase().includes(searchLower)) ||
       (party.address && party.address.toLowerCase().includes(searchLower)) ||
       (party.email && party.email.toLowerCase().includes(searchLower)) ||
       (party.phone && party.phone.toLowerCase().includes(searchLower)) ||
       (party.gstin && party.gstin.toLowerCase().includes(searchLower))
-    )
-  })
+    );
+  });
 
   const formatDate = (dateString) => {
-    if (!dateString) return ""
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat("en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }).format(date)
-  }
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }).format(date);
+  };
 
-  const linkToCreateParty = "/dashboard/accounts/invoice/parties/add-party"
-  const typeLabel = type === "customer" ? "Customer" : "Supplier"
-  const typeLabelPlural = type === "customer" ? "Customers" : "Suppliers"
+  const linkToCreateParty = '/dashboard/accounts/invoice/parties/add-party';
+  const typeLabel = type === 'customer' ? 'Customer' : 'Supplier';
+  const typeLabelPlural = type === 'customer' ? 'Customers' : 'Suppliers';
 
   return (
     <>
@@ -151,17 +165,27 @@ export default function AllParties(props) {
           <div className="p-4 bg-gradient-to-r from-sky-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700 border-b border-gray-200 dark:border-gray-700">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <h1 className="text-xl font-semibold text-gray-800 dark:text-white flex items-center gap-2">
-                <Icon icon="solar:users-group-rounded-bold" className="text-sky-500" />
+                <Icon
+                  icon="solar:users-group-rounded-bold"
+                  className="text-sky-500"
+                />
                 {typeLabelPlural} Parties
               </h1>
               <Link href={`${linkToCreateParty}?type=${type}`}>
-                <button
+                {/* <button
                   type="button"
                   className="flex items-center gap-2 text-white bg-sky-500 hover:bg-sky-600 focus:ring-4 focus:ring-sky-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors"
                 >
                   <Icon icon="solar:add-circle-bold" className="text-lg" />
                   Add {typeLabel}
-                </button>
+                </button> */}
+                <Button
+                  size={'sm'}
+                  className={'m-2 flex items-center gap-2 text-white'}
+                >
+                  <Icon icon="solar:add-circle-bold" className="text-lg" />
+                  Add {typeLabel}
+                </Button>
               </Link>
             </div>
           </div>
@@ -171,7 +195,10 @@ export default function AllParties(props) {
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-grow">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                  <Icon icon="heroicons:magnifying-glass" className="text-gray-500 dark:text-gray-400" />
+                  <Icon
+                    icon="heroicons:magnifying-glass"
+                    className="text-gray-500 dark:text-gray-400"
+                  />
                 </div>
                 <input
                   type="search"
@@ -202,14 +229,19 @@ export default function AllParties(props) {
                     onClick={() => setShowColumnSelector(!showColumnSelector)}
                     className="flex items-center gap-1 h-full rounded-lg border border-gray-300 bg-gray-50 py-2 px-3 text-sm hover:bg-gray-100 focus:ring-2 focus:ring-sky-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
                   >
-                    <Icon icon="heroicons:adjustments-horizontal" className="text-lg" />
+                    <Icon
+                      icon="heroicons:adjustments-horizontal"
+                      className="text-lg"
+                    />
                     Columns
                   </button>
 
                   {showColumnSelector && (
                     <div className="absolute right-0 mt-2 w-60 bg-white rounded-lg shadow-lg z-10 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                       <div className="p-2 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Toggle Columns</span>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Toggle Columns
+                        </span>
                         <div className="flex gap-1">
                           <button
                             onClick={resetColumns}
@@ -257,17 +289,25 @@ export default function AllParties(props) {
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
-                <p className="mt-4 text-gray-600 dark:text-gray-400">Loading {typeLabelPlural.toLowerCase()}...</p>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">
+                  Loading {typeLabelPlural.toLowerCase()}...
+                </p>
               </div>
             ) : isError || !filteredParties || filteredParties.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12">
-                <Icon icon="solar:users-group-broken" className="w-16 h-16 text-gray-300 dark:text-gray-600" />
+                <Icon
+                  icon="solar:users-group-broken"
+                  className="w-16 h-16 text-gray-300 dark:text-gray-600"
+                />
                 <p className="mt-4 text-gray-600 dark:text-gray-400">
                   {isError
                     ? `Error loading ${typeLabelPlural.toLowerCase()}`
                     : `No ${typeLabelPlural.toLowerCase()} found`}
                 </p>
-                <Link href={`${linkToCreateParty}?type=${type}`} className="mt-4">
+                <Link
+                  href={`${linkToCreateParty}?type=${type}`}
+                  className="mt-4"
+                >
                   <button
                     type="button"
                     className="flex items-center gap-2 text-white bg-sky-500 hover:bg-sky-600 focus:ring-4 focus:ring-sky-300 font-medium rounded-lg text-sm px-5 py-2.5 transition-colors"
@@ -282,7 +322,11 @@ export default function AllParties(props) {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400 sticky top-0 z-10">
                   <tr>
                     {visibleColumns.map((column) => (
-                      <th key={column} scope="col" className="px-4 py-3 whitespace-nowrap">
+                      <th
+                        key={column}
+                        scope="col"
+                        className="px-4 py-3 whitespace-nowrap"
+                      >
                         {column}
                       </th>
                     ))}
@@ -296,14 +340,19 @@ export default function AllParties(props) {
                     <tr
                       key={party.id}
                       className={`border-b dark:border-gray-700 ${
-                        index % 2 === 0 ? "bg-white dark:bg-gray-800" : "bg-gray-50 dark:bg-gray-700"
+                        index % 2 === 0
+                          ? 'bg-white dark:bg-gray-800'
+                          : 'bg-gray-50 dark:bg-gray-700'
                       } hover:bg-gray-100 dark:hover:bg-gray-600`}
                     >
                       {visibleColumns.map((column) => (
-                        <td key={`${party.id}-${column}`} className="px-4 py-3 whitespace-nowrap">
-                          {column === "createdAt" || column === "updatedAt"
+                        <td
+                          key={`${party.id}-${column}`}
+                          className="px-4 py-3 whitespace-nowrap"
+                        >
+                          {column === 'createdAt' || column === 'updatedAt'
                             ? formatDate(party[column])
-                            : party[column] || ""}
+                            : party[column] || ''}
                         </td>
                       ))}
                       <td className="px-4 py-3 text-right whitespace-nowrap">
@@ -323,14 +372,20 @@ export default function AllParties(props) {
                                 className="text-red-500 hover:text-red-700 transition-colors"
                                 title="Confirm Delete"
                               >
-                                <Icon icon="solar:check-circle-bold" className="text-lg" />
+                                <Icon
+                                  icon="solar:check-circle-bold"
+                                  className="text-lg"
+                                />
                               </button>
                               <button
                                 onClick={() => setDeleteConfirm(null)}
                                 className="text-gray-500 hover:text-gray-700 transition-colors"
                                 title="Cancel"
                               >
-                                <Icon icon="solar:close-circle-bold" className="text-lg" />
+                                <Icon
+                                  icon="solar:close-circle-bold"
+                                  className="text-lg"
+                                />
                               </button>
                             </div>
                           ) : (
@@ -339,7 +394,10 @@ export default function AllParties(props) {
                               className="text-red-500 hover:text-red-700 transition-colors"
                               title={`Delete ${typeLabel}`}
                             >
-                              <Icon icon="solar:trash-bin-trash-bold" className="text-lg" />
+                              <Icon
+                                icon="solar:trash-bin-trash-bold"
+                                className="text-lg"
+                              />
                             </button>
                           )}
                         </div>
@@ -355,7 +413,10 @@ export default function AllParties(props) {
           {filteredParties?.length > 0 && (
             <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
               <div className="text-sm text-gray-700 dark:text-gray-300">
-                Showing <span className="font-medium">{filteredParties?.length || 0}</span>{" "}
+                Showing{' '}
+                <span className="font-medium">
+                  {filteredParties?.length || 0}
+                </span>{' '}
                 {typeLabelPlural.toLowerCase()}
               </div>
               <div className="flex gap-2">
@@ -377,5 +438,5 @@ export default function AllParties(props) {
         </div>
       </section>
     </>
-  )
+  );
 }

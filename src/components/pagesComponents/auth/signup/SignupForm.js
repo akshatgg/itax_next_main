@@ -47,8 +47,8 @@ export default function SignupForm() {
     resolver: yupResolver(signupSchema),
   });
   const router = useRouter();
-  const [otpKey, setOtpKey] = useState(null)
-  const [email, setEmail] = useState(null)
+  const [otpKey, setOtpKey] = useState(null);
+  const [email, setEmail] = useState(null);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isPasswordVisible2, setIsPasswordVisible2] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -56,6 +56,7 @@ export default function SignupForm() {
   const onSendOtp = async (FormData) => {
     const {
       firstName,
+      middleName,
       lastName,
       gender,
       pin,
@@ -68,9 +69,12 @@ export default function SignupForm() {
 
     try {
       setLoading(true);
+      console.log(`middleName`, middleName);
+      console.log(`lastName`, lastName);
       const response = await userbackAxios.post('/user/sign-up', {
         // const response = await userAxios.post('/api/auth/signup', {
         firstName,
+        middleName,
         lastName,
         gender,
         pin,
@@ -81,8 +85,8 @@ export default function SignupForm() {
         type: 'normal',
       });
       const { data } = response; // Extract data separately
-    
-console.log("ddddddddddddddddddd",data);
+
+      console.log('ddddddddddddddddddd', data);
 
       if (response.status === 200) {
         router.push(
@@ -98,7 +102,6 @@ console.log("ddddddddddddddddddd",data);
         toast.info(
           `User already exists! Please Login with your email address.`,
         );
-       
       } else if (error?.response && error?.response?.status === 500) {
         toast.error('something went wrong. Please try again later');
         console.log('Internal server error login', error);
@@ -134,6 +137,25 @@ console.log("ddddddddddddddddddd",data);
             />
             {errors.firstName && (
               <p className="text-xs text-red-500">{errors.firstName.message}</p>
+            )}
+          </li>
+          <li>
+            <label className={formClassName.Label} htmlFor="middleName">
+              Middle Name
+            </label>
+            <input
+              type="text"
+              id="middleName"
+              maxLength={25}
+              className={formClassName.Input}
+              {...register('middleName', {
+                required: 'middleName is required.',
+              })}
+            />
+            {errors.middleName && (
+              <p className="text-xs text-red-500">
+                {errors.middleName.message}
+              </p>
             )}
           </li>
           <li>
