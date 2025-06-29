@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Loader from '@/components/partials/loading/Loader';
 import SubSidebarItem from './SubSidebarItem';
@@ -18,6 +18,7 @@ export default function SideBarItem(props) {
     activeItem,
     index,
     setIsNavigating,
+    isSidebarOpen,
   } = props;
 
   const router = useRouter();
@@ -36,6 +37,12 @@ export default function SideBarItem(props) {
     setIsNavigating(true);
     router.push(linkTo);
   };
+
+  useEffect(() => {
+    if (!isSidebarOpen && activeItem === index) {
+      handleActive(null);
+    }
+  }, [isSidebarOpen]);
 
   if (subMenu) {
     return (
