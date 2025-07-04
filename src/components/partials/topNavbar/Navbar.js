@@ -499,7 +499,7 @@ export default function Navbar({ className = '' }) {
                 <MdOutlineLocalGroceryStore size={24} />
                 <sup className="absolute top-2.5 right-2">{cartCount}</sup>
               </StyledLink>
-              <UserInfo />
+              <UserInfo setIsNavigating={setIsNavigating}/>
             </div>
           ) : (
             // <Link href="/login" className="btn-primary">

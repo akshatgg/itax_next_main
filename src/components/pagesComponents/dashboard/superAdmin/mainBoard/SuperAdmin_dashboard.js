@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import useAuth from '../../../../../hooks/useAuth';
 import { Icon } from '@iconify/react';
 import Link from 'next/link';
+import Loader from '@/components/partials/loading/Loader.js';
+import { usePathname } from 'next/navigation';
 
 import axios from 'axios';
 import Financial_Details from './items/Financial_Details';
@@ -24,6 +26,12 @@ export default function SuperAdmin_Dashboard() {
   const [totalPages, setTotalPages] = useState(4);
   const [transactions, setTransactions] = useState([]);
   const { token } = useAuth();
+  const [isNavigating, setIsNavigating] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setIsNavigating(false);
+  }, [pathname]);
 
   const getAuthToken = async () => {
     return document.cookie
@@ -72,7 +80,7 @@ export default function SuperAdmin_Dashboard() {
             dateStyle: 'medium',
             timeStyle: 'short',
           }),
-          amount: (txn.amountForServices),
+          amount: txn.amountForServices,
           status: txn.status,
           id: txn.txnid,
         }));
@@ -122,8 +130,13 @@ export default function SuperAdmin_Dashboard() {
   }, []);
   return (
     <div className="px-4 grid gap-8">
+      {isNavigating && (
+        <div className="fixed inset-0 bg-white/60 z-50 flex items-center justify-center">
+          <Loader />
+        </div>
+      )}
       <DashSection title={'Overview'}>
-        <CardOverview className="col-span-12 xl:col-span-7" />
+        <CardOverview setIsNavigating={setIsNavigating} className="col-span-12 xl:col-span-7" />
       </DashSection>
       <DashSection
         title={'Recent Users'}
