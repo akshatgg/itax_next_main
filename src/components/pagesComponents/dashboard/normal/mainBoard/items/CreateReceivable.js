@@ -32,6 +32,7 @@ const CreateReceivable = ({ currentRow, onClose, onRefresh }) => {
   } = useForm({
     defaultValues: createReceivableForm,
     resolver: zodResolver(currentRow ? updateReceivableSchema : createReceivableSchema),
+    mode: 'onTouched',
   });
 
   async function submitHandler(formData) {

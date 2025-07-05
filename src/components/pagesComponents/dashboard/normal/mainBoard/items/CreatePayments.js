@@ -34,6 +34,7 @@ const CreatePayments = ({ currentRow, onClose, onRefresh }) => {
     resolver: zodResolver(
       currentRow ? updatePaymentsSchema : createPaymentsSchema,
     ),
+    mode: 'onTouched',
   });
 
   async function submitHandler(formData) {

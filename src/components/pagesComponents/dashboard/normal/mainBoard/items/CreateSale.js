@@ -32,6 +32,7 @@ const CreateSale = ({ currentRow, onClose, onRefresh }) => {
   } = useForm({
     defaultValues: createSaleForm,
     resolver: zodResolver(currentRow ? updateSaleSchema : createSaleSchema),
+    mode: 'onTouched',
   });
 
   async function submitHandler(formData) {

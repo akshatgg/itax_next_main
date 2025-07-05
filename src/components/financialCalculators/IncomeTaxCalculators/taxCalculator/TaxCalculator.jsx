@@ -178,6 +178,7 @@ export default function TaxCalculator() {
   const [severe_disabilityCheck1, setsevere_DisabilityCheck1] = useState(false);
   // severe disability check 1
   const [severe_disabilityCheck2, setsevere_DisabilityCheck2] = useState(false);
+  const CurrentYear = new Date().getFullYear();
 
   // stcg and ltcg states
   const [stcg1, setStcg1] = useState({

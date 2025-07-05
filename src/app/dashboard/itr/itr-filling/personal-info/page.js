@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';      // ⬅️ prevents static prerendering
+
 import ITRPresonalInfo from "@/components/ITR/ITRPresonalInfo";
 import { getUserProfile } from "@/hooks/authProvider";
 export default async function page() {

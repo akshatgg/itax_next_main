@@ -17,37 +17,117 @@ export const createSaleForm = {
   //   password: '',
 };
 
-export const createSaleSchema = z.object({
-  name: z.string().min(1, 'Name is required!'),
-  status: z.string().min(1, 'Status is required!'),
-  invoiceDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format!',
-  }),
-  invoiceNo: z.string().min(1, 'Invoice number is required!'),
-  totalAmount: z.number().positive('Total amount must be positive!'),
-  advanceAmount: z.number().positive('Advance amount must be positive!'),
-});
+// export const createSaleSchema = z.object({
+//   name: z.string().min(1, 'Name is required!'),
+//   status: z.string().min(1, 'Status is required!'),
+//   invoiceDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+//     message: 'Invalid date format!',
+//   }),
+//   invoiceNo: z.string().min(1, 'Invoice number is required!'),
+//   totalAmount: z.number().positive('Total amount must be positive!'),
+//   advanceAmount: z.number().positive('Advance amount must be positive!'),
+// });
 
-export const updateSaleSchema = z.object({
-  name: z.string().min(1, 'Name is required!').optional(),
-  status: z.string().min(1, 'Status is required!').optional(),
+export const createSaleSchema = z.object({
+  name: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Name is required!',
+    }),
+  status: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Status is required!',
+    }),
   invoiceDate: z
     .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
       message: 'Invalid date format!',
-    })
-    .optional(),
-  invoiceNo: z.string().min(1, 'Invoice number is required!').optional(),
-  totalAmount: z.number().positive('Total amount must be positive!').optional(),
+    }),
+  invoiceNo: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Invoice number is required!',
+    }),
+  totalAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Total amount must be positive!',
+    }),
   advanceAmount: z
-    .number()
-    .positive('Advance amount must be positive!')
-    .optional(),
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Advance amount must be positive!',
+    }),
 });
+
+// export const updateSaleSchema = z.object({
+//   name: z.string().min(1, 'Name is required!').optional(),
+//   status: z.string().min(1, 'Status is required!').optional(),
+//   invoiceDate: z
+//     .string()
+//     .refine((date) => !isNaN(Date.parse(date)), {
+//       message: 'Invalid date format!',
+//     })
+//     .optional(),
+//   invoiceNo: z.string().min(1, 'Invoice number is required!').optional(),
+//   totalAmount: z.number().positive('Total amount must be positive!').optional(),
+//   advanceAmount: z
+//     .number()
+//     .positive('Advance amount must be positive!')
+//     .optional(),
+// });
+export const updateSaleSchema = z.object({
+  name: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Name is required!',
+    }),
+  status: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Status is required!',
+    }),
+  invoiceDate: z
+    .string()
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
+      message: 'Invalid date format!',
+    }),
+  invoiceNo: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Invoice number is required!',
+    }),
+  totalAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Total amount must be positive!',
+    }),
+  advanceAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Advance amount must be positive!',
+    }),
+});
+
 export const validationResult = updateSaleSchema.safeParse(createSaleForm);
 
 if (validationResult.success) {
-  console.log('Validation successful:', validationResult.data);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Validation successful:', validationResult.data);
+  }
 } else {
   console.error('Validation errors:', validationResult.error.errors);
 }
@@ -227,38 +307,117 @@ export const createPurchaseForm = {
   advanceAmount: '',
 };
 
-export const createPurchaseSchema = z.object({
-  name: z.string().min(1, 'Name is required!'),
-  status: z.string().min(1, 'Status is required!'),
-  invoiceDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format!',
-  }),
-  invoiceNo: z.string().min(1, 'Invoice number is required!'),
-  totalAmount: z.number().positive('Total amount must be positive!'),
-  advanceAmount: z.number().positive('Advance amount must be positive!'),
-});
+// export const createPurchaseSchema = z.object({
+//   name: z.string().min(1, 'Name is required!'),
+//   status: z.string().min(1, 'Status is required!'),
+//   invoiceDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+//     message: 'Invalid date format!',
+//   }),
+//   invoiceNo: z.string().min(1, 'Invoice number is required!'),
+//   totalAmount: z.number().positive('Total amount must be positive!'),
+//   advanceAmount: z.number().positive('Advance amount must be positive!'),
+// });
 
-export const updatePurchaseSchema = z.object({
-  name: z.string().min(1, 'Name is required!').optional(),
-  status: z.string().min(1, 'Status is required!').optional(),
+// export const updatePurchaseSchema = z.object({
+//   name: z.string().min(1, 'Name is required!').optional(),
+//   status: z.string().min(1, 'Status is required!').optional(),
+//   invoiceDate: z
+//     .string()
+//     .refine((date) => !isNaN(Date.parse(date)), {
+//       message: 'Invalid date format!',
+//     })
+//     .optional(),
+//   invoiceNo: z.string().min(1, 'Invoice number is required!').optional(),
+//   totalAmount: z.number().positive('Total amount must be positive!').optional(),
+//   advanceAmount: z
+//     .number()
+//     .positive('Advance amount must be positive!')
+//     .optional(),
+// });
+export const createPurchaseSchema = z.object({
+  name: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Name is required!',
+    }),
+  status: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Status is required!',
+    }),
   invoiceDate: z
     .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
       message: 'Invalid date format!',
-    })
-    .optional(),
-  invoiceNo: z.string().min(1, 'Invoice number is required!').optional(),
-  totalAmount: z.number().positive('Total amount must be positive!').optional(),
+    }),
+  invoiceNo: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Invoice number is required!',
+    }),
+  totalAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Total amount must be positive!',
+    }),
   advanceAmount: z
-    .number()
-    .positive('Advance amount must be positive!')
-    .optional(),
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Advance amount must be positive!',
+    }),
 });
+export const updatePurchaseSchema = z.object({
+  name: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Name is required!',
+    }),
+  status: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Status is required!',
+    }),
+  invoiceDate: z
+    .string()
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
+      message: 'Invalid date format!',
+    }),
+  invoiceNo: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Invoice number is required!',
+    }),
+  totalAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Total amount must be positive!',
+    }),
+  advanceAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Advance amount must be positive!',
+    }),
+});
+
 export const validationResultPurchase =
   updatePurchaseSchema.safeParse(createPurchaseForm);
 
 if (validationResultPurchase.success) {
-  console.log('Validation successful:', validationResultPurcahse.data);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Validation successful:', validationResultPurchase.data);
+  }
 } else {
   console.error('Validation errors:', validationResultPurchase.error.errors);
 }
@@ -381,39 +540,117 @@ export const createPaymentsForm = {
   advanceAmount: '',
 };
 
-export const createPaymentsSchema = z.object({
-  name: z.string().min(1, 'Name is required!'),
-  status: z.string().min(1, 'Status is required!'),
-  invoiceDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format!',
-  }),
-  invoiceNo: z.string().min(1, 'Invoice number is required!'),
-  totalAmount: z.number().positive('Total amount must be positive!'),
-  advanceAmount: z.number().positive('Advance amount must be positive!'),
-});
+// export const createPaymentsSchema = z.object({
+//   name: z.string().min(1, 'Name is required!'),
+//   status: z.string().min(1, 'Status is required!'),
+//   invoiceDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+//     message: 'Invalid date format!',
+//   }),
+//   invoiceNo: z.string().min(1, 'Invoice number is required!'),
+//   totalAmount: z.number().positive('Total amount must be positive!'),
+//   advanceAmount: z.number().positive('Advance amount must be positive!'),
+// });
 
-export const updatePaymentsSchema = z.object({
-  name: z.string().min(1, 'Name is required!').optional(),
-  status: z.string().min(1, 'Status is required!').optional(),
+// export const updatePaymentsSchema = z.object({
+//   name: z.string().min(1, 'Name is required!').optional(),
+//   status: z.string().min(1, 'Status is required!').optional(),
+//   invoiceDate: z
+//     .string()
+//     .refine((date) => !isNaN(Date.parse(date)), {
+//       message: 'Invalid date format!',
+//     })
+//     .optional(),
+//   invoiceNo: z.string().min(1, 'Invoice number is required!').optional(),
+//   totalAmount: z.number().positive('Total amount must be positive!').optional(),
+//   advanceAmount: z
+//     .number()
+//     .positive('Advance amount must be positive!')
+//     .optional(),
+// });
+export const createPaymentsSchema = z.object({
+  name: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Name is required!',
+    }),
+  status: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Status is required!',
+    }),
   invoiceDate: z
     .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
       message: 'Invalid date format!',
-    })
-    .optional(),
-  invoiceNo: z.string().min(1, 'Invoice number is required!').optional(),
-  totalAmount: z.number().positive('Total amount must be positive!').optional(),
+    }),
+  invoiceNo: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Invoice number is required!',
+    }),
+  totalAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Total amount must be positive!',
+    }),
   advanceAmount: z
-    .number()
-    .positive('Advance amount must be positive!')
-    .optional(),
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Advance amount must be positive!',
+    }),
+});
+export const updatePaymentsSchema = z.object({
+  name: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Name is required!',
+    }),
+  status: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Status is required!',
+    }),
+  invoiceDate: z
+    .string()
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
+      message: 'Invalid date format!',
+    }),
+  invoiceNo: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Invoice number is required!',
+    }),
+  totalAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Total amount must be positive!',
+    }),
+  advanceAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Advance amount must be positive!',
+    }),
 });
 
 export const validationResultPayments =
   updatePaymentsSchema.safeParse(createPaymentsForm);
 
 if (validationResultPayments.success) {
-  console.log('Validation successful:', validationResultPayments.data);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Validation successful:', validationResultPayments.data);
+  }
 } else {
   console.error('Validation errors:', validationResultPayments.error.errors);
 }
@@ -536,38 +773,117 @@ export const createReceivableForm = {
   advanceAmount: '',
 };
 
-export const createReceivableSchema = z.object({
-  name: z.string().min(1, 'Name is required!'),
-  status: z.string().min(1, 'Status is required!'),
-  invoiceDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-    message: 'Invalid date format!',
-  }),
-  invoiceNo: z.string().min(1, 'Invoice number is required!'),
-  totalAmount: z.number().positive('Total amount must be positive!'),
-  advanceAmount: z.number().positive('Advance amount must be positive!'),
-});
+// export const createReceivableSchema = z.object({
+//   name: z.string().min(1, 'Name is required!'),
+//   status: z.string().min(1, 'Status is required!'),
+//   invoiceDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
+//     message: 'Invalid date format!',
+//   }),
+//   invoiceNo: z.string().min(1, 'Invoice number is required!'),
+//   totalAmount: z.number().positive('Total amount must be positive!'),
+//   advanceAmount: z.number().positive('Advance amount must be positive!'),
+// });
 
-export const updateReceivableSchema = z.object({
-  name: z.string().min(1, 'Name is required!').optional(),
-  status: z.string().min(1, 'Status is required!').optional(),
+// export const updateReceivableSchema = z.object({
+//   name: z.string().min(1, 'Name is required!').optional(),
+//   status: z.string().min(1, 'Status is required!').optional(),
+//   invoiceDate: z
+//     .string()
+//     .refine((date) => !isNaN(Date.parse(date)), {
+//       message: 'Invalid date format!',
+//     })
+//     .optional(),
+//   invoiceNo: z.string().min(1, 'Invoice number is required!').optional(),
+//   totalAmount: z.number().positive('Total amount must be positive!').optional(),
+//   advanceAmount: z
+//     .number()
+//     .positive('Advance amount must be positive!')
+//     .optional(),
+// });
+export const createReceivableSchema = z.object({
+  name: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Name is required!',
+    }),
+  status: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Status is required!',
+    }),
   invoiceDate: z
     .string()
-    .refine((date) => !isNaN(Date.parse(date)), {
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
       message: 'Invalid date format!',
-    })
-    .optional(),
-  invoiceNo: z.string().min(1, 'Invoice number is required!').optional(),
-  totalAmount: z.number().positive('Total amount must be positive!').optional(),
+    }),
+  invoiceNo: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Invoice number is required!',
+    }),
+  totalAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Total amount must be positive!',
+    }),
   advanceAmount: z
-    .number()
-    .positive('Advance amount must be positive!')
-    .optional(),
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Advance amount must be positive!',
+    }),
 });
+export const updateReceivableSchema = z.object({
+  name: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Name is required!',
+    }),
+  status: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Status is required!',
+    }),
+  invoiceDate: z
+    .string()
+    .optional()
+    .refine((val) => !val || !isNaN(Date.parse(val)), {
+      message: 'Invalid date format!',
+    }),
+  invoiceNo: z
+    .string()
+    .optional()
+    .refine((val) => !val || val.trim().length > 0, {
+      message: 'Invoice number is required!',
+    }),
+  totalAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Total amount must be positive!',
+    }),
+  advanceAmount: z
+    .union([z.string(), z.number()])
+    .optional()
+    .refine((val) => !val || Number(val) > 0, {
+      message: 'Advance amount must be positive!',
+    }),
+});
+
 export const validationResultReceivable =
   updateReceivableSchema.safeParse(createReceivableForm);
 
 if (validationResultReceivable.success) {
-  console.log('Validation successful:', validationResultReceivable.data);
+  if (process.env.NODE_ENV !== 'production') {
+    console.log('Validation successful:', validationResultReceivable.data);
+  }
 } else {
   console.error('Validation errors:', validationResultReceivable.error.errors);
 }
