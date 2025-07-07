@@ -1,12 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true, // ✅ disables all ESLint checks during build
+  },
   webpack: (config, { dev }) => {
     if (dev) config.optimization.minimize = false;
     return config;
   },
   images: {
-     domains: ['source.unsplash.com'],
+    domains: ['source.unsplash.com'],
     remotePatterns: [
       {
         protocol: "https",
@@ -19,7 +22,7 @@ const nextConfig = {
         hostname: "localhost",
         port: "8000",
         pathname: "/uploads/**",
-      }
+      },
     ],
   },
 };

@@ -22,12 +22,15 @@ const userMenuData = [
 ];
 
 function UserInfoDashBoard__index(prop) {
-  const { active, index, handleActive, linkTo } = prop;
+  const { active, index, handleActive, linkTo, setIsNavigating } = prop;
   return (
     <li>
       <Link href={linkTo}>
         <button
-          onClick={() => handleActive(index)}
+          onClick={() => {
+            setIsNavigating?.(true); // ✅ Trigger navigation flag
+            handleActive(index);
+          }}
           className={` ${
             index == active ? 'bg-blue-600_light ' : ''
           } w-full flex items-center p-2 text-blue-600 rounded-lg hover:bg-blue-800 hover:text-neutral-50`}
@@ -45,7 +48,7 @@ function UserInfoDashBoard__index(prop) {
   );
 }
 function UserMenu(prop) {
-  const { className, dataItem, logout } = prop;
+  const { className, dataItem, logout, setIsNavigating } = prop;
   const [active, setActive] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
   const handleActive = (e) => {
@@ -79,6 +82,7 @@ function UserMenu(prop) {
           index={index}
           key={index}
           isOpen={isOpen}
+          setIsNavigating={setIsNavigating}
         />
       ))}
       <li>
@@ -97,7 +101,7 @@ function UserMenu(prop) {
 }
 import useAuth from '@/hooks/useAuth';
 import Button, { BTN_SIZES } from '@/components/ui/Button';
-export default function UserInfo() {
+export default function UserInfo({ setIsNavigating }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { handleLogOut, currentUser } = useAuth();
 
@@ -130,6 +134,7 @@ export default function UserInfo() {
         className={`${
           isMenuOpen ? '' : 'hidden'
         } dark:-bg--clr-neutral-900 z-50`}
+        setIsNavigating={setIsNavigating}
       />
       <div
         onClick={() => setIsMenuOpen((prev) => !prev)}
