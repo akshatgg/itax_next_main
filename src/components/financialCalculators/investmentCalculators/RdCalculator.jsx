@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const RecurringDepositCalculator = () => {
-  const [principal, setPrincipal] = useState("1000")
-  const [rate, setRate] = useState("7")
-  const [months, setMonths] = useState("12")
+  const [principal, setPrincipal] = useState("0")
+  const [rate, setRate] = useState("0")
+  const [months, setMonths] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -57,9 +57,9 @@ const RecurringDepositCalculator = () => {
   }
 
   const handleReset = () => {
-    setPrincipal("1000")
-    setRate("7")
-    setMonths("12")
+    setPrincipal("0")
+    setRate("0")
+    setMonths("0")
     calculateRecurringDeposit()
   }
 

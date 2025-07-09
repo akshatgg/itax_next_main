@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const NpsCalculator = () => {
-  const [monthlyInvestment, setMonthlyInvestment] = useState("5000")
-  const [rateOfInterest, setRateOfInterest] = useState("8")
-  const [currentAge, setCurrentAge] = useState("30")
+  const [monthlyInvestment, setMonthlyInvestment] = useState("0")
+  const [rateOfInterest, setRateOfInterest] = useState("0")
+  const [currentAge, setCurrentAge] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
   const [pieChartData, setPieChartData] = useState([])
@@ -82,9 +82,9 @@ const NpsCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setMonthlyInvestment("5000")
-    setRateOfInterest("8")
-    setCurrentAge("30")
+    setMonthlyInvestment("0")
+    setRateOfInterest("0")
+    setCurrentAge("0")
     calculateNPS()
   }
 

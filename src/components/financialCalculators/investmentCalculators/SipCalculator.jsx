@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const SipCalculator = () => {
-  const [monthlyInvestment, setMonthlyInvestment] = useState("5000")
-  const [expectedReturn, setExpectedReturn] = useState("12")
-  const [timePeriod, setTimePeriod] = useState("10")
+  const [monthlyInvestment, setMonthlyInvestment] = useState("0")
+  const [expectedReturn, setExpectedReturn] = useState("0")
+  const [timePeriod, setTimePeriod] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -61,9 +61,9 @@ const SipCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setMonthlyInvestment("5000")
-    setExpectedReturn("12")
-    setTimePeriod("10")
+    setMonthlyInvestment("0")
+    setExpectedReturn("0")
+    setTimePeriod("0")
     calculateSIP()
   }
 

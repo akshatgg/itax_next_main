@@ -7,8 +7,8 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const PostOfficeMonthlyIncomeSchemeCal = () => {
-  const [investmentAmount, setInvestmentAmount] = useState("100000")
-  const [interestRate, setInterestRate] = useState("7.4")
+  const [investmentAmount, setInvestmentAmount] = useState("0")
+  const [interestRate, setInterestRate] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -41,8 +41,8 @@ const PostOfficeMonthlyIncomeSchemeCal = () => {
   }
 
   const handleReset = () => {
-    setInvestmentAmount("100000")
-    setInterestRate("7.4")
+    setInvestmentAmount("0")
+    setInterestRate("0")
     calculateMonthlyIncome()
   }
 

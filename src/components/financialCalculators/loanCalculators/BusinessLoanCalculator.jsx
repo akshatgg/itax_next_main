@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const BusinessLoanCalculator = () => {
-  const [loanAmount, setLoanAmount] = useState("500000")
-  const [rateOfInterest, setRateOfInterest] = useState("10")
-  const [loanTenure, setLoanTenure] = useState("5")
+  const [loanAmount, setLoanAmount] = useState("0")
+  const [rateOfInterest, setRateOfInterest] = useState("0")
+  const [loanTenure, setLoanTenure] = useState("0")
   const [results, setResults] = useState(null)
   const [monthlyPaymentDetails, setMonthlyPaymentDetails] = useState([])
   const [pieChartData, setPieChartData] = useState([])
@@ -80,9 +80,9 @@ const BusinessLoanCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setLoanAmount("500000")
-    setRateOfInterest("10")
-    setLoanTenure("5")
+    setLoanAmount("0")
+    setRateOfInterest("0")
+    setLoanTenure("0")
     calculateBusinessLoan()
   }
 
