@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const SimpleInterestCalculator = () => {
-  const [principal, setPrincipal] = useState("10000")
-  const [rate, setRate] = useState("5")
-  const [time, setTime] = useState("5")
+  const [principal, setPrincipal] = useState("0")
+  const [rate, setRate] = useState("0")
+  const [time, setTime] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -55,9 +55,9 @@ const SimpleInterestCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setPrincipal("10000")
-    setRate("5")
-    setTime("5")
+    setPrincipal("0")
+    setRate("0")
+    setTime("0")
     calculateSimpleInterest()
   }
 

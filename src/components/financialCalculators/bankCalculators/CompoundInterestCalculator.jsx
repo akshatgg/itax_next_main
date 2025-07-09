@@ -7,10 +7,10 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const CompoundInterestCalculator = () => {
-  const [principal, setPrincipal] = useState("10000")
-  const [rate, setRate] = useState("5")
-  const [time, setTime] = useState("5")
-  const [compoundFrequency, setCompoundFrequency] = useState("1")
+  const [principal, setPrincipal] = useState("0")
+  const [rate, setRate] = useState("0")
+  const [time, setTime] = useState("0")
+  const [compoundFrequency, setCompoundFrequency] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -58,10 +58,10 @@ const CompoundInterestCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setPrincipal("10000")
-    setRate("5")
-    setTime("5")
-    setCompoundFrequency("1")
+    setPrincipal("0")
+    setRate("0")
+    setTime("0")
+    setCompoundFrequency("0")
     calculateCompoundInterest()
   }
 

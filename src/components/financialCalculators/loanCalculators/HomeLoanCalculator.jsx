@@ -19,9 +19,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const HomeLoanCalculator = () => {
-  const [loanAmount, setLoanAmount] = useState("500000")
-  const [interestRate, setInterestRate] = useState("6.5")
-  const [loanTerm, setLoanTerm] = useState("20")
+  const [loanAmount, setLoanAmount] = useState("0")
+  const [interestRate, setInterestRate] = useState("0")
+  const [loanTerm, setLoanTerm] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
   const [pieData, setPieData] = useState([])
@@ -86,9 +86,9 @@ const HomeLoanCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setLoanAmount("500000")
-    setInterestRate("6.5")
-    setLoanTerm("20")
+    setLoanAmount("0")
+    setInterestRate("0")
+    setLoanTerm("0")
     calculateLoan()
   }
 

@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const DepreciationCalculator = () => {
-  const [purchasePrice, setPurchasePrice] = useState("100000")
-  const [scrapValue, setScrapValue] = useState("10000")
-  const [estimatedUsefulLife, setEstimatedUsefulLife] = useState("5")
+  const [purchasePrice, setPurchasePrice] = useState("0")
+  const [scrapValue, setScrapValue] = useState("0")
+  const [estimatedUsefulLife, setEstimatedUsefulLife] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -56,9 +56,9 @@ const DepreciationCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setPurchasePrice("100000")
-    setScrapValue("10000")
-    setEstimatedUsefulLife("5")
+    setPurchasePrice("0")
+    setScrapValue("0")
+    setEstimatedUsefulLife("0")
     calculateDepreciation()
   }
 

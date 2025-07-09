@@ -7,8 +7,8 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const GstCalculator = () => {
-  const [amount, setAmount] = useState("1000")
-  const [gstRate, setGstRate] = useState("18")
+  const [amount, setAmount] = useState("0")
+  const [gstRate, setGstRate] = useState("0")
   const [calculationType, setCalculationType] = useState("exclusive")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
@@ -55,8 +55,8 @@ const GstCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setAmount("1000")
-    setGstRate("18")
+    setAmount("0")
+    setGstRate("0")
     setCalculationType("exclusive")
     calculateGST()
   }

@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const FixedDepositCalculator = () => {
-  const [principal, setPrincipal] = useState("100000")
-  const [interestRate, setInterestRate] = useState("7")
-  const [timePeriod, setTimePeriod] = useState("5")
+  const [principal, setPrincipal] = useState("0")
+  const [interestRate, setInterestRate] = useState("0")
+  const [timePeriod, setTimePeriod] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -55,9 +55,9 @@ const FixedDepositCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setPrincipal("100000")
-    setInterestRate("7")
-    setTimePeriod("5")
+    setPrincipal("0")
+    setInterestRate("0")
+    setTimePeriod("0")
     calculateFixedDeposit()
   }
 

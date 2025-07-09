@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const CarLoanCalculator = () => {
-  const [loanAmount, setLoanAmount] = useState("500000")
-  const [interestRate, setInterestRate] = useState("8.5")
-  const [loanTenure, setLoanTenure] = useState("5")
+  const [loanAmount, setLoanAmount] = useState("0")
+  const [interestRate, setInterestRate] = useState("0")
+  const [loanTenure, setLoanTenure] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -64,9 +64,9 @@ const CarLoanCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setLoanAmount("500000")
-    setInterestRate("8.5")
-    setLoanTenure("5")
+    setLoanAmount("0")
+    setInterestRate("0")
+    setLoanTenure("0")
     calculateLoanDetails()
   }
 

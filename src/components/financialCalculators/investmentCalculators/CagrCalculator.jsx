@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const CAGRCalculator = () => {
-  const [initialInvestment, setInitialInvestment] = useState("100000")
-  const [finalInvestment, setFinalInvestment] = useState("150000")
-  const [timePeriod, setTimePeriod] = useState("5")
+  const [initialInvestment, setInitialInvestment] = useState("0")
+  const [finalInvestment, setFinalInvestment] = useState("0")
+  const [timePeriod, setTimePeriod] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -54,9 +54,9 @@ const CAGRCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setInitialInvestment("100000")
-    setFinalInvestment("150000")
-    setTimePeriod("5")
+    setInitialInvestment("0")
+    setFinalInvestment("0")
+    setTimePeriod("0")
     calculateCAGR()
   }
 

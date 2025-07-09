@@ -7,9 +7,9 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const CapitalGainsCalculator = () => {
-  const [purchasePrice, setPurchasePrice] = useState("100000")
-  const [salePrice, setSalePrice] = useState("150000")
-  const [capitalGainsTaxRate, setCapitalGainsTaxRate] = useState("15")
+  const [purchasePrice, setPurchasePrice] = useState("0")
+  const [salePrice, setSalePrice] = useState("0")
+  const [capitalGainsTaxRate, setCapitalGainsTaxRate] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
 
@@ -50,9 +50,9 @@ const CapitalGainsCalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setPurchasePrice("100000")
-    setSalePrice("150000")
-    setCapitalGainsTaxRate("15")
+    setPurchasePrice("0")
+    setSalePrice("0")
+    setCapitalGainsTaxRate("0")
     calculateCapitalGains()
   }
 

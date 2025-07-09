@@ -7,11 +7,11 @@ import { InputField } from "../components/InputField"
 import { CalculatorResultCard } from "../components/CalculatorResultCard"
 
 const HRACalculator = () => {
-  const [basic, setBasic] = useState("50000")
-  const [hra, setHra] = useState("20000")
-  const [rent, setRent] = useState("15000")
+  const [basic, setBasic] = useState("0")
+  const [hra, setHra] = useState("0")
+  const [rent, setRent] = useState("0")
   const [isMetro, setIsMetro] = useState(false)
-  const [da, setDa] = useState("5000")
+  const [da, setDa] = useState("0")
   const [otherAllowances, setOtherAllowances] = useState("0")
   const [results, setResults] = useState(null)
   const [chartData, setChartData] = useState([])
@@ -58,11 +58,11 @@ const HRACalculator = () => {
   }, [])
 
   const handleReset = () => {
-    setBasic("50000")
-    setHra("20000")
-    setRent("15000")
+    setBasic("0")
+    setHra("0")
+    setRent("0")
     setIsMetro(false)
-    setDa("5000")
+    setDa("0")
     setOtherAllowances("0")
     calculateHRA()
   }
