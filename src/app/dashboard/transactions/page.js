@@ -1,6 +1,6 @@
 import Transactions_Admin from "@/components/pagesComponents/dashboard/admin/Transactions/Transactions_Admin";
 import SuperAdminTransactionHistory from "@/components/pagesComponents/dashboard/superAdmin/transactions/Transactions";
-import TransactionHistory from "@/components/pagesComponents/dashboard/TransactionHistory /TransactionHistory";
+import TransactionHistory from "@/components/pagesComponents/dashboard/TransactionHistory/TransactionHistory";
 import { cookies } from "next/headers";
 const page = () => {
   const cookieStore = cookies();
