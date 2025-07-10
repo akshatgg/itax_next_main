@@ -15,7 +15,7 @@ import TaxTable from './ItemTaxTable/TaxTable';
 import { TAX_TYPES_BY_STATES, UT_STATE_CODES } from './staticData';
 import moment from 'moment';
 // import { Input_GSTIN } from '@/components/formComponents/Inputs';
-
+import { useCallback } from 'react';
 export const formClassNames = {
   label: 'block  mb-1 text-sm font-medium text-gray-950/90 dark:text-white',
   input:
@@ -79,68 +79,102 @@ export default function CreateInvoice({
   const [partiesData, setPartiesData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
 
+
+
+const [nonInventoryTaxData, setNonInventoryTaxData] = useState({
+  totalTaxableValue: 0,
+  totalTaxAmount: 0,
+  totalInvoiceValue: 0,
+  cgst: 0,
+  sgst: 0,
+  igst: 0,
+  utgst: 0,
+  taxBreakdown: {}
+});
+
+const handleTaxCalculation = useCallback((taxData) => {
+  setNonInventoryTaxData(taxData);
+  
+  // Update form values with calculated amounts
+  setValue('totalGst', taxData.totalTaxAmount.toString());
+  setValue('totalAmount', taxData.totalInvoiceValue.toString());
+  setValue('cgst', taxData.cgst.toString());
+  setValue('sgst', taxData.sgst.toString());
+  setValue('igst', taxData.igst.toString());
+  setValue('utgst', taxData.utgst.toString());
+}, [setValue]);
+
+
   // invoice submit handler
-  const onSubmit = async (formData) => {
-    try {
-      setIsLoading(true);
-      const data = {
-        invoiceNumber: formData.invoiceNumber,
-        gstNumber: formData.gstNumber,
-        type: formData.type,
-        partyId: formData.partyId,
-        totalAmount: parseInt(formData.totalAmount),
-        totalGst: parseInt(formData.totalGst),
-        stateOfSupply: formData.stateOfSupply,
-        dueDate: new Date(formData.dueDate),
-        invoiceDate: new Date(formData.invoiceDate),
-        isInventory: formData.isInventory === 'true',
-        cgst: parseInt(formData.cgst),
-        sgst: parseInt(formData.sgst),
-        igst: parseInt(formData.igst),
-        utgst: parseInt(formData.utgst),
-        details: formData.details,
-        extraDetails: formData.extraDetails,
-        invoiceItems:
-          newItems &&
-          newItems.map((newItemObj) => {
-            return {
-              itemId: newItemObj.item.id,
-              quantity: newItemObj.quantity,
-              discount: newItemObj.discount,
-              taxPercent: newItemObj.taxPercent,
-            };
-          }),
-        modeOfPayment:
-          formData.modeOfPayment === 'Select mode'
-            ? 'credit'
-            : formData.modeOfPayment,
-        credit: formData.credit,
-        status: formData.status,
-      };
-      let resp;
-      if (!currentInvoice) {
-        resp = await userAxios.post('/invoice/invoices', data);
-      } else {
-        resp = await userAxios.put(
-          `/invoice/invoices/${currentInvoice.id}`,
-          data,
-        );
-      }
-      if (resp.status === 201) {
-        await refresh();
-        onClose();
-        toast.success('New invoice created ✅');
-      }
-      if (resp.status === 200) {
-        await refresh();
-        onClose();
-        toast.success('Invoice updated ✅');
-      }
-    } catch (error) {
-    } finally {
-      setIsLoading(false);
+const onSubmit = async (formData) => {
+  try {
+    setIsLoading(true);
+    const data = {
+      invoiceNumber: formData.invoiceNumber,
+      gstNumber: formData.gstNumber,
+      type: formData.type,
+      partyId: formData.partyId,
+      totalAmount: parseInt(formData.totalAmount),
+      totalGst: parseInt(formData.totalGst),
+      stateOfSupply: formData.stateOfSupply,
+      dueDate: new Date(formData.dueDate),
+      invoiceDate: new Date(formData.invoiceDate),
+      isInventory: formData.isInventory === 'true',
+      cgst: parseInt(formData.cgst),
+      sgst: parseInt(formData.sgst),
+      igst: parseInt(formData.igst),
+      utgst: parseInt(formData.utgst),
+      details: formData.details,
+      extraDetails: formData.extraDetails,
+      
+      // For inventory items
+      invoiceItems: formData.isInventory === 'true' && newItems
+        ? newItems.map((newItemObj) => ({
+            itemId: newItemObj.item.id,
+            quantity: newItemObj.quantity,
+            discount: newItemObj.discount,
+            taxPercent: newItemObj.taxPercent,
+          }))
+        : [],
+      
+      // For non-inventory items - include tax breakdown
+      nonInventoryTaxBreakdown: formData.isInventory === 'false' 
+        ? nonInventoryTaxData.taxBreakdown 
+        : {},
+        
+      modeOfPayment:
+        formData.modeOfPayment === 'Select mode'
+          ? 'credit'
+          : formData.modeOfPayment,
+      credit: formData.credit,
+      status: formData.status,
+    };
+    
+    // Rest of your submission code...
+    let resp;
+    if (!currentInvoice) {
+      resp = await userAxios.post('/invoice/invoices', data);
+    } else {
+      resp = await userAxios.put(`/invoice/invoices/${currentInvoice.id}`, data);
     }
-  };
+    
+    if (resp.status === 201) {
+      await refresh();
+      onClose();
+      toast.success('New invoice created ✅');
+    }
+    if (resp.status === 200) {
+      await refresh();
+      onClose();
+      toast.success('Invoice updated ✅');
+    }
+  } catch (error) {
+    toast.error('Error creating/updating invoice');
+    console.error(error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const getParties = async () => {
     try {
@@ -350,29 +384,49 @@ export default function CreateInvoice({
                 {errors.gstNumber && errors.gstNumber.message}
               </p>
             </li>
-            <li>
-              <label htmlFor="partyId" className={formClassNames.label}>
-                Party
-              </label>
-              <div className="relative">
-                <select
-                  name="partyId"
-                  id="partyId"
-                  className={`${formClassNames.input} py-[10px]`}
-                  {...register('partyId')}
-                >
-                  <option value="">Select party</option>
-                  {partiesData?.parties?.map((party, index) => (
-                    <option key={index} value={party.id}>
-                      {party.partyName}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <p className=" text-xs text-red-500 h-4 px-2">
-                {errors.partyId && errors.partyId.message}
-              </p>
-            </li>
+ <li className="space-y-1">
+  <label
+    htmlFor="partyId"
+    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+  >
+    Party
+  </label>
+
+  <div className="relative">
+    {partiesData?.parties?.length > 0 ? (
+      <select
+        id="partyId"
+        {...register("partyId")}
+        className="block w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-800 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 transition-all"
+      >
+        <option value="">Select a party</option>
+        {partiesData.parties.map((party, index) => (
+          <option key={index} value={party.id}>
+            {party.partyName}
+          </option>
+        ))}
+      </select>
+    ) : (
+      <div className="flex items-center justify-between bg-yellow-50 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100 px-4 py-2 rounded-md text-sm border border-yellow-300 dark:border-yellow-600">
+        <span>No parties found.</span>
+        <a
+          href="invoice/parties/add-party?type=customer"
+          className="text-blue-600 hover:underline hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400"
+        >
+          Add Party
+        </a>
+      </div>
+    )}
+  </div>
+
+  {errors.partyId && (
+    <p className="text-xs text-red-500 mt-1 px-1">
+      {errors.partyId.message}
+    </p>
+  )}
+</li>
+
+
             <li>
               <label htmlFor="invoiceNumber" className={formClassNames.label}>
                 Invoice Number
@@ -559,11 +613,14 @@ export default function CreateInvoice({
               />
             </li>
 
-            {isInventory === 'false' && taxType && (
-              <div className="w-full md:col-span-4">
-                <TaxTable taxType={taxType} />
-              </div>
-            )}
+      {isInventory === 'false' && taxType && (
+  <div className="w-full md:col-span-4">
+    <TaxTable 
+      taxType={taxType} 
+      onTaxCalculation={handleTaxCalculation}
+    />
+  </div>
+)}
 
             {isInventory === 'true' && (
               <ItemsInputContainer
@@ -710,7 +767,7 @@ export default function CreateInvoice({
                     width={30}
                     height={25}
                     alt="Loading.."
-                  />
+                  />  
                   <p>Creating..</p>
                 </div>
               ) : currentInvoice ? (

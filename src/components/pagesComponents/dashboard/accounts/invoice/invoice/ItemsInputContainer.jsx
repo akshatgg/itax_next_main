@@ -127,9 +127,18 @@ export default function ItemsInputContainer({
   return (
     <div className="mt-5 md:col-span-4">
       <h2>Item Details</h2>
-      <p className="text-xs text-red-500 h-4 px-2">
-        {itemsData?.items?.length === 0 && 'No item found'}
-      </p>
+{itemsData?.items?.length === 0 && (
+  <div className="px-3 py-2 bg-yellow-50 text-yellow-800 border border-yellow-300 rounded-md text-sm mb-3">
+    No items found.{" "}
+    <a
+      href="invoice/items/create-item"
+      className="text-blue-600 underline hover:text-blue-800"
+    >
+      Click here to add an item
+    </a>
+  </div>
+)}
+
       <ul className="grid grid-cols-1 sm:grid-cols-6 gap-2">
         <li className="col-span-1">
           <label htmlFor="itemName" className={formClassNames.label}>
