@@ -11,7 +11,7 @@ import { createInvSchema } from './invFormSchema';
 import Button from '@/components/ui/Button';
 import Image from 'next/image';
 import regex from '@/utils/regex';
-import TaxTable from './ItemTaxTable/TaxTable';
+import NonInventoryTaxComponent from './ItemTaxTable/TaxTable';
 import { TAX_TYPES_BY_STATES, UT_STATE_CODES } from './staticData';
 import moment from 'moment';
 // import { Input_GSTIN } from '@/components/formComponents/Inputs';
@@ -615,7 +615,7 @@ const onSubmit = async (formData) => {
 
       {isInventory === 'false' && taxType && (
   <div className="w-full md:col-span-4">
-    <TaxTable 
+    <NonInventoryTaxComponent 
       taxType={taxType} 
       onTaxCalculation={handleTaxCalculation}
     />

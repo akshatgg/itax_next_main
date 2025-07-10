@@ -1,385 +1,199 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
 import { TAX_TYPES_BY_STATES } from '../staticData';
-import ReactTable from '@/components/ui/ReactTable';
 import { formClassNames } from '../CreateInvoice';
 import { formatINRCurrency } from '@/utils/utilityFunctions';
+import { Trash2, Plus, Edit3 } from 'lucide-react';
 
-const baseTableHeaders = [
-  {
-    text: 'Rate %',
-    dataField: 'rate',
-    formatter: (data) => {
-      return (
-        <div className="flex justify-center items-center font-medium">
-          <span>{data}</span>
-        </div>
-      );
-    },
-  },
-  {
-    text: 'Taxable Value (₹)',
-    dataField: 'value',
-    formatter: (data) => {
-      return (
-        <div className="flex justify-center items-center">
-          {data}
-        </div>
-      );
-    },
-  },
-];
-
-const intraTableHeaders = [
-  {
-    text: 'Central Tax (₹)',
-    dataField: 'cgst',
-    formatter: (data) => {
-      return (
-        <div className="flex justify-center items-center font-medium text-green-600">
-          <span>{data}</span>
-        </div>
-      );
-    },
-  },
-  {
-    text: 'State/UT Tax (₹)',
-    dataField: 'sgst',
-    formatter: (data) => {
-      return (
-        <div className="flex justify-center items-center font-medium text-blue-600">
-          <span>{data}</span>
-        </div>
-      );
-    },
-  },
-  {
-    text: 'CESS (₹)',
-    dataField: 'cess',
-    formatter: (data) => {
-      return (
-        <div className="flex justify-center items-center font-medium text-purple-600">
-          <span>{data}</span>
-        </div>
-      );
-    },
-  },
-];
-
-const utTableHeaders = [
-  intraTableHeaders.at(0),
-  {
-    text: 'UT Tax (₹)',
-    dataField: 'utgst',
-    formatter: (data) => {
-      return (
-        <div className="flex justify-center items-center font-medium text-orange-600">
-          <span>{data}</span>
-        </div>
-      );
-    },
-  },
-  {
-    text: 'CESS (₹)',
-    dataField: 'cess',
-    formatter: (data) => {
-      return (
-        <div className="flex justify-center items-center font-medium text-purple-600">
-          <span>{data}</span>
-        </div>
-      );
-    },
-  },
-];
-
-const interTableHeaders = [
-  {
-    text: 'Integrated Tax (₹)',
-    dataField: 'igst',
-    formatter: (data) => {
-      return (
-        <div className="flex justify-center items-center font-medium text-indigo-600">
-          <span>{data}</span>
-        </div>
-      );
-    },
-  },
-  {
-    text: 'CESS (₹)',
-    dataField: 'cess',
-    formatter: (data) => {
-      return (
-        <div className="flex justify-center items-center font-medium text-purple-600">
-          <span>{data}</span>
-        </div>
-      );
-    },
-  },
-];
-
-const tableHeaders = {
-  [TAX_TYPES_BY_STATES.intra]: baseTableHeaders.concat(intraTableHeaders),
-  [TAX_TYPES_BY_STATES.inter]: baseTableHeaders.concat(interTableHeaders),
-  [TAX_TYPES_BY_STATES.ut]: baseTableHeaders.concat(utTableHeaders),
-};
-
-const TaxTable = ({ taxType, onTaxCalculation }) => {
-  const [tax, setTax] = useState({});
+const NonInventoryTaxComponent = ({ taxType, onTaxCalculation }) => {
+  const [items, setItems] = useState([]);
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [currentItem, setCurrentItem] = useState({
+    description: '',
+    quantity: 1,
+    rate: '',
+    taxRate: '',
+    amount: 0,
+    taxAmount: 0,
+    totalAmount: 0
+  });
   const [errors, setErrors] = useState({});
-  const [totalTaxableValue, setTotalTaxableValue] = useState(0);
-  const [totalTaxAmount, setTotalTaxAmount] = useState(0);
 
-  // Validate input value
-  const validateInput = (value) => {
-    if (value === '') return true;
-    const numValue = parseFloat(value);
-    return !isNaN(numValue) && numValue >= 0;
-  };
+  // Available GST rates
+  const gstRates = [0, 1, 1.5, 3, 5, 6, 7.5, 12, 18, 28];
 
-  // Format number with proper decimal places
-  const formatNumber = (num) => {
-    return parseFloat(num).toFixed(2);
-  };
-
-  const handleTaxValueChange = useCallback((e) => {
-    const { name, value } = e.target;
-    
-    // Remove any non-numeric characters except decimal point
-    const cleanValue = value.replace(/[^0-9.]/g, '');
-    
-    // Validate the input
-    if (!validateInput(cleanValue)) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: 'Please enter a valid positive number'
-      }));
-      return;
-    }
-
-    // Clear error for this field
-    setErrors(prev => {
-      const newErrors = { ...prev };
-      delete newErrors[name];
-      return newErrors;
-    });
-
-    // Update tax state
-    setTax((prevTax) => ({
-      ...prevTax,
-      [name]: cleanValue,
-    }));
-  }, []);
-
-  const getTax = useCallback((taxName, rate) => {
-    const allowedTaxes = {
-      [TAX_TYPES_BY_STATES.intra]: ['cgst', 'sgst'],
-      [TAX_TYPES_BY_STATES.inter]: ['igst'],
-      [TAX_TYPES_BY_STATES.ut]: ['cgst', 'utgst'],
-    };
-
-    // If no rate is specified, it sends the total gst tax
-    if (taxType && allowedTaxes[taxType].includes(taxName) && !rate) {
-      let totalTax = 0;
-      Object.entries(tax).forEach(([key, value]) => {
-        if (key && value) {
-          const parsedKey = parseFloat(key);
-          const parseVal = parseFloat(value);
-          if (!isNaN(parsedKey) && !isNaN(parseVal)) {
-            totalTax += (parseVal * parsedKey) / 100;
-          }
-        }
-      });
-      return totalTax;
-    }
-
-    if (taxType && tax[rate] && allowedTaxes[taxType].includes(taxName)) {
-      const taxValue = parseFloat(tax[rate]);
-      const taxRate = parseFloat(rate);
-      if (!isNaN(taxValue) && !isNaN(taxRate)) {
-        return (taxValue * taxRate) / 100;
-      }
-    }
-
-    return 0;
-  }, [tax, taxType]);
-
-  // Calculate totals whenever tax changes
+  // Calculate item amounts whenever rate, quantity, or taxRate changes
   useEffect(() => {
-    const taxableValue = Object.values(tax).reduce(
-      (total, val) => parseFloat(val || 0) + total,
-      0
-    );
-    
-    const taxAmount = getTax('cgst') + getTax('sgst') + getTax('igst') + getTax('utgst');
-    
-    setTotalTaxableValue(taxableValue);
-    setTotalTaxAmount(taxAmount);
+    const rate = parseFloat(currentItem.rate) || 0;
+    const quantity = parseFloat(currentItem.quantity) || 1;
+    const taxRate = parseFloat(currentItem.taxRate) || 0;
 
-    // Send calculation to parent component
+    const amount = rate * quantity;
+    const taxAmount = (amount * taxRate) / 100;
+    const totalAmount = amount + taxAmount;
+
+    setCurrentItem(prev => ({
+      ...prev,
+      amount: amount,
+      taxAmount: taxAmount,
+      totalAmount: totalAmount
+    }));
+  }, [currentItem.rate, currentItem.quantity, currentItem.taxRate]);
+
+  // Calculate totals and send to parent
+  useEffect(() => {
+    const totalTaxableValue = items.reduce((sum, item) => sum + item.amount, 0);
+    const totalTaxAmount = items.reduce((sum, item) => sum + item.taxAmount, 0);
+    const totalInvoiceValue = totalTaxableValue + totalTaxAmount;
+
+    // Calculate tax breakdown based on tax type
+    let cgst = 0, sgst = 0, igst = 0, utgst = 0;
+
+    if (taxType === TAX_TYPES_BY_STATES.inter) {
+      // Intra-state: CGST + SGST
+      cgst = totalTaxAmount / 2;
+      sgst = totalTaxAmount / 2;
+    } else if (taxType === TAX_TYPES_BY_STATES.intra) {
+      // Inter-state: IGST
+      igst = totalTaxAmount;
+    } else if (taxType === TAX_TYPES_BY_STATES.ut) {
+      // UT: CGST + UTGST
+      cgst = totalTaxAmount / 2;
+      utgst = totalTaxAmount / 2;
+    }
+
     if (onTaxCalculation) {
       onTaxCalculation({
-        totalTaxableValue: taxableValue,
-        totalTaxAmount: taxAmount,
-        totalInvoiceValue: taxableValue + taxAmount,
-        cgst: getTax('cgst'),
-        sgst: getTax('sgst'),
-        igst: getTax('igst'),
-        utgst: getTax('utgst'),
-        taxBreakdown: tax
+        totalTaxableValue,
+        totalTaxAmount,
+        totalInvoiceValue,
+        cgst,
+        sgst,
+        igst,
+        utgst,
+        taxBreakdown: items.reduce((acc, item, index) => {
+          acc[`item_${index}`] = {
+            description: item.description,
+            amount: item.amount,
+            taxAmount: item.taxAmount
+          };
+          return acc;
+        }, {})
       });
     }
-  }, [tax, getTax, onTaxCalculation]);
+  }, [items, taxType, onTaxCalculation]);
 
-  const createInputField = (rate) => (
-    <div className="relative">
-      <input
-        type="text"
-        name={rate}
-        className={`${formClassNames.input} ${errors[rate] ? 'border-red-500 focus:border-red-500' : ''} text-right`}
-        onChange={handleTaxValueChange}
-        value={tax[rate] || ''}
-        placeholder="0.00"
-        autoComplete="off"
-      />
-      {errors[rate] && (
-        <div className="absolute -bottom-5 left-0 text-xs text-red-500">
-          {errors[rate]}
-        </div>
-      )}
-    </div>
-  );
+  const validateItem = () => {
+    const newErrors = {};
+    
+    if (!currentItem.description.trim()) {
+      newErrors.description = 'Description is required';
+    }
+    
+    if (!currentItem.rate || parseFloat(currentItem.rate) <= 0) {
+      newErrors.rate = 'Rate must be greater than 0';
+    }
+    
+    if (!currentItem.quantity || parseFloat(currentItem.quantity) <= 0) {
+      newErrors.quantity = 'Quantity must be greater than 0';
+    }
+    
+    if (currentItem.taxRate === '') {
+      newErrors.taxRate = 'Tax rate is required';
+    }
 
-  const tableData = [
-    {
-      rate: '0%',
-      value: createInputField('0'),
-      cgst: formatNumber(getTax('cgst', '0')),
-      sgst: formatNumber(getTax('sgst', '0')),
-      igst: formatNumber(getTax('igst', '0')),
-      utgst: formatNumber(getTax('utgst', '0')),
-      cess: '0.00',
-    },
-    {
-      rate: '1%',
-      value: createInputField('1'),
-      cgst: formatNumber(getTax('cgst', '1')),
-      sgst: formatNumber(getTax('sgst', '1')),
-      igst: formatNumber(getTax('igst', '1')),
-      utgst: formatNumber(getTax('utgst', '1')),
-      cess: '0.00',
-    },
-    {
-      rate: '1.5%',
-      value: createInputField('1.5'),
-      cgst: formatNumber(getTax('cgst', '1.5')),
-      sgst: formatNumber(getTax('sgst', '1.5')),
-      igst: formatNumber(getTax('igst', '1.5')),
-      utgst: formatNumber(getTax('utgst', '1.5')),
-      cess: '0.00',
-    },
-    {
-      rate: '3%',
-      value: createInputField('3'),
-      cgst: formatNumber(getTax('cgst', '3')),
-      sgst: formatNumber(getTax('sgst', '3')),
-      igst: formatNumber(getTax('igst', '3')),
-      utgst: formatNumber(getTax('utgst', '3')),
-      cess: '0.00',
-    },
-    {
-      rate: '5%',
-      value: createInputField('5'),
-      cgst: formatNumber(getTax('cgst', '5')),
-      sgst: formatNumber(getTax('sgst', '5')),
-      igst: formatNumber(getTax('igst', '5')),
-      utgst: formatNumber(getTax('utgst', '5')),
-      cess: '0.00',
-    },
-    {
-      rate: '6%',
-      value: createInputField('6'),
-      cgst: formatNumber(getTax('cgst', '6')),
-      sgst: formatNumber(getTax('sgst', '6')),
-      igst: formatNumber(getTax('igst', '6')),
-      utgst: formatNumber(getTax('utgst', '6')),
-      cess: '0.00',
-    },
-    {
-      rate: '7.5%',
-      value: createInputField('7.5'),
-      cgst: formatNumber(getTax('cgst', '7.5')),
-      sgst: formatNumber(getTax('sgst', '7.5')),
-      igst: formatNumber(getTax('igst', '7.5')),
-      utgst: formatNumber(getTax('utgst', '7.5')),
-      cess: '0.00',
-    },
-    {
-      rate: '12%',
-      value: createInputField('12'),
-      cgst: formatNumber(getTax('cgst', '12')),
-      sgst: formatNumber(getTax('sgst', '12')),
-      igst: formatNumber(getTax('igst', '12')),
-      utgst: formatNumber(getTax('utgst', '12')),
-      cess: '0.00',
-    },
-    {
-      rate: '18%',
-      value: createInputField('18'),
-      cgst: formatNumber(getTax('cgst', '18')),
-      sgst: formatNumber(getTax('sgst', '18')),
-      igst: formatNumber(getTax('igst', '18')),
-      utgst: formatNumber(getTax('utgst', '18')),
-      cess: '0.00',
-    },
-    {
-      rate: '28%',
-      value: createInputField('28'),
-      cgst: formatNumber(getTax('cgst', '28')),
-      sgst: formatNumber(getTax('sgst', '28')),
-      igst: formatNumber(getTax('igst', '28')),
-      utgst: formatNumber(getTax('utgst', '28')),
-      cess: '0.00',
-    },
-    {
-      rate: (
-        <div className="font-bold text-lg bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
-          <span>Total</span>
-        </div>
-      ),
-      value: (
-        <div className="flex justify-center w-full">
-          <span className="font-bold text-lg bg-blue-100 dark:bg-blue-900 px-3 py-1 rounded text-blue-800 dark:text-blue-200">
-            {formatINRCurrency(totalTaxableValue)}
-          </span>
-        </div>
-      ),
-      cgst: (
-        <div className="font-bold text-lg bg-green-100 dark:bg-green-900 px-2 py-1 rounded text-green-800 dark:text-green-200">
-          {formatINRCurrency(getTax('cgst'))}
-        </div>
-      ),
-      sgst: (
-        <div className="font-bold text-lg bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-blue-800 dark:text-blue-200">
-          {formatINRCurrency(getTax('sgst'))}
-        </div>
-      ),
-      igst: (
-        <div className="font-bold text-lg bg-indigo-100 dark:bg-indigo-900 px-2 py-1 rounded text-indigo-800 dark:text-indigo-200">
-          {formatINRCurrency(getTax('igst'))}
-        </div>
-      ),
-      utgst: (
-        <div className="font-bold text-lg bg-orange-100 dark:bg-orange-900 px-2 py-1 rounded text-orange-800 dark:text-orange-200">
-          {formatINRCurrency(getTax('utgst'))}
-        </div>
-      ),
-      cess: (
-        <div className="font-bold text-lg bg-purple-100 dark:bg-purple-900 px-2 py-1 rounded text-purple-800 dark:text-purple-200">
-          {formatINRCurrency(0)}
-        </div>
-      ),
-    },
-  ];
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleAddItem = () => {
+    if (validateItem()) {
+      const newItem = {
+        ...currentItem,
+        id: Date.now() + Math.random()
+      };
+      
+      if (editingIndex !== null) {
+        const updatedItems = [...items];
+        updatedItems[editingIndex] = newItem;
+        setItems(updatedItems);
+        setEditingIndex(null);
+      } else {
+        setItems(prev => [...prev, newItem]);
+      }
+      
+      setCurrentItem({
+        description: '',
+        quantity: 1,
+        rate: '',
+        taxRate: '',
+        amount: 0,
+        taxAmount: 0,
+        totalAmount: 0
+      });
+      setIsAddingItem(false);
+      setErrors({});
+    }
+  };
+
+  const handleEditItem = (index) => {
+    setCurrentItem(items[index]);
+    setEditingIndex(index);
+    setIsAddingItem(true);
+  };
+
+  const handleDeleteItem = (index) => {
+    const updatedItems = items.filter((_, i) => i !== index);
+    setItems(updatedItems);
+  };
+
+  const handleCancelEdit = () => {
+    setCurrentItem({
+      description: '',
+      quantity: 1,
+      rate: '',
+      taxRate: '',
+      amount: 0,
+      taxAmount: 0,
+      totalAmount: 0
+    });
+    setIsAddingItem(false);
+    setEditingIndex(null);
+    setErrors({});
+  };
+
+  const handleInputChange = (field, value) => {
+    setCurrentItem(prev => ({
+      ...prev,
+      [field]: value
+    }));
+    
+    // Clear error for this field
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: undefined
+      }));
+    }
+  };
+
+  const getTaxLabel = () => {
+    switch (taxType) {
+      case TAX_TYPES_BY_STATES.inter:
+        return 'CGST + SGST';
+      case TAX_TYPES_BY_STATES.intra:
+        return 'IGST';
+      case TAX_TYPES_BY_STATES.ut:
+        return 'CGST + UTGST';
+      default:
+        return 'GST';
+    }
+  };
+
+  const totalTaxableValue = items.reduce((sum, item) => sum + item.amount, 0);
+  const totalTaxAmount = items.reduce((sum, item) => sum + item.taxAmount, 0);
+  const totalInvoiceValue = totalTaxableValue + totalTaxAmount;
 
   return (
     <div className="my-6 space-y-4">
@@ -387,72 +201,284 @@ const TaxTable = ({ taxType, onTaxCalculation }) => {
       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-            Tax Calculation Table - {taxType?.toUpperCase()} State
+            Non-Inventory Items - {taxType?.toUpperCase()} State ({getTaxLabel()})
           </h3>
           <div className="flex space-x-4 text-sm">
             <div className="bg-white dark:bg-gray-800 px-3 py-1 rounded-full border">
-              <span className="text-gray-600 dark:text-gray-300">Total Taxable: </span>
+              <span className="text-gray-600 dark:text-gray-300">Items: </span>
               <span className="font-bold text-blue-600 dark:text-blue-400">
-                {formatINRCurrency(totalTaxableValue)}
+                {items.length}
               </span>
             </div>
             <div className="bg-white dark:bg-gray-800 px-3 py-1 rounded-full border">
-              <span className="text-gray-600 dark:text-gray-300">Total Tax: </span>
+              <span className="text-gray-600 dark:text-gray-300">Total: </span>
               <span className="font-bold text-green-600 dark:text-green-400">
-                {formatINRCurrency(totalTaxAmount)}
+                {formatINRCurrency(totalInvoiceValue)}
               </span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Instructions */}
-      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
-        <div className="flex items-start space-x-2">
-          <div className="text-amber-600 dark:text-amber-400 mt-0.5">
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
+      {/* Add Item Button */}
+      {!isAddingItem && (
+        <button
+          onClick={() => setIsAddingItem(true)}
+          className="flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+        >
+          <Plus className="w-4 h-4" />
+          <span>Add Item</span>
+        </button>
+      )}
+
+      {/* Add/Edit Item Form */}
+      {isAddingItem && (
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-4">
+          <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">
+            {editingIndex !== null ? 'Edit Item' : 'Add New Item'}
+          </h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Description */}
+            <div className="md:col-span-2 lg:col-span-1">
+              <label className={formClassNames.label}>Description *</label>
+              <input
+                type="text"
+                value={currentItem.description}
+                onChange={(e) => handleInputChange('description', e.target.value)}
+                className={`${formClassNames.input} ${errors.description ? 'border-red-500' : ''}`}
+                placeholder="Enter item description"
+              />
+              {errors.description && (
+                <p className="text-xs text-red-500 mt-1">{errors.description}</p>
+              )}
+            </div>
+
+            {/* Quantity */}
+            <div>
+              <label className={formClassNames.label}>Quantity *</label>
+              <input
+                type="number"
+                value={currentItem.quantity}
+                onChange={(e) => handleInputChange('quantity', e.target.value)}
+                className={`${formClassNames.input} ${errors.quantity ? 'border-red-500' : ''}`}
+                placeholder="1"
+                min="1"
+                step="1"
+              />
+              {errors.quantity && (
+                <p className="text-xs text-red-500 mt-1">{errors.quantity}</p>
+              )}
+            </div>
+
+            {/* Rate */}
+            <div>
+              <label className={formClassNames.label}>Rate (₹) *</label>
+              <input
+                type="number"
+                value={currentItem.rate}
+                onChange={(e) => handleInputChange('rate', e.target.value)}
+                className={`${formClassNames.input} ${errors.rate ? 'border-red-500' : ''}`}
+                placeholder="0.00"
+                min="0"
+                step="0.01"
+              />
+              {errors.rate && (
+                <p className="text-xs text-red-500 mt-1">{errors.rate}</p>
+              )}
+            </div>
+
+            {/* Tax Rate */}
+            <div>
+              <label className={formClassNames.label}>GST Rate (%) *</label>
+              <select
+                value={currentItem.taxRate}
+                onChange={(e) => handleInputChange('taxRate', e.target.value)}
+                className={`${formClassNames.input} ${errors.taxRate ? 'border-red-500' : ''}`}
+              >
+                <option value="">Select GST Rate</option>
+                {gstRates.map(rate => (
+                  <option key={rate} value={rate}>{rate}%</option>
+                ))}
+              </select>
+              {errors.taxRate && (
+                <p className="text-xs text-red-500 mt-1">{errors.taxRate}</p>
+              )}
+            </div>
+
+            {/* Amount (calculated) */}
+            <div>
+              <label className={formClassNames.label}>Amount (₹)</label>
+              <input
+                type="text"
+                value={formatINRCurrency(currentItem.amount)}
+                className={`${formClassNames.input} bg-gray-50 dark:bg-gray-700`}
+                disabled
+              />
+            </div>
+
+            {/* Tax Amount (calculated) */}
+            <div>
+              <label className={formClassNames.label}>Tax Amount (₹)</label>
+              <input
+                type="text"
+                value={formatINRCurrency(currentItem.taxAmount)}
+                className={`${formClassNames.input} bg-gray-50 dark:bg-gray-700`}
+                disabled
+              />
+            </div>
           </div>
-          <div>
-            <p className="text-sm text-amber-800 dark:text-amber-200">
-              <strong>Instructions:</strong> Enter the taxable value for each GST rate applicable to your invoice. 
-              The system will automatically calculate the corresponding tax amounts based on your supply type.
-            </p>
+
+          {/* Total Amount Display */}
+          <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg">
+            <div className="text-center">
+              <span className="text-sm text-gray-600 dark:text-gray-300">Total Amount: </span>
+              <span className="text-lg font-bold text-blue-600 dark:text-blue-400">
+                {formatINRCurrency(currentItem.totalAmount)}
+              </span>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-end space-x-3">
+            <button
+              onClick={handleCancelEdit}
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleAddItem}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              {editingIndex !== null ? 'Update Item' : 'Add Item'}
+            </button>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Table */}
-      <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
-        <ReactTable columns={tableHeaders[taxType] || []} data={tableData} />
-      </div>
-
-      {/* Summary Card */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-              {formatINRCurrency(totalTaxableValue)}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Total Taxable Value</div>
+      {/* Items List */}
+      {items.length > 0 && (
+        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
+          <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+            <h4 className="text-md font-medium text-gray-800 dark:text-gray-200">Added Items</h4>
           </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-              {formatINRCurrency(totalTaxAmount)}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Total Tax Amount</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
-              {formatINRCurrency(totalTaxableValue + totalTaxAmount)}
-            </div>
-            <div className="text-sm text-gray-600 dark:text-gray-300">Total Invoice Value</div>
+          
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Description
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Qty
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Rate
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    GST %
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Tax
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Total
+                  </th>
+                  <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {items.map((item, index) => (
+                  <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">
+                      {item.description}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 text-right">
+                      {item.quantity}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 text-right">
+                      {formatINRCurrency(item.rate)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 text-right">
+                      {item.taxRate}%
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-gray-100 text-right">
+                      {formatINRCurrency(item.amount)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-green-600 dark:text-green-400 text-right font-medium">
+                      {formatINRCurrency(item.taxAmount)}
+                    </td>
+                    <td className="px-4 py-3 text-sm text-blue-600 dark:text-blue-400 text-right font-bold">
+                      {formatINRCurrency(item.totalAmount)}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex justify-center space-x-2">
+                        <button
+                          onClick={() => handleEditItem(index)}
+                          className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                        >
+                          <Edit3 className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteItem(index)}
+                          className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
+      )}
+
+      {/* Summary Section */}
+      {items.length > 0 && (
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                {formatINRCurrency(totalTaxableValue)}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Taxable Value</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+                {formatINRCurrency(totalTaxAmount)}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Tax Amount ({getTaxLabel()})</div>
+            </div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                {formatINRCurrency(totalInvoiceValue)}
+              </div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Total Invoice Value</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Empty State */}
+      {items.length === 0 && !isAddingItem && (
+        <div className="text-center py-8 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="text-gray-500 dark:text-gray-400">
+            <p className="text-lg mb-2">No items added yet</p>
+            <p className="text-sm">Click Add Item to start adding non-inventory items to your invoice</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default TaxTable;
+export default NonInventoryTaxComponent;
