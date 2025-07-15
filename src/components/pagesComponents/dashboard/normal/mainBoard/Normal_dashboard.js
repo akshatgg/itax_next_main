@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import CardOverview from './items/CardOverview';
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import Sales_Purchase from './items/Sales_and_Purchase';
+import SalesBreakdownAnalytics from './items/SalesBreakdownAnalytics'; // Import the new component
 import DataState from './items/DataState';
 import userAxios from '@/lib/userbackAxios';
 import Loader from '@/components/partials/loading/Loader';
@@ -53,21 +54,29 @@ export default function Normal_dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950 dark:via-gray-900 dark:to-blue-950 transition-colors duration-300">
-      <div className="flex flex-col lg:flex-row gap-6 p-6">
-        <div className="w-full lg:basis-[65%] space-y-6">
-          <CardOverview invoices={invoices} className="" />
-          <TransactionOverview 
-            invoices={invoices}
-            onSelectInvoice={(id, data) => {
-              setSelectedOrderId(id);
-              setInvoiceData(data);
-            }}
-            className=""
-          />
+      <div className="flex flex-col gap-6 p-6">
+        {/* Top Section */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="w-full lg:basis-[65%] space-y-6">
+            <CardOverview invoices={invoices} className="" />
+            <TransactionOverview 
+              invoices={invoices}
+              onSelectInvoice={(id, data) => {
+                setSelectedOrderId(id);
+                setInvoiceData(data);
+              }}
+              className=""
+            />
+          </div>
+          
+          <div className="w-full lg:basis-[35%]">
+            <Sales_Purchase invoices={invoices} />
+          </div>
         </div>
-        
-        <div className="w-full lg:basis-[35%]">
-          <Sales_Purchase invoices={invoices} />
+
+        {/* Bottom Section - Sales Breakdown Analytics */}
+        <div className="w-full">
+          <SalesBreakdownAnalytics invoices={invoices} />
         </div>
       </div>
     </div>
