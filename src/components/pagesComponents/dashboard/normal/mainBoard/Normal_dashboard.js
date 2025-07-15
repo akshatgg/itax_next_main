@@ -6,7 +6,7 @@ import Sales_Purchase from './items/Sales_and_Purchase';
 import DataState from './items/DataState';
 import userAxios from '@/lib/userbackAxios';
 import Loader from '@/components/partials/loading/Loader';
-import TransactionOverview from './items/TransactionOverview';  
+import TransactionOverview from './items/TransactionOverview';
 import { Invoice } from '../../order-history-component/OrderHistory.Component';
 
 export default function Normal_dashboard() {
@@ -32,10 +32,10 @@ export default function Normal_dashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-[70vh] justify-center items-center">
+      <div className="flex h-[70vh] justify-center items-center bg-gradient-to-br from-blue-50 to-white dark:from-blue-950 dark:to-gray-900">
         <div className="flex flex-col items-center space-y-4">
           <Loader />
-          <p className="text-gray-500 dark:text-gray-400 animate-pulse">Loading dashboard...</p>
+          <p className="text-blue-600 dark:text-blue-400 animate-pulse font-medium">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -52,17 +52,17 @@ export default function Normal_dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <div className="flex flex-col lg:flex-row gap-6 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950 dark:via-gray-900 dark:to-blue-950 transition-colors duration-300">
+      <div className="flex flex-col lg:flex-row gap-6 p-6">
         <div className="w-full lg:basis-[65%] space-y-6">
           <CardOverview invoices={invoices} className="" />
           <TransactionOverview 
-            invoices={invoices} 
+            invoices={invoices}
             onSelectInvoice={(id, data) => {
               setSelectedOrderId(id);
               setInvoiceData(data);
-            }} 
-            className="" 
+            }}
+            className=""
           />
         </div>
         

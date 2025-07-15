@@ -60,7 +60,7 @@ export default function DashboardLayout({ children }) {
       <main
         className={`
           ${isSidebarOpen ? 'lg:pl-64' : 'lg:pl-16'}
-          pt-[60px]  /* adjust if your TopNavbar height differs */
+          pt-[0px]  /* adjust if your TopNavbar height differs */
           px-4
           transition-all duration-200
         `}

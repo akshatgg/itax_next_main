@@ -19,9 +19,9 @@ export default function CardOverview({ invoices = [], className }) {
       overview: `${total}`,
       time: `${sales} sales / ${purchases} purchases`,
       iconName: 'lucide:file-text',
-      gradient: 'from-purple-500 to-indigo-600',
-      bgGradient: 'from-purple-50 to-indigo-50',
-      darkBgGradient: 'from-purple-900/20 to-indigo-900/20',
+      gradient: 'from-blue-500 to-blue-600',
+      bgGradient: 'from-blue-50 to-white',
+      darkBgGradient: 'from-blue-900/10 to-blue-800/5',
       linkTo: '',
       growth: '+12%',
     },
@@ -33,29 +33,29 @@ export default function CardOverview({ invoices = [], className }) {
   };
 
   return (
-    <div className={`${className} container 2xl:max-w-7xl mx-auto mt-4 p-4`}>
+    <div className={`${className} container 2xl:max-w-7xl mx-auto p-4`}>
       {isNavigating && (
-        <div className="fixed inset-0 bg-white/60 backdrop-blur-sm flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-white/80 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="flex h-[70vh] justify-center items-center">
             <Loader />
           </div>
         </div>
       )}
       
-      <div className="grid gap-6 grid-cols-[repeat(auto-fit,_minmax(280px,_1fr))]">
+      <div className="grid gap-6 grid-cols-[repeat(auto-fit,_minmax(300px,_1fr))]">
         {dashboardData.map((el, key) => (
           <div
             key={key}
             onClick={() => handleClick(el.linkTo)}
-            className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
+            className="group cursor-pointer transform transition-all duration-200 hover:scale-[1.02]"
           >
-            <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${el.bgGradient} dark:${el.darkBgGradient} p-6 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-2xl transition-all duration-300`}>
-              {/* Background Pattern */}
-              <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+            <div className={`relative overflow-hidden rounded-xl bg-gradient-to-br ${el.bgGradient} dark:${el.darkBgGradient} p-6 border border-blue-200/50 dark:border-blue-700/50 shadow-lg hover:shadow-xl transition-all duration-300`}>
+              {/* Professional background pattern */}
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-100/20 to-transparent opacity-50"></div>
               
               {/* Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className={`w-14 h-14 bg-gradient-to-br ${el.gradient} rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+              <div className="flex items-center justify-between mb-6">
+                <div className={`w-14 h-14 bg-gradient-to-br ${el.gradient} rounded-lg flex items-center justify-center shadow-md group-hover:shadow-lg transition-all duration-300`}>
                   <Icon
                     icon={el.iconName}
                     className="w-7 h-7 text-white"
@@ -63,21 +63,21 @@ export default function CardOverview({ invoices = [], className }) {
                 </div>
                 
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                  <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/40 px-3 py-1 rounded-full">
                     {el.growth}
                   </span>
-                  <Icon icon="lucide:trending-up" className="w-4 h-4 text-green-500" />
+                  <Icon icon="lucide:trending-up" className="w-4 h-4 text-blue-500" />
                 </div>
               </div>
               
               {/* Content */}
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">
                   {el.title}
                 </h3>
                 
                 <div className="flex items-baseline space-x-2">
-                  <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                  <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                     {el.overview}
                   </span>
                   <span className="text-sm text-gray-500 dark:text-gray-400">
@@ -85,7 +85,7 @@ export default function CardOverview({ invoices = [], className }) {
                   </span>
                 </div>
                 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between pt-2">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {el.time}
                   </p>
@@ -93,9 +93,9 @@ export default function CardOverview({ invoices = [], className }) {
                 </div>
               </div>
               
-              {/* Decorative Elements */}
-              <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white/5 rounded-full blur-lg"></div>
+              {/* Professional decorative elements */}
+              <div className="absolute -top-2 -right-2 w-16 h-16 bg-blue-500/5 rounded-full blur-xl"></div>
+              <div className="absolute -bottom-2 -left-2 w-12 h-12 bg-blue-500/10 rounded-full blur-lg"></div>
             </div>
           </div>
         ))}
