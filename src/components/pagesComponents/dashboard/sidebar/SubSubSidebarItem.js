@@ -1,7 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { Icon } from '@iconify/react';
-import Loader from '@/components/partials/loading/Loader';
+
 export default function SubSubSubmenu(props) {
   const router = useRouter();
 
@@ -10,41 +10,45 @@ export default function SubSubSubmenu(props) {
     setIsNavigating(true);
     router.push(linkTo);
   };
-  const { upcoming, title, iconName, linkTo, subMenu, subMenuItems , setIsNavigating} = props;
-  console.log('abc', title);
+
+  const { upcoming, title, iconName, linkTo, subMenu, subMenuItems, setIsNavigating } = props;
+
   if (subMenu) {
     return (
-      <div
-        className={`overflow-hidden/ grid transition-grid-rows duration-300 grid-rows-[0fr_0fr] focus:grid-rows-[0fr_1fr]`}
-      >
-        <button className="font-thin ">{title}</button>
-        <div className="overflow-hidden/">
-          <button>SubSubSubmenu title</button>
+      <div className="px-8 py-1">
+        <button className="w-full text-left text-xs font-medium text-gray-600 hover:text-gray-800 transition-colors duration-200">
+          {title}
+        </button>
+        <div className="ml-4 mt-1">
+          <button className="text-xs text-gray-500 hover:text-gray-700 transition-colors duration-200">
+            SubSubSubmenu title
+          </button>
         </div>
       </div>
     );
   }
+
   return (
-    <div className=" p-4 pl-8">
+    <div className="px-8 py-1">
       <button
+        onClick={handleNavigation}
         disabled={upcoming}
-        className={` ${upcoming ? 'opacity-50 cursor-not-allowed' : 'opacity-100'} flex font-thin`}
+        className={`
+          w-full flex items-center text-left transition-all duration-200
+          ${upcoming ? 'opacity-50 cursor-not-allowed' : 'hover:text-white'}
+        `}
       >
-        <span>
-          <Icon
-            icon={iconName}
-            className="w-6 h-6 ml-1 mr-2  bg-blue-500 text-neutral-50 rounded-2xl p-1"
-          />
+        <Icon
+          icon={iconName}
+          className="w-3 h-3 min-w-[0.75rem] text-blue-600"
+        />
+        <span className={`ml-2 text-xs font-medium transition-colors duration-200 ${
+          title === 'Super Admin' 
+            ? 'text-orange-600 font-semibold' 
+            : 'text-gray-700 hover:text-gray-900'
+        }`}>
+          {title}
         </span>
-        {title === 'Super Admin' ? (
-          <button className="ml-6 font-semibold text-left block text-sm bg-blue-600">
-            {title}
-          </button>
-        ) : (
-          <span className="ml-6 font-semibold text-left block text-sm">
-            {title}
-          </span>
-        )}
       </button>
     </div>
   );

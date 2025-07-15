@@ -15,15 +15,16 @@ export default function CardOverview({ invoices = [], className }) {
 
   const dashboardData = [
     {
-      title: 'Invoices',
+      title: 'Total Invoices',
       overview: `${total}`,
       time: `${sales} sales / ${purchases} purchases`,
-      iconName: 'material-symbols:account-circle-outline',
-      cssClass:
-        'p-3 mr-4 text-purple-500 bg-purple-100 rounded-full dark:text-purple-100 dark:bg-purple-500',
+      iconName: 'lucide:file-text',
+      gradient: 'from-purple-500 to-indigo-600',
+      bgGradient: 'from-purple-50 to-indigo-50',
+      darkBgGradient: 'from-purple-900/20 to-indigo-900/20',
       linkTo: '',
+      growth: '+12%',
     },
-    
   ];
 
   const handleClick = async (link) => {
@@ -34,38 +35,71 @@ export default function CardOverview({ invoices = [], className }) {
   return (
     <div className={`${className} container 2xl:max-w-7xl mx-auto mt-4 p-4`}>
       {isNavigating && (
-        <div className="fixed inset-0 bg-white/60 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-white/60 backdrop-blur-sm flex justify-center items-center z-50">
           <div className="flex h-[70vh] justify-center items-center">
             <Loader />
           </div>
         </div>
       )}
-      <ul className="grid gap-4 grid-cols-[repeat(auto-fit,_minmax(200px,_1fr))]">
+      
+      <div className="grid gap-6 grid-cols-[repeat(auto-fit,_minmax(280px,_1fr))]">
         {dashboardData.map((el, key) => (
-          <li
+          <div
             key={key}
             onClick={() => handleClick(el.linkTo)}
-            className="cursor-pointer"
+            className="group cursor-pointer transform transition-all duration-300 hover:scale-105"
           >
-            <GridItem href="#">
-              <div>
-                <Icon
-                  icon={el.iconName}
-                  className={`rounded-xl sm:h-16 sm:w-16 sm:p-3 h-14 w-14 p-3 ${el.cssClass}`}
-                />
-              </div>
-              <div>
-                <div className="flex flex-wrap justify-between">
-                  <span>{el.title}</span>
-                  <span>{el.overview}</span>
+            <div className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${el.bgGradient} dark:${el.darkBgGradient} p-6 border border-gray-200 dark:border-gray-700 shadow-lg hover:shadow-2xl transition-all duration-300`}>
+              {/* Background Pattern */}
+              <div className="absolute inset-0 bg-grid-pattern opacity-5"></div>
+              
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className={`w-14 h-14 bg-gradient-to-br ${el.gradient} rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                  <Icon
+                    icon={el.iconName}
+                    className="w-7 h-7 text-white"
+                  />
                 </div>
-                <p className="font-normal text-txt/70">{el.time}</p>
+                
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-1 rounded-full">
+                    {el.growth}
+                  </span>
+                  <Icon icon="lucide:trending-up" className="w-4 h-4 text-green-500" />
+                </div>
               </div>
-            </GridItem>
-          </li>
+              
+              {/* Content */}
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {el.title}
+                </h3>
+                
+                <div className="flex items-baseline space-x-2">
+                  <span className="text-3xl font-bold text-gray-900 dark:text-white">
+                    {el.overview}
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    invoices
+                  </span>
+                </div>
+                
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    {el.time}
+                  </p>
+                  <Icon icon="lucide:arrow-right" className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
+                </div>
+              </div>
+              
+              {/* Decorative Elements */}
+              <div className="absolute -top-4 -right-4 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+              <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-white/5 rounded-full blur-lg"></div>
+            </div>
+          </div>
         ))}
-        
-      </ul>
+      </div>
     </div>
   );
 }

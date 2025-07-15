@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Icon } from '@iconify/react';
 import { useRouter } from 'next/navigation';
 import SubSubSubmenu from './SubSubSidebarItem';
+
 export default function SubSideBarItem(props) {
   const router = useRouter();
 
@@ -11,6 +12,7 @@ export default function SubSideBarItem(props) {
     setIsNavigating(true);
     router.push(linkTo);
   };
+
   const {
     upcoming,
     title,
@@ -23,78 +25,66 @@ export default function SubSideBarItem(props) {
     index,
     setIsNavigating,
   } = props;
+
+  const isActive = subActiveItem === index;
+
   if (subMenu) {
     return (
-      <div
-        className={` py-4 pl-1 grid gap-2 transition-grid-rows duration-300 grid-rows-[0fr_0fr] ${subActiveItem === index ? 'grid-rows-[0fr_1fr]' : ''}`}
-      >
-        
+      <div>
         <button
           onClick={() => subHandleActive(index)}
           disabled={upcoming}
-          className={`${upcoming ? 'opacity-50 cursor-not-allowed' : 'opacity-100'} flex font-semibold`}
+          className={`
+            w-full flex items-center px-6 py-2 text-left transition-all duration-200
+            ${upcoming ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-100'}
+            ${isActive ? 'bg-blue-100' : ''}
+          `}
         >
-          <span>
-            <Icon
-              icon={iconName}
-              className="w-6 h-6 ml-1 mr-2  bg-blue-500 text-neutral-50 rounded-md p-1"
-            />
-          </span>
-          <span className="ml-6 font-semibold text-left block text-md">
+          <Icon
+            icon={iconName}
+            className="w-4 h-4 min-w-[1rem] text-blue-600"
+          />
+          <span className="ml-3 text-sm font-medium text-gray-700 truncate">
             {title}
           </span>
-          <span className="ml-auto">
-            {subMenu ? (
-              <Icon
-                icon={
-                  subActiveItem === index
-                    ? 'ep:arrow-up-bold'
-                    : 'ep:arrow-down-bold'
-                }
-              />
-            ) : (
-              ''
-            )}
-          </span>
+          <Icon
+            icon={isActive ? 'ep:arrow-up-bold' : 'ep:arrow-down-bold'}
+            className="ml-auto w-3 h-3 text-gray-500"
+          />
         </button>
-        <div
-          className={`overflow-hidden grid gap-2 transition-grid-rows duration-300 grid-rows-[0fr_0fr] bg-neutral-50  shadow-[inset_0px_0px_3px_0px_#444] transition-colors text-blue-500 rounded-md`}
-        >
-          {subMenuItems.map((item, i) => (
-            <SubSubSubmenu key={i} {...item}/>
-          ))}
-        </div>
+        
+        {/* Sub-submenu */}
+        {isActive && (
+          <div className="bg-gray-100 border-l-2 border-blue-400 ml-6">
+            {subMenuItems.map((item, i) => (
+              <SubSubSubmenu 
+                key={i} 
+                {...item}
+                setIsNavigating={setIsNavigating}
+              />
+            ))}
+          </div>
+        )}
       </div>
     );
   }
+
   return (
-    <div className="capitalize py-4 pl-1">
+    <div>
       <button
         onClick={handleNavigation}
         disabled={upcoming}
-        className={`${upcoming ? 'opacity-50 cursor-not-allowed' : 'opacity-100'} flex font-bold`}
+        className={`
+          w-full flex items-center px-6 py-2 text-left transition-all duration-200
+          ${upcoming ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-100'}
+        `}
       >
-        <span>
-          <Icon
-            icon={iconName}
-            className="w-6 h-6 ml-1 mr-2  bg-blue-500 text-neutral-50 rounded-md p-1"
-          />
-        </span>
-        <span className="ml-6 font-semibold text-left block text-sm">
+        <Icon
+          icon={iconName}
+          className="w-4 h-4 min-w-[1rem] text-blue-600"
+        />
+        <span className="ml-3 text-sm font-medium text-gray-700 truncate">
           {title}
-        </span>
-        <span>
-          {subMenu ? (
-            <Icon
-              icon={
-                subActiveItem === index
-                  ? 'ep:arrow-up-bold'
-                  : 'ep:arrow-down-bold'
-              }
-            />
-          ) : (
-            ''
-          )}
         </span>
       </button>
     </div>
