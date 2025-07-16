@@ -178,7 +178,7 @@ export default function TransactionOverview({
                         <div className="relative mr-4">
                           <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-sm">
                             <Icon
-                              icon="lucide:receipt"
+                              icon="ph:receipt"
                               className="w-6 h-6 text-white"
                             />
                           </div>

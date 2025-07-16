@@ -18,7 +18,7 @@ export default function CardOverview({ invoices = [], className }) {
       title: 'Total Invoices',
       overview: `${total}`,
       time: `${sales} sales / ${purchases} purchases`,
-      iconName: 'lucide:file-text',
+      iconName: 'mdi:invoice-add',
       gradient: 'from-blue-500 to-blue-600',
       bgGradient: 'from-blue-50 to-white',
       darkBgGradient: 'from-blue-900/10 to-blue-800/5',
