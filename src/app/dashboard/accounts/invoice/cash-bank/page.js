@@ -125,79 +125,44 @@ export default function InvoiceTable() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchInvoices = async () => {
-      try {
-        setLoading(true);
-        // Get the auth token
-        const token = await getAuthToken();
-
-        if (!token) {
-          throw new Error('Authentication token not found');
-        }
-
-        // First fetch invoice 1
-        const id1 = '60e45e83-4ec9-41af-ab18-abaa446bb121';
-        const response1 = await userbackAxios.get(`/invoice/invoices/${id1}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        // Fetch invoice 2
-        const id2 = '8abcd1e5-cc43-4de7-a15d-529b425dec06';
-        const response2 = await userbackAxios.get(`/invoice/invoices/${id2}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        // Combine results
-        setInvoices([response1.data, response2.data]);
-        setError(null);
-      } catch (err) {
-        console.error(
-          'Invoice fetch error:',
-          err?.response?.status,
-          err?.response?.data || err.message,
-        );
-        setError(err.message || 'Failed to fetch invoices');
-
-        // For demo purposes, create mock data if API fails
-        setInvoices([
-          {
-            id: '60e45e83-4ec9-41af-ab18-abaa446bb121',
-            invoiceNumber: 'INV-1747288228162',
-            type: 'purchase',
-            totalAmount: 37022,
-            totalGst: 725,
-            status: 'paid',
-            modeOfPayment: 'cash',
-            invoiceDate: '2025-05-09T00:00:00.000Z',
-            dueDate: '2025-05-07T00:00:00.000Z',
-            createdAt: '2025-05-15T05:52:04.998Z',
-          },
-          {
-            id: '8abcd1e5-cc43-4de7-a15d-529b425dec06',
-            invoiceNumber: 'INV-1747287711372',
-            type: 'sales',
-            totalAmount: 389361,
-            totalGst: 59394,
-            status: 'pending',
-            modeOfPayment: 'bank',
-            invoiceDate: '2025-04-12T00:00:00.000Z',
-            dueDate: '2025-05-12T00:00:00.000Z',
-            createdAt: '2025-05-12T04:15:24.998Z',
-          },
-        ]);
-      } finally {
-        setLoading(false);
+  const fetchInvoices = async () => {
+    try {
+      setLoading(true);
+      const token = await getAuthToken();
+      if (!token) {
+        throw new Error('Authentication token not found');
       }
-    };
 
-    fetchInvoices();
-  }, []);
+      const response = await userbackAxios.get('/invoice/invoices', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      // Extract invoices from response.data
+      const allInvoices = response.data?.invoices || [];
+
+      setInvoices(allInvoices);
+      setError(null);
+    } catch (err) {
+      console.error(
+        'Invoice fetch error:',
+        err?.response?.status,
+        err?.response?.data || err.message
+      );
+      setError(err.message || 'Failed to fetch invoices');
+
+      // Optional: fallback mock data (for dev/testing)
+      setInvoices([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchInvoices();
+}, []);
+
 
   if (loading) {
     return (

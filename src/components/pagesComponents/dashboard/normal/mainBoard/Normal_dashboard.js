@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 import CardOverview from './items/CardOverview';
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import Sales_Purchase from './items/Sales_and_Purchase';
+import SalesBreakdownAnalytics from './items/SalesBreakdownAnalytics'; // Import the new component
 import DataState from './items/DataState';
 import userAxios from '@/lib/userbackAxios';
 import Loader from '@/components/partials/loading/Loader';
-import TransactionOverview from './items/TransactionOverview';  
+import TransactionOverview from './items/TransactionOverview';
 import { Invoice } from '../../order-history-component/OrderHistory.Component';
 
 export default function Normal_dashboard() {
@@ -32,10 +33,10 @@ export default function Normal_dashboard() {
 
   if (loading) {
     return (
-      <div className="flex h-[70vh] justify-center items-center">
+      <div className="flex h-[70vh] justify-center items-center bg-gradient-to-br from-blue-50 to-white dark:from-blue-950 dark:to-gray-900">
         <div className="flex flex-col items-center space-y-4">
           <Loader />
-          <p className="text-gray-500 dark:text-gray-400 animate-pulse">Loading dashboard...</p>
+          <p className="text-blue-600 dark:text-blue-400 animate-pulse font-medium">Loading dashboard...</p>
         </div>
       </div>
     );
@@ -52,22 +53,30 @@ export default function Normal_dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
-      <div className="flex flex-col lg:flex-row gap-6 p-4">
-        <div className="w-full lg:basis-[65%] space-y-6">
-          <CardOverview invoices={invoices} className="" />
-          <TransactionOverview 
-            invoices={invoices} 
-            onSelectInvoice={(id, data) => {
-              setSelectedOrderId(id);
-              setInvoiceData(data);
-            }} 
-            className="" 
-          />
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950 dark:via-gray-900 dark:to-blue-950 transition-colors duration-300">
+      <div className="flex flex-col gap-6 p-6">
+        {/* Top Section */}
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="w-full lg:basis-[65%] space-y-6">
+            <CardOverview invoices={invoices} className="" />
+            <TransactionOverview 
+              invoices={invoices}
+              onSelectInvoice={(id, data) => {
+                setSelectedOrderId(id);
+                setInvoiceData(data);
+              }}
+              className=""
+            />
+          </div>
+          
+          <div className="w-full lg:basis-[35%]">
+            <Sales_Purchase invoices={invoices} />
+          </div>
         </div>
-        
-        <div className="w-full lg:basis-[35%]">
-          <Sales_Purchase invoices={invoices} />
+
+        {/* Bottom Section - Sales Breakdown Analytics */}
+        <div className="w-full">
+          <SalesBreakdownAnalytics invoices={invoices} />
         </div>
       </div>
     </div>
