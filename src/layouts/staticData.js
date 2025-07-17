@@ -698,9 +698,9 @@ export const DashboardSidebarItemsData = {
         },
         {
           title: 'E-Invoice',
-          iconName: 'lets-icons:subttasks-alt-fill',
-          upcoming: true,
-          linkTo: '/invoice/addparty',
+          iconName: 'material-symbols:dashboard',
+          upcoming: false,
+          linkTo: '/dashboard/accounts/einvoice',
         },
         // {
         //   title: 'Items',

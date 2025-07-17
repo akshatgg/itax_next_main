@@ -56,7 +56,49 @@ export const invoiceDashboardNavItems = [
       'p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500',
   },
 ];
-
+export const EinvoiceDashboardNavItems = [
+  {
+    linkTo: '#',
+    icon: 'iconamoon:invoice-duotone',
+    title: 'invoice',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-blue-500 bg-blue-100 rounded-full dark:text-blue-100 dark:bg-blue-500',
+  },
+ 
+  {
+    linkTo: 'items',
+    icon: 'solar:box-broken',
+    title: 'item',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500',
+  },
+  {
+    linkTo: 'parties/customer',
+    icon: 'ph:users-four',
+    title: 'customer',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-500',
+  },
+  {
+    linkTo: 'parties/supplier',
+    icon: 'ph:users-four',
+    title: 'supplier',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-500',
+  },
+  {
+    linkTo: 'cash-bank',
+    icon: 'game-icons:cash',
+    title: 'cash/bank',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500',
+  },
+];
 export const invoicesTableHeaders = [
   {
     text: (
