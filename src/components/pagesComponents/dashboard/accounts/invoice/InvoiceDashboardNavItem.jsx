@@ -11,11 +11,11 @@ import {
 
 function InvoiceDashboardNavItem({ navCardData, einvoice }) {
   const navItems = einvoice ? EinvoiceDashboardNavItems : invoiceDashboardNavItems;
-
+  const dashboardTitle = einvoice ? 'E-Invoice Overview' : 'Invoice Overview';
   return (
     <DashSection
       className="mt-4"
-      title="Invoice"
+      title={dashboardTitle}
       titleRight="current year - 2025"
     >
       <GridContainer className="p-4">
