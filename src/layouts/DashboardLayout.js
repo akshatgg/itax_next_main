@@ -22,7 +22,10 @@ export default function DashboardLayout({ children }) {
     setIsNavigating(false);
   }, [pathname]);
 
-  if (pathname.startsWith('/dashboard/accounts/invoice')) {
+  if (
+    pathname.startsWith('/dashboard/accounts/invoice') ||
+    pathname.startsWith('/dashboard/accounts/einvoice')
+  ) {
     return <>{children}</>;
   }
 

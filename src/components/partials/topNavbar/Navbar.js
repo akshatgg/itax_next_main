@@ -514,17 +514,17 @@ export default function Navbar({ className = '' }) {
         <div className="flex ml-auto">
           {token && currentUser ? (
             <div className="flex mx-3 md:mx-0">
-              <Link
+              <StyledLink
                 href="/cart"
                 className="flex justify-center items-center bg-primary w-[45px] h-[45px] mx-3 text-white rounded-full font-semibold relative transition-transform duration-200 hover:scale-110"
               >
                 <MdOutlineLocalGroceryStore size={24} />
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1 -right-2 bg-[#3C7CDDFF] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {cartCount}
                   </span>
                 )}
-              </Link>
+              </StyledLink>
               <UserInfo />
             </div>
           ) : (
