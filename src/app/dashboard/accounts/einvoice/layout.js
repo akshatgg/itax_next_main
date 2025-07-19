@@ -16,31 +16,31 @@ const sidebarItems = [
     subMenu: false,
   },
   {
-    upcoming: false,
-    title: 'create invoice',
+    upcoming: true,
+    title: 'create einvoice',
     linkTo: '#',
     iconName: 'oui:dot',
-    subMenu: true,
-    subMenuItems: [
-      {
-        upcoming: false,
-        title: 'sales',
-        linkTo: '/dashboard/accounts/invoice/sales',
-        iconName: 'mdi:cart-sale',
-      },
-      {
-        upcoming: false,
-        title: 'purchase',
-        linkTo: '/dashboard/accounts/invoice/purchase',
-        iconName: 'carbon:purchase',
-      },
-      {
-        upcoming: false,
-        title: 'expenses',
-        linkTo: '/dashboard/accounts/invoice/expense',
-        iconName: 'mdi:cash-return',
-      },
-    ],
+    subMenu: false,
+    // subMenuItems: [
+    //   {
+    //     upcoming: false,
+    //     title: 'sales',
+    //     linkTo: '/dashboard/accounts/invoice/sales',
+    //     iconName: 'mdi:cart-sale',
+    //   },
+    //   {
+    //     upcoming: false,
+    //     title: 'purchase',
+    //     linkTo: '/dashboard/accounts/invoice/purchase',
+    //     iconName: 'carbon:purchase',
+    //   },
+    //   {
+    //     upcoming: false,
+    //     title: 'expenses',
+    //     linkTo: '/dashboard/accounts/invoice/expense',
+    //     iconName: 'mdi:cash-return',
+    //   },
+    // ],
   },
   {
     upcoming: false,
@@ -129,6 +129,7 @@ export default function AccountLayout({ children }) {
         isSidebarOpen={isSidebarOpen}
         handleSidebar={() => setIsSidebarOpen((prev) => !prev)}
         setIsNavigating={setIsNavigating}
+        topOffset={"3 rem"}
       />
 
       {/* Overlay for mobile when sidebar is open */}

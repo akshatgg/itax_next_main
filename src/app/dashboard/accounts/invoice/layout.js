@@ -129,6 +129,7 @@ export default function AccountLayout({ children }) {
         isSidebarOpen={isSidebarOpen}
         handleSidebar={() => setIsSidebarOpen((prev) => !prev)}
         setIsNavigating={setIsNavigating}
+        topOffset={"3 rem"}
       />
 
       {/* Overlay for mobile when sidebar is open */}
