@@ -219,7 +219,7 @@ export function EinvoiceDashboard_index({ businessProfile, einvoice }) {
   return (
     <div className="py-8">
       <InvoiceDashboardNavItem navCardData={navCardData} einvoice={einvoice} />
-      <EinvoiceDashboard einvoice={einvoice} />
+      <EinvoiceDashboard einvoice={einvoice} businessProfile={businessProfile} />
     </div>
   );
 }

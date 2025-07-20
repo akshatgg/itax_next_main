@@ -2,9 +2,37 @@
 
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import { Icon } from '@iconify/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import userbackAxios from '@/lib/userbackAxios';
+import { toast } from 'react-toastify';
+import CreateEInvoiceModal from './CreateEInvoiceModal';
 
-function EinvoiceDashboard() {
+export default function EinvoiceDashboard(businessProfile) {
+  // Sample data for developer mode
+  const sampleInvoiceData = [
+    {
+      id: 'sample1',
+      irn: '01AMBPG1234A1Z5-DOC-001-2024',
+      date: '2024-01-15',
+      amount: 125000,
+      status: 'Generated'
+    },
+    {
+      id: 'sample2', 
+      irn: '01AMBPG1234A1Z5-DOC-002-2024',
+      date: '2024-01-16',
+      amount: 87500,
+      status: 'Generated'
+    },
+    {
+      id: 'sample3',
+      irn: '01AMBPG1234A1Z5-DOC-003-2024', 
+      date: '2024-01-17',
+      amount: 156000,
+      status: 'Generated'
+    }
+  ];
+
   const [einvoiceData, setEinvoiceData] = useState({
     generated: [],
     pending: [],
@@ -17,34 +45,205 @@ function EinvoiceDashboard() {
     gstin: '',
     password: '',
     isAuthenticated: false,
-    isLoading: false
+    isLoading: false,
+    authExpiry: null
   });
 
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // Check if authentication is still valid (2 hours)
+  useEffect(() => {
+    const sampleData = [
+      {
+        id: 'sample1',
+        irn: '01AMBPG1234A1Z5-DOC-001-2024',
+        date: '2024-01-15',
+        amount: 125000,
+        status: 'Generated'
+      },
+      {
+        id: 'sample2', 
+        irn: '01AMBPG1234A1Z5-DOC-002-2024',
+        date: '2024-01-16',
+        amount: 87500,
+        status: 'Generated'
+      },
+      {
+        id: 'sample3',
+        irn: '01AMBPG1234A1Z5-DOC-003-2024', 
+        date: '2024-01-17',
+        amount: 156000,
+        status: 'Generated'
+      }
+    ];
+
+    const savedAuthData = localStorage.getItem('einvoiceAuth');
+    if (savedAuthData) {
+      const parsedAuth = JSON.parse(savedAuthData);
+      const now = new Date().getTime();
+      const expiryTime = new Date(parsedAuth.authExpiry).getTime();
+      
+      if (now < expiryTime) {
+        // Auth is still valid
+        setAuthData(parsedAuth);
+        setEinvoiceData(prev => ({
+          ...prev,
+          generated: sampleData
+        }));
+      } else {
+        // Auth expired, clear storage
+        localStorage.removeItem('einvoiceAuth');
+      }
+    }
+  }, []);
 
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setAuthData(prev => ({ ...prev, isLoading: true }));
     
-    // Simulate API call
-    setTimeout(() => {
-      setAuthData(prev => ({ 
-        ...prev, 
-        isAuthenticated: true, 
-        isLoading: false 
-      }));
-      setShowAuthModal(false);
-    }, 2000);
+    try {
+      // Check for developer mode credentials first
+      if (authData.username === 'developer' && 
+          authData.password === 'dev123' && 
+          authData.gstin === '27AMBPG1234A1Z5') {
+        
+        // Set auth expiry to 2 hours from now
+        const authExpiry = new Date();
+        authExpiry.setHours(authExpiry.getHours() + 2);
+        
+        const authenticatedData = {
+          ...authData,
+          isAuthenticated: true,
+          isLoading: false,
+          authExpiry: authExpiry.toISOString()
+        };
+        
+        setAuthData(authenticatedData);
+        setEinvoiceData(prev => ({
+          ...prev,
+          generated: sampleInvoiceData
+        }));
+        
+        // Save to localStorage for 2-hour persistence
+        localStorage.setItem('einvoiceAuth', JSON.stringify(authenticatedData));
+        setShowAuthModal(false);
+        toast.success('Authentication successful! (Developer Mode)');
+        return;
+      }
+      
+      // Try Next.js API first, then fallback to backend API
+      let response;
+      try {
+        // Use Next.js internal API
+        response = await fetch('/api/einvoice/auth', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: authData.username,
+            gstin: authData.gstin,
+            password: authData.password
+          })
+        });
+        
+        const responseData = await response.json();
+        
+        if (response.ok && responseData.status) {
+          const authExpiry = new Date();
+          authExpiry.setHours(authExpiry.getHours() + 2);
+          
+          const authenticatedData = {
+            ...authData,
+            isAuthenticated: true,
+            isLoading: false,
+            authExpiry: authExpiry.toISOString()
+          };
+          
+          setAuthData(authenticatedData);
+          
+          // Load invoice data from API response
+          if (responseData.data && responseData.data.invoices) {
+            setEinvoiceData(prev => ({
+              ...prev,
+              generated: responseData.data.invoices
+            }));
+          }
+          
+          // Save to localStorage for 2-hour persistence
+          localStorage.setItem('einvoiceAuth', JSON.stringify(authenticatedData));
+          setShowAuthModal(false);
+          toast.success(responseData.message || 'Authentication successful!');
+          return;
+        } else {
+          throw new Error(responseData.message || 'Authentication failed');
+        }
+      } catch (fetchError) {
+        // Fallback to backend API if Next.js API fails
+        const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+        if (BACKEND_URL) {
+          response = await userbackAxios.post(`${BACKEND_URL}/einvoice/auth`, {
+            username: authData.username,
+            gstin: authData.gstin,
+            password: authData.password
+          });
+          
+          if (response.status === 200) {
+            const authExpiry = new Date();
+            authExpiry.setHours(authExpiry.getHours() + 2);
+            
+            const authenticatedData = {
+              ...authData,
+              isAuthenticated: true,
+              isLoading: false,
+              authExpiry: authExpiry.toISOString()
+            };
+            
+            setAuthData(authenticatedData);
+            
+            // Load actual invoice data from API response
+            if (response.data && response.data.invoices) {
+              setEinvoiceData(prev => ({
+                ...prev,
+                generated: response.data.invoices
+              }));
+            }
+            
+            // Save to localStorage for 2-hour persistence
+            localStorage.setItem('einvoiceAuth', JSON.stringify(authenticatedData));
+            setShowAuthModal(false);
+            toast.success('Authentication successful!');
+            return;
+          }
+        }
+        throw fetchError;
+      }
+    } catch (error) {
+      console.error('Authentication error:', error);
+      toast.error(error.response?.data?.message || error.message || 'Authentication failed. Please check your credentials.');
+    } finally {
+      setAuthData(prev => ({ ...prev, isLoading: false }));
+    }
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('einvoiceAuth');
     setAuthData({
       username: '',
       gstin: '',
       password: '',
       isAuthenticated: false,
-      isLoading: false
+      isLoading: false,
+      authExpiry: null
     });
+    setEinvoiceData({
+      generated: [],
+      pending: [],
+      cancelled: [],
+      failed: []
+    });
+    toast.info('Logged out successfully');
   };
 
   const openGSTPortal = () => {
@@ -137,6 +336,24 @@ function EinvoiceDashboard() {
                   />
                 </div>
 
+                {/* Developer Mode Hint */}
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                  <div className="flex items-start space-x-2">
+                    <Icon icon="mdi:lightbulb" className="w-5 h-5 text-yellow-600 mt-0.5" />
+                    <div>
+                      <h6 className="text-sm font-semibold text-yellow-800 mb-1">Developer Mode</h6>
+                      <p className="text-xs text-yellow-700 mb-2">
+                        For testing purposes, use these credentials:
+                      </p>
+                      <div className="text-xs text-yellow-700 font-mono">
+                        <div>Username: <span className="font-semibold">developer</span></div>
+                        <div>GSTIN: <span className="font-semibold">27AMBPG1234A1Z5</span></div>
+                        <div>Password: <span className="font-semibold">dev123</span></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-between pt-4">
                   <button
                     type="button"
@@ -192,6 +409,11 @@ function EinvoiceDashboard() {
                   <div>
                     <h4 className="font-semibold text-gray-800">GST Portal Connected</h4>
                     <p className="text-sm text-gray-600">GSTIN: {authData.gstin}</p>
+                    {authData.authExpiry && (
+                      <p className="text-xs text-gray-500">
+                        Session expires: {new Date(authData.authExpiry).toLocaleString()}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <button
@@ -223,7 +445,20 @@ function EinvoiceDashboard() {
               </button>
             </div>
           ) : (
-            <div className="overflow-x-auto">
+            <div>
+              {/* Create E-Invoice Button */}
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-800">E-Invoice List</h3>
+                <button
+                  onClick={() => setShowCreateModal(true)}
+                  className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center space-x-2"
+                >
+                  <Icon icon="mdi:plus" className="w-4 h-4" />
+                  <span>Create E-Invoice</span>
+                </button>
+              </div>
+              
+              <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b">
@@ -269,6 +504,7 @@ function EinvoiceDashboard() {
                   )}
                 </tbody>
               </table>
+              </div>
             </div>
           )}
         </div>
@@ -291,8 +527,17 @@ function EinvoiceDashboard() {
           </div>
         </DashSection>
       )}
+
+      {/* Create E-Invoice Modal */}
+      {showCreateModal && (
+        <CreateEInvoiceModal 
+          isOpen={showCreateModal}
+          onClose={() => setShowCreateModal(false)}
+          authData={authData}
+          businessProfile={businessProfile}
+        />
+      )}
     </>
   );
 }
 
-export default EinvoiceDashboard;

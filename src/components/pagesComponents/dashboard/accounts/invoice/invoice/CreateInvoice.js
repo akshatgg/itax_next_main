@@ -176,17 +176,19 @@ const onSubmit = async (formData) => {
   }
 };
 
-  const getParties = async () => {
-    try {
-      setIsLoading(true);
-      const pariesResponse = await userAxios.get('/invoice/parties');
-      setPartiesData(pariesResponse.data);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+const getParties = async () => {
+  try {
+    setIsLoading(true);
+    const pariesResponse = await userAxios.get('/invoice/parties');
+    setPartiesData(pariesResponse.data);
+    console.log("Fetched parties response:", pariesResponse.data); // Proper logging
+  } catch (error) {
+    console.log("Error fetching parties:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   const getItems = async () => {
     try {
