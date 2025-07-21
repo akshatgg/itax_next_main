@@ -12,8 +12,8 @@ export default function EInvoiceNavigation({ currentStep, onStepChange, steps })
             onClick={() => onStepChange(step.id)}
             className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
               currentStep === step.id
-                ? 'bg-green-600 text-white'
-                : 'bg-white text-gray-600 hover:bg-green-50 hover:text-green-600'
+                ? 'bg-blue-600 text-white'
+                : 'bg-white text-gray-600 hover:bg-blue-50 hover:text-blue-600'
             }`}
           >
             <Icon icon={step.icon} className="w-4 h-4" />

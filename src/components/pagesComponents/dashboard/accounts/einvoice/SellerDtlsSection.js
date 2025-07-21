@@ -41,7 +41,7 @@ export default function SellerDtlsSection({ formData, onChange }) {
   return (
     <div className="border border-gray-200 rounded-lg p-4">
       <h5 className="text-sm font-semibold text-gray-800 mb-3 flex items-center">
-        <Icon icon="mdi:store" className="w-4 h-4 mr-2 text-purple-600" />
+        <Icon icon="mdi:store" className="w-4 h-4 mr-2 text-blue-600" />
         Seller Details (SellerDtls)
       </h5>
       
@@ -55,7 +55,7 @@ export default function SellerDtlsSection({ formData, onChange }) {
             type="text"
             value={formData.SellerGstin}
             onChange={(e) => handleInputChange('SellerGstin', e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none transition-colors"
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors"
             placeholder="Enter seller GSTIN"
             pattern="[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}"
             required

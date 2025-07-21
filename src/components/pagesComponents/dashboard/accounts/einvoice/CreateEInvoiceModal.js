@@ -8,6 +8,8 @@ import TranDtlsSection from './TranDtlsSection';
 import DocDtlsSection from './DocDtlsSection';
 import SellerDtlsSection from './SellerDtlsSection';
 import BuyerDtlsSection from './BuyerDtlsSection';
+import ItemListSection from './ItemListSection';
+import ValDtlsSection from './ValDtlsSection';
 import EInvoiceNavigation from './EInvoiceNavigation';
 
 export default function CreateEInvoiceModal({ isOpen, onClose, authData, businessProfile }) {
@@ -44,7 +46,23 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
     BuyerPin: '',
     BuyerStcd: '',
     BuyerPh: '',
-    BuyerEm: ''
+    BuyerEm: '',
+    // Item List
+    itemList: [],
+    // Value Details
+    ValDtls: {
+      AssVal: 0,
+      CgstVal: 0,
+      SgstVal: 0,
+      IgstVal: 0,
+      CesVal: 0,
+      StCesVal: 0,
+      Discount: 0,
+      OthChrg: 0,
+      RndOffAmt: 0,
+      TotInvVal: 0,
+      TotInvValFc: 0
+    }
   });
   
   const [isLoading, setIsLoading] = useState(false);
@@ -77,7 +95,9 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
     { id: 'transaction', label: 'Transaction', icon: 'mdi:swap-horizontal' },
     { id: 'document', label: 'Document', icon: 'mdi:file-document' },
     { id: 'seller', label: 'Seller', icon: 'mdi:store' },
-    { id: 'buyer', label: 'Buyer', icon: 'mdi:account' }
+    { id: 'buyer', label: 'Buyer', icon: 'mdi:account' },
+    { id: 'items', label: 'Items', icon: 'mdi:package-variant' },
+    { id: 'values', label: 'Values', icon: 'mdi:calculator' }
   ];
 
   const handleInputChange = (field, value) => {
@@ -150,10 +170,92 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
         Em: formData.BuyerEm
       };
 
+      // Transform selected items for E-Invoice format
+      const itemList = formData.itemList.map((item, index) => {
+        const qty = item.quantity || 1;
+        const rate = item.rate || 0;
+        const discount = item.discount || 0;
+        const grossAmt = qty * rate;
+        const discountAmt = (grossAmt * discount) / 100;
+        const preTaxVal = grossAmt - discountAmt;
+        
+        // Calculate GST amounts
+        const gstRate = parseFloat(item.igst) || 0;
+        const cgstRate = parseFloat(item.cgst) || 0;
+        const sgstRate = parseFloat(item.sgst) || 0;
+        
+        const igstAmt = (preTaxVal * gstRate) / 100;
+        const cgstAmt = (preTaxVal * cgstRate) / 100;
+        const sgstAmt = (preTaxVal * sgstRate) / 100;
+        
+        const cesAmt = item.cesAmt || 0;
+        const cesNonAdvlAmt = item.cesNonAdvlAmt || 0;
+        const stateCesAmt = item.stateCesAmt || 0;
+        const stateCesNonAdvlAmt = item.stateCesNonAdvlAmt || 0;
+        const othChrg = item.othChrg || 0;
+        
+        const totalItemValue = preTaxVal + igstAmt + cgstAmt + sgstAmt + cesAmt + cesNonAdvlAmt + stateCesAmt + stateCesNonAdvlAmt + othChrg;
+
+        const itemData = {
+          SlNo: (index + 1).toString(),
+          PrdDesc: item.itemName || item.name || item.description || '',
+          IsServc: item.isService ? "Y" : "N",
+          HsnCd: item.hsnCode || "1234",
+          Barcde: item.barcode || "",
+          Qty: qty,
+          FreeQty: item.freeQty || 0,
+          Unit: item.unit || "NOS",
+          UnitPrice: rate,
+          TotAmt: grossAmt,
+          Discount: discountAmt,
+          PreTaxVal: preTaxVal,
+          AssAmt: preTaxVal, // Assessable amount (same as pre-tax value)
+          GstRt: gstRate, // Total GST rate (should be IGST rate only as per requirement)
+          IgstAmt: igstAmt,
+          CgstAmt: cgstAmt,
+          SgstAmt: sgstAmt,
+          CesRt: item.cesRate || 0,
+          CesAmt: cesAmt,
+          CesNonAdvlAmt: cesNonAdvlAmt,
+          StateCesRt: item.stateCesRate || 0,
+          StateCesAmt: stateCesAmt,
+          StateCesNonAdvlAmt: stateCesNonAdvlAmt,
+          OthChrg: othChrg,
+          TotItemVal: totalItemValue,
+          OrdLineRef: item.orderLineRef || "",
+          OrgCntry: item.originCountry || "IN",
+          PrdSlNo: item.productSerialNumber || ""
+        };
+
+        // Add batch details if batch number is provided
+        if (item.batchNumber && item.batchNumber.trim()) {
+          itemData.BchDtls = {
+            Nm: item.batchNumber,
+            ...(item.expiryDate && { ExpDt: item.expiryDate }),
+            ...(item.warrantyDate && { WrDt: item.warrantyDate })
+          };
+        }
+
+        // Add attribute details if any attributes are provided
+        if (item.attributes && item.attributes.length > 0) {
+          const validAttributes = item.attributes.filter(attr => attr.Nm && attr.Nm.trim());
+          if (validAttributes.length > 0) {
+            itemData.AttribDtls = validAttributes.map(attr => ({
+              Nm: attr.Nm,
+              Val: attr.Val || ""
+            }));
+          }
+        }
+
+        return itemData;
+      });
+
       console.log('Creating E-Invoice with TranDtls:', tranDetails);
       console.log('Creating E-Invoice with DocDtls:', docDetails);
       console.log('Creating E-Invoice with SellerDtls:', sellerDetails);
       console.log('Creating E-Invoice with BuyerDtls:', buyerDetails);
+      console.log('Creating E-Invoice with ItemList:', itemList);
+      console.log('Creating E-Invoice with ValDtls:', formData.ValDtls);
       
       // Call the E-Invoice creation API
       const response = await fetch('/api/einvoice/create', {
@@ -166,6 +268,8 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
           DocDtls: docDetails,
           SellerDtls: sellerDetails,
           BuyerDtls: buyerDetails,
+          ItemList: itemList,
+          ValDtls: formData.ValDtls,
           authToken: authData.token || 'mock_token'
         })
       });
@@ -212,7 +316,23 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
           BuyerPin: '',
           BuyerStcd: '',
           BuyerPh: '',
-          BuyerEm: ''
+          BuyerEm: '',
+          // Item List
+          itemList: [],
+          // Value Details
+          ValDtls: {
+            AssVal: 0,
+            CgstVal: 0,
+            SgstVal: 0,
+            IgstVal: 0,
+            CesVal: 0,
+            StCesVal: 0,
+            Discount: 0,
+            OthChrg: 0,
+            RndOffAmt: 0,
+            TotInvVal: 0,
+            TotInvValFc: 0
+          }
         });
         
         setCurrentStep('transaction');
@@ -303,6 +423,20 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
               />
             )}
 
+            {currentStep === 'items' && (
+              <ItemListSection 
+                formData={formData} 
+                onChange={handleInputChange} 
+              />
+            )}
+
+            {currentStep === 'values' && (
+              <ValDtlsSection 
+                formData={formData} 
+                onChange={handleInputChange} 
+              />
+            )}
+
             {/* Action Buttons */}
             <div className="flex justify-between pt-4 border-t border-gray-200">
               <div className="flex gap-3">
@@ -321,7 +455,7 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
                   </button>
                 )}
                 
-                {currentStep !== 'buyer' && (
+                {currentStep !== 'buyer' && currentStep !== 'items' && currentStep !== 'values' && (
                   <button
                     type="button"
                     onClick={() => {
@@ -346,7 +480,7 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
                   Cancel
                 </button>
                 
-                {currentStep === 'buyer' && (
+                {currentStep === 'values' && (
                   <button
                     type="submit"
                     disabled={isLoading}
