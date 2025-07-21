@@ -19,7 +19,7 @@ export default async function InvoicePage() {
         <Invoice_Dashboard />
       ) : (
         <EinvoiceDashboard_index
-          businessProfile={businessProfile?.response?.data?.profile}
+          businessProfile={businessProfile?.response}
           einvoice={true} // Pass einvoice prop to InvoiceDashboard_Index
         />
       )}

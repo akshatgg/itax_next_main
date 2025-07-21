@@ -1,7 +1,7 @@
 'use client';
 
 import { Icon } from '@iconify/react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 export default function ValDtlsSection({ formData, onChange }) {
   const [valueDetails, setValueDetails] = useState({
@@ -37,75 +37,79 @@ export default function ValDtlsSection({ formData, onChange }) {
   };
 
   // Auto-calculate when itemList changes
-  useEffect(() => {
-    const calculateValues = () => {
-      const itemList = formData.itemList || [];
+  const calculateValues = useCallback(() => {
+    const itemList = formData.itemList || [];
+    
+    let totalAssVal = 0;
+    let totalCgstVal = 0;
+    let totalSgstVal = 0;
+    let totalIgstVal = 0;
+    let totalCesVal = 0;
+    let totalStCesVal = 0;
+    let totalDiscount = 0;
+    let totalOthChrg = 0;
+
+    itemList.forEach(item => {
+      const qty = item.quantity || 1;
+      const rate = item.rate || 0;
+      const discount = item.discount || 0;
+      const grossAmt = qty * rate;
+      const discountAmt = (grossAmt * discount) / 100;
+      const preTaxVal = grossAmt - discountAmt;
       
-      let totalAssVal = 0;
-      let totalCgstVal = 0;
-      let totalSgstVal = 0;
-      let totalIgstVal = 0;
-      let totalCesVal = 0;
-      let totalStCesVal = 0;
-      let totalDiscount = 0;
-      let totalOthChrg = 0;
+      // Calculate GST amounts
+      const gstRate = parseFloat(item.igst) || 0;
+      const cgstRate = parseFloat(item.cgst) || 0;
+      const sgstRate = parseFloat(item.sgst) || 0;
+      
+      const igstAmt = (preTaxVal * gstRate) / 100;
+      const cgstAmt = (preTaxVal * cgstRate) / 100;
+      const sgstAmt = (preTaxVal * sgstRate) / 100;
+      
+      const cesAmt = item.cesAmt || 0;
+      const stateCesAmt = item.stateCesAmt || 0;
+      const othChrg = item.othChrg || 0;
 
-      itemList.forEach(item => {
-        const qty = item.quantity || 1;
-        const rate = item.rate || 0;
-        const discount = item.discount || 0;
-        const grossAmt = qty * rate;
-        const discountAmt = (grossAmt * discount) / 100;
-        const preTaxVal = grossAmt - discountAmt;
-        
-        // Calculate GST amounts
-        const gstRate = parseFloat(item.igst) || 0;
-        const cgstRate = parseFloat(item.cgst) || 0;
-        const sgstRate = parseFloat(item.sgst) || 0;
-        
-        const igstAmt = (preTaxVal * gstRate) / 100;
-        const cgstAmt = (preTaxVal * cgstRate) / 100;
-        const sgstAmt = (preTaxVal * sgstRate) / 100;
-        
-        const cesAmt = item.cesAmt || 0;
-        const stateCesAmt = item.stateCesAmt || 0;
-        const othChrg = item.othChrg || 0;
+      // Accumulate totals
+      totalAssVal += preTaxVal;
+      totalCgstVal += cgstAmt;
+      totalSgstVal += sgstAmt;
+      totalIgstVal += igstAmt;
+      totalCesVal += cesAmt;
+      totalStCesVal += stateCesAmt;
+      totalDiscount += discountAmt;
+      totalOthChrg += othChrg;
+    });
 
-        // Accumulate totals
-        totalAssVal += preTaxVal;
-        totalCgstVal += cgstAmt;
-        totalSgstVal += sgstAmt;
-        totalIgstVal += igstAmt;
-        totalCesVal += cesAmt;
-        totalStCesVal += stateCesAmt;
-        totalDiscount += discountAmt;
-        totalOthChrg += othChrg;
-      });
+    // Calculate total invoice value
+    const totalBeforeRounding = totalAssVal + totalCgstVal + totalSgstVal + totalIgstVal + totalCesVal + totalStCesVal + totalOthChrg;
+    const roundedTotal = Math.round(totalBeforeRounding);
+    const roundOffAmt = roundedTotal - totalBeforeRounding;
 
-      // Calculate total invoice value
-      const totalBeforeRounding = totalAssVal + totalCgstVal + totalSgstVal + totalIgstVal + totalCesVal + totalStCesVal + totalOthChrg;
-      const roundedTotal = Math.round(totalBeforeRounding);
-      const roundOffAmt = roundedTotal - totalBeforeRounding;
-
-      return {
-        AssVal: parseFloat(totalAssVal.toFixed(2)),
-        CgstVal: parseFloat(totalCgstVal.toFixed(2)),
-        SgstVal: parseFloat(totalSgstVal.toFixed(2)),
-        IgstVal: parseFloat(totalIgstVal.toFixed(2)),
-        CesVal: parseFloat(totalCesVal.toFixed(2)),
-        StCesVal: parseFloat(totalStCesVal.toFixed(2)),
-        Discount: parseFloat(totalDiscount.toFixed(2)),
-        OthChrg: parseFloat(totalOthChrg.toFixed(2)),
-        RndOffAmt: parseFloat(roundOffAmt.toFixed(2)),
-        TotInvVal: parseFloat(roundedTotal.toFixed(2)),
-        TotInvValFc: 0 // Additional currency not implemented yet
-      };
+    return {
+      AssVal: parseFloat(totalAssVal.toFixed(2)),
+      CgstVal: parseFloat(totalCgstVal.toFixed(2)),
+      SgstVal: parseFloat(totalSgstVal.toFixed(2)),
+      IgstVal: parseFloat(totalIgstVal.toFixed(2)),
+      CesVal: parseFloat(totalCesVal.toFixed(2)),
+      StCesVal: parseFloat(totalStCesVal.toFixed(2)),
+      Discount: parseFloat(totalDiscount.toFixed(2)),
+      OthChrg: parseFloat(totalOthChrg.toFixed(2)),
+      RndOffAmt: parseFloat(roundOffAmt.toFixed(2)),
+      TotInvVal: parseFloat(roundedTotal.toFixed(2)),
+      TotInvValFc: 0 // Additional currency not implemented yet
     };
+  }, [formData.itemList]);
 
+  useEffect(() => {
     const calculatedValues = calculateValues();
     setValueDetails(calculatedValues);
-    onChange('ValDtls', calculatedValues);
-  }, [formData.itemList, onChange]);
+  }, [calculateValues]);
+
+  // Notify parent when valueDetails changes (for both auto and manual updates)
+  useEffect(() => {
+    onChange('ValDtls', valueDetails);
+  }, [valueDetails]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="border border-gray-200 rounded-lg p-4">

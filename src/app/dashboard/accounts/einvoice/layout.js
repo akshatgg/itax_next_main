@@ -11,36 +11,9 @@ const sidebarItems = [
   {
     upcoming: false,
     title: 'overview',
-    linkTo: '/dashboard/accounts/invoice',
+    linkTo: '/dashboard/accounts/einvoice',
     iconName: 'material-symbols:dashboard',
     subMenu: false,
-  },
-  {
-    upcoming: true,
-    title: 'create einvoice',
-    linkTo: '#',
-    iconName: 'oui:dot',
-    subMenu: false,
-    // subMenuItems: [
-    //   {
-    //     upcoming: false,
-    //     title: 'sales',
-    //     linkTo: '/dashboard/accounts/invoice/sales',
-    //     iconName: 'mdi:cart-sale',
-    //   },
-    //   {
-    //     upcoming: false,
-    //     title: 'purchase',
-    //     linkTo: '/dashboard/accounts/invoice/purchase',
-    //     iconName: 'carbon:purchase',
-    //   },
-    //   {
-    //     upcoming: false,
-    //     title: 'expenses',
-    //     linkTo: '/dashboard/accounts/invoice/expense',
-    //     iconName: 'mdi:cash-return',
-    //   },
-    // ],
   },
   {
     upcoming: false,

@@ -7,7 +7,9 @@ import userbackAxios from '@/lib/userbackAxios';
 export default function ItemListSection({ formData, onChange }) {
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
+  
+  // Use formData.itemList as the source of truth instead of local state
+  const selectedItems = formData.itemList || [];
 
   const fetchItems = async () => {
     try {
@@ -43,7 +45,6 @@ export default function ItemListSection({ formData, onChange }) {
     if (isSelected) {
       // Remove item from selection
       const updatedItems = selectedItems.filter(selectedItem => selectedItem.id !== item.id);
-      setSelectedItems(updatedItems);
       onChange('itemList', updatedItems);
     } else {
       // Add item to selection with default quantity and mapped data
@@ -72,7 +73,6 @@ export default function ItemListSection({ formData, onChange }) {
         attributes: [] // Array of {Nm: name, Val: value}
       };
       const updatedItems = [...selectedItems, itemWithQuantity];
-      setSelectedItems(updatedItems);
       onChange('itemList', updatedItems);
     }
   };
@@ -81,7 +81,6 @@ export default function ItemListSection({ formData, onChange }) {
     const updatedItems = selectedItems.map(item => 
       item.id === itemId ? { ...item, quantity: parseInt(quantity) || 1 } : item
     );
-    setSelectedItems(updatedItems);
     onChange('itemList', updatedItems);
   };
 
@@ -89,7 +88,6 @@ export default function ItemListSection({ formData, onChange }) {
     const updatedItems = selectedItems.map(item => 
       item.id === itemId ? { ...item, rate: parseFloat(rate) || 0 } : item
     );
-    setSelectedItems(updatedItems);
     onChange('itemList', updatedItems);
   };
 
@@ -97,7 +95,6 @@ export default function ItemListSection({ formData, onChange }) {
     const updatedItems = selectedItems.map(item => 
       item.id === itemId ? { ...item, [field]: value } : item
     );
-    setSelectedItems(updatedItems);
     onChange('itemList', updatedItems);
   };
 
@@ -108,7 +105,6 @@ export default function ItemListSection({ formData, onChange }) {
         attributes: [...(item.attributes || []), { Nm: '', Val: '' }] 
       } : item
     );
-    setSelectedItems(updatedItems);
     onChange('itemList', updatedItems);
   };
 
@@ -119,7 +115,6 @@ export default function ItemListSection({ formData, onChange }) {
         attributes: item.attributes.filter((_, index) => index !== attrIndex) 
       } : item
     );
-    setSelectedItems(updatedItems);
     onChange('itemList', updatedItems);
   };
 
@@ -132,7 +127,6 @@ export default function ItemListSection({ formData, onChange }) {
         ) 
       } : item
     );
-    setSelectedItems(updatedItems);
     onChange('itemList', updatedItems);
   };
 

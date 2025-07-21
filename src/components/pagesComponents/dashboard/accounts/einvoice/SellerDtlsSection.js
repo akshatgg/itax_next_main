@@ -2,20 +2,32 @@
 
 import { Icon } from '@iconify/react';
 import { useState, useEffect } from 'react';
-import userbackAxios from '@/lib/userbackAxios.js';
 
-export default function SellerDtlsSection({ formData, onChange }) {
-  const [businessProfile, setBusinessProfile] = useState(null);
+export default function SellerDtlsSection({ formData, onChange, businessProfile }) {
   const [isLoading, setIsLoading] = useState(false);
+  const [hasAutoFilled, setHasAutoFilled] = useState(false);
 
-  const getBusinessProfile = async () => {
-    try {
-      setIsLoading(true);
-      const response = await userbackAxios.get('/business/profile');
-      if (response.data && response.data.data && response.data.data.profile) {
-        const profile = response.data.data.profile;
-        setBusinessProfile(profile);
-        console.log("Fetched business profile:", profile);
+  useEffect(() => {
+    // Only run auto-fill once and when businessProfile is available
+    if (businessProfile && !hasAutoFilled) {
+      console.log("SellerDtlsSection - Running auto-fill for the first time");
+      console.log("SellerDtlsSection - Full businessProfile:", businessProfile);
+      
+      // Try different possible data structures
+      let profile = null;
+      
+      if (businessProfile.data && businessProfile.data.profile) {
+        profile = businessProfile.data.profile;
+      } else if (businessProfile.businessProfile && businessProfile.businessProfile.data && businessProfile.businessProfile.data.profile) {
+        profile = businessProfile.businessProfile.data.profile;
+      } else if (businessProfile.profile) {
+        profile = businessProfile.profile;
+      } else {
+        console.log("Profile structure not found, checking keys:", Object.keys(businessProfile));
+      }
+      
+      if (profile) {
+        console.log("Auto-filling from business profile:", profile);
         
         // Auto-fill seller details from business profile
         onChange('SellerGstin', profile.gstin || '');
@@ -26,18 +38,19 @@ export default function SellerDtlsSection({ formData, onChange }) {
         onChange('SellerLoc', profile.city || '');
         onChange('SellerPin', profile.pincode || '');
         onChange('SellerStcd', profile.statecode || '');
+        
+        console.log("Auto-fill completed");
+        setHasAutoFilled(true);
+      } else {
+        console.log("No profile data found to auto-fill");
       }
-    } catch (error) {
-      console.log("Error fetching business profile:", error);
-    } finally {
-      setIsLoading(false);
     }
+  }, [businessProfile, onChange, hasAutoFilled]);
+
+  const handleInputChange = (field, value) => {
+    onChange(field, value);
   };
-
-  useEffect(() => {
-    getBusinessProfile();
-  }, []);
-
+  
   return (
     <div className="border border-gray-200 rounded-lg p-4">
       <h5 className="text-sm font-semibold text-gray-800 mb-3 flex items-center">

@@ -92,12 +92,12 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
 
   // Navigation steps
   const steps = [
-    { id: 'transaction', label: 'Transaction', icon: 'mdi:swap-horizontal' },
-    { id: 'document', label: 'Document', icon: 'mdi:file-document' },
-    { id: 'seller', label: 'Seller', icon: 'mdi:store' },
-    { id: 'buyer', label: 'Buyer', icon: 'mdi:account' },
-    { id: 'items', label: 'Items', icon: 'mdi:package-variant' },
-    { id: 'values', label: 'Values', icon: 'mdi:calculator' }
+    { id: 'transaction', label: 'Transaction', shortLabel: 'Tran', icon: 'mdi:swap-horizontal' },
+    { id: 'document', label: 'Document', shortLabel: 'Doc', icon: 'mdi:file-document' },
+    { id: 'seller', label: 'Seller', shortLabel: 'Sell', icon: 'mdi:store' },
+    { id: 'buyer', label: 'Buyer', shortLabel: 'Buy', icon: 'mdi:account' },
+    { id: 'items', label: 'Items', shortLabel: 'Items', icon: 'mdi:package-variant' },
+    { id: 'values', label: 'Values', shortLabel: 'Val', icon: 'mdi:calculator' }
   ];
 
   const handleInputChange = (field, value) => {
@@ -352,149 +352,160 @@ export default function CreateEInvoiceModal({ isOpen, onClose, authData, busines
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-4xl mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-800">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className="bg-white rounded-xl w-full max-w-6xl mx-auto max-h-[95vh] sm:max-h-[90vh] overflow-hidden flex flex-col">
+        {/* Header - Fixed */}
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 flex-shrink-0">
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800">
             Create E-Invoice
           </h3>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="text-gray-500 hover:text-gray-700 p-1"
           >
-            <Icon icon="mdi:close" className="w-6 h-6" />
+            <Icon icon="mdi:close" className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <h4 className="text-md font-semibold text-gray-800 mb-2">
-                E-Invoice Details
-              </h4>
-              <p className="text-sm text-gray-600 mb-4">
-                Enter transaction and document details for E-Invoice generation
-              </p>
-            </div>
-            <Icon 
-              icon="mdi:file-document-plus" 
-              className="w-8 h-8 text-blue-600" 
-            />
-          </div>
-
-          {/* Navigation */}
-          <EInvoiceNavigation 
-            steps={steps} 
-            currentStep={currentStep} 
-            onStepChange={handleStepChange} 
-          />
-
-          <form onSubmit={handleSubmit} className="space-y-6 mt-6">
-            {/* Render current step component */}
-            {currentStep === 'transaction' && (
-              <TranDtlsSection 
-                formData={formData} 
-                onChange={handleInputChange} 
-              />
-            )}
-            
-            {currentStep === 'document' && (
-              <DocDtlsSection 
-                formData={formData} 
-                onChange={handleInputChange} 
-              />
-            )}
-            
-            {currentStep === 'seller' && (
-              <SellerDtlsSection
-                businessProfile={businessProfile}
-                formData={formData} 
-                onChange={handleInputChange} 
-              />
-            )}
-            
-            {currentStep === 'buyer' && (
-              <BuyerDtlsSection 
-                partiesData={partiesData.parties.filter(p => p.type === 'customer')}
-                isLoadingParties={isLoadingParties}
-                handleInputChange={handleInputChange}
-                formData={formData} 
-                onChange={handleInputChange} 
-              />
-            )}
-
-            {currentStep === 'items' && (
-              <ItemListSection 
-                formData={formData} 
-                onChange={handleInputChange} 
-              />
-            )}
-
-            {currentStep === 'values' && (
-              <ValDtlsSection 
-                formData={formData} 
-                onChange={handleInputChange} 
-              />
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex justify-between pt-4 border-t border-gray-200">
-              <div className="flex gap-3">
-                {currentStep !== 'transaction' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const currentIndex = steps.findIndex(step => step.id === currentStep);
-                      if (currentIndex > 0) {
-                        setCurrentStep(steps[currentIndex - 1].id);
-                      }
-                    }}
-                    className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
-                  >
-                    Previous
-                  </button>
-                )}
-                
-                {currentStep !== 'buyer' && currentStep !== 'items' && currentStep !== 'values' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const currentIndex = steps.findIndex(step => step.id === currentStep);
-                      if (currentIndex < steps.length - 1) {
-                        setCurrentStep(steps[currentIndex + 1].id);
-                      }
-                    }}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Next
-                  </button>
-                )}
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 sm:p-6">
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 sm:p-6 border border-blue-200">
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-4 sm:mb-6">
+                <div className="mb-4 sm:mb-0">
+                  <h4 className="text-md sm:text-lg font-semibold text-gray-800 mb-2">
+                    E-Invoice Details
+                  </h4>
+                  <p className="text-xs sm:text-sm text-gray-600">
+                    Enter transaction and document details for E-Invoice generation
+                  </p>
+                </div>
+                <Icon 
+                  icon="mdi:file-document-plus" 
+                  className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600 flex-shrink-0" 
+                />
               </div>
 
-              <div className="flex gap-3">
+              {/* Navigation */}
+              <EInvoiceNavigation 
+                steps={steps} 
+                currentStep={currentStep} 
+                onStepChange={handleStepChange} 
+              />
+
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+                {/* Render current step component */}
+                {currentStep === 'transaction' && (
+                  <TranDtlsSection 
+                    formData={formData} 
+                    onChange={handleInputChange} 
+                  />
+                )}
+                
+                {currentStep === 'document' && (
+                  <DocDtlsSection 
+                    formData={formData} 
+                    onChange={handleInputChange} 
+                  />
+                )}
+                
+                {currentStep === 'seller' && (
+                  <SellerDtlsSection
+                    businessProfile={businessProfile}
+                    formData={formData} 
+                    onChange={handleInputChange} 
+                  />
+                )}
+                
+                {currentStep === 'buyer' && (
+                  <BuyerDtlsSection 
+                    partiesData={partiesData.parties.filter(p => p.type === 'customer')}
+                    isLoadingParties={isLoadingParties}
+                    handleInputChange={handleInputChange}
+                    formData={formData} 
+                    onChange={handleInputChange} 
+                  />
+                )}
+
+                {currentStep === 'items' && (
+                  <ItemListSection 
+                    formData={formData} 
+                    onChange={handleInputChange} 
+                  />
+                )}
+
+                {currentStep === 'values' && (
+                  <ValDtlsSection 
+                    formData={formData} 
+                    onChange={handleInputChange} 
+                  />
+                )}
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer - Fixed */}
+        <div className="border-t border-gray-200 p-4 sm:p-6 bg-white flex-shrink-0">
+          <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
+            {/* Navigation Buttons */}
+            <div className="flex gap-2 sm:gap-3 order-2 sm:order-1">
+              {currentStep !== 'transaction' && (
                 <button
                   type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                  onClick={() => {
+                    const currentIndex = steps.findIndex(step => step.id === currentStep);
+                    if (currentIndex > 0) {
+                      setCurrentStep(steps[currentIndex - 1].id);
+                    }
+                  }}
+                  className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm sm:text-base"
                 >
-                  Cancel
+                  Previous
                 </button>
-                
-                {currentStep === 'values' && (
-                  <button
-                    type="submit"
-                    disabled={isLoading}
-                    className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
-                  >
-                    {isLoading && (
-                      <Icon icon="mdi:loading" className="w-4 h-4 mr-2 animate-spin" />
-                    )}
-                    {isLoading ? 'Creating...' : 'Create E-Invoice'}
-                  </button>
-                )}
-              </div>
+              )}
+              
+              {currentStep !== 'buyer' && currentStep !== 'items' && currentStep !== 'values' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const currentIndex = steps.findIndex(step => step.id === currentStep);
+                    if (currentIndex < steps.length - 1) {
+                      setCurrentStep(steps[currentIndex + 1].id);
+                    }
+                  }}
+                  className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
+                >
+                  Next
+                </button>
+              )}
             </div>
-          </form>
+
+            {/* Action Buttons */}
+            <div className="flex gap-2 sm:gap-3 order-1 sm:order-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm sm:text-base"
+              >
+                Cancel
+              </button>
+              
+              {currentStep === 'values' && (
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  onClick={handleSubmit}
+                  className="flex-1 sm:flex-none px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center text-sm sm:text-base"
+                >
+                  {isLoading && (
+                    <Icon icon="mdi:loading" className="w-4 h-4 mr-2 animate-spin" />
+                  )}
+                  {isLoading ? 'Creating...' : 'Create E-Invoice'}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
