@@ -12,6 +12,34 @@ export const AllCareers = () => {
   const [isError, setIsError] = useState(false)
   const [searchTerm, setSearchTerm] = useState("")
 
+  const handleResumeView = (cvUrl, candidateName) => {
+    if (cvUrl) {
+      window.open(cvUrl, '_blank', 'noopener,noreferrer')
+    }
+  }
+
+  const handleResumeDownload = (cvUrl, candidateName) => {
+    if (cvUrl) {
+      try {
+        // Get file extension from URL
+        const urlParts = cvUrl.split('.')
+        const extension = urlParts[urlParts.length - 1] || 'pdf'
+        
+        const link = document.createElement('a')
+        link.href = cvUrl
+        link.download = `${candidateName.replace(/\s+/g, '_')}_Resume.${extension}`
+        link.target = '_blank'
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      } catch (error) {
+        console.error('Error downloading resume:', error)
+        // Fallback to opening in new tab
+        window.open(cvUrl, '_blank', 'noopener,noreferrer')
+      }
+    }
+  }
+
   const fetchCareers = async () => {
     try {
       setIsLoading(true)
@@ -43,7 +71,8 @@ export const AllCareers = () => {
           career.name?.toLowerCase().includes(searchLower) ||
           career.email?.toLowerCase().includes(searchLower) ||
           career.mobile?.toLowerCase().includes(searchLower) ||
-          career.role?.toLowerCase().includes(searchLower)
+          career.skills?.toLowerCase().includes(searchLower) ||
+          career.address?.toLowerCase().includes(searchLower)
         )
       })
       setFilteredCareers(filtered)
@@ -59,7 +88,7 @@ export const AllCareers = () => {
             <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search applications by name, email, role, or phone..."
+              placeholder="Search applications by name, email, skills, or phone..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 bg-gray-50 focus:bg-white"
@@ -91,8 +120,8 @@ export const AllCareers = () => {
               <tr>
                 <th className="px-4 py-3 font-semibold">Candidate</th>
                 <th className="px-4 py-3 font-semibold">Contact</th>
-                <th className="px-4 py-3 font-semibold">Role</th>
-                <th className="px-4 py-3 font-semibold">Experience</th>
+                <th className="px-4 py-3 font-semibold">Skills</th>
+                <th className="px-4 py-3 font-semibold">Address</th>
                 <th className="px-4 py-3 font-semibold">Resume</th>
                 <th className="px-4 py-3 font-semibold">Applied Date</th>
               </tr>
@@ -117,7 +146,7 @@ export const AllCareers = () => {
                             {career.name || 'N/A'}
                           </div>
                           <div className="text-xs text-gray-500">
-                            Candidate
+                            {career.gender || 'N/A'}
                           </div>
                         </div>
                       </div>
@@ -141,30 +170,47 @@ export const AllCareers = () => {
                       </div>
                     </td>
 
-                    {/* Role */}
+                    {/* Skills */}
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
                         <FaBriefcase className="text-gray-400 text-xs" />
                         <span className="text-sm font-medium text-gray-900 bg-blue-50 px-2 py-1 rounded border border-blue-100">
-                          {career.role || 'N/A'}
+                          {career.skills || 'N/A'}
                         </span>
                       </div>
                     </td>
 
-                    {/* Experience */}
+                    {/* Address */}
                     <td className="px-4 py-3">
-                      <span className="text-sm text-gray-700">
-                        {career.experience ? `${career.experience} years` : 'N/A'}
-                      </span>
+                      <div className="text-sm text-gray-700">
+                        <div>{career.address || 'N/A'}</div>
+                        {career.pin && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            PIN: {career.pin}
+                          </div>
+                        )}
+                      </div>
                     </td>
 
                     {/* Resume */}
                     <td className="px-4 py-3">
-                      {career.resume ? (
-                        <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded border border-blue-200 transition-colors">
-                          <HiDocumentText className="text-xs" />
-                          <span>View Resume</span>
-                        </button>
+                      {career.cv ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleResumeView(career.cv, career.name)}
+                            className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1 rounded border border-blue-200 transition-colors"
+                          >
+                            <HiDocumentText className="text-xs" />
+                            <span>View</span>
+                          </button>
+                          <button
+                            onClick={() => handleResumeDownload(career.cv, career.name)}
+                            className="flex items-center gap-1 text-sm text-green-600 hover:text-green-700 bg-green-50 hover:bg-green-100 px-2 py-1 rounded border border-green-200 transition-colors"
+                            title="Download Resume"
+                          >
+                            <FaDownload className="text-xs" />
+                          </button>
+                        </div>
                       ) : (
                         <span className="text-sm text-gray-500">No resume</span>
                       )}
