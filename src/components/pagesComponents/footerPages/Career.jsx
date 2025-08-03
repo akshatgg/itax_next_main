@@ -12,6 +12,7 @@ const Career = () => {
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [uploadedFile, setUploadedFile] = useState(null)
 
   const {
     register,
@@ -21,19 +22,33 @@ const Career = () => {
   } = useForm()
 
   const onSubmit = async (body) => {
+    console.log("Form submitted with data:", body)
+    console.log("Backend URL:", process.env.NEXT_PUBLIC_BACK_URL)
+    
     try {
       const maxlimit = 1024 * 1024
       const file = body.cv[0]
 
+      console.log("File selected:", file)
+
+      if (!file) {
+        toast.error("Please select a resume file")
+        return
+      }
+
       const size = file.size
       const type = file.type
 
-      if (!file) {
-        throw new Error("Resume is required.")
+      console.log("File size:", size, "File type:", type)
+
+      if (size > maxlimit) {
+        toast.error("File size should be less than 1 MB")
+        return
       }
 
-      if (size > maxlimit && type !== "application/pdf") {
-        throw new Error("Only Pdf File Accepted and Should be less than 1 mb.")
+      if (type !== "application/pdf") {
+        toast.error("Only PDF files are accepted")
+        return
       }
 
       setSuccess(false)
@@ -51,36 +66,69 @@ const Career = () => {
       formData.append("mobile", body.mobile)
       formData.append("cv", body.cv[0])
 
+      console.log("FormData prepared, making API call...")
+
       const { data, status } = await userAxios.post("/career/create", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
 
-      if (status === 201) {
-        setSuccess(data?.status)
+      console.log("API Response:", { data, status })
+
+      if (status === 201 || status === 200) {
+        setSuccess(true)
         setSubmitted(true)
+        setUploadedFile(null)
         reset({
           name: "",
-          skills: "",
           gender: "",
           email: "",
           pin: "",
           address: "",
           mobile: "",
           cv: "",
-          role: "",
         })
-        toast.success(data?.message)
+        toast.success(data?.message || "Application submitted successfully!")
       } else {
-        toast.error(message ?? "Server error")
-        setSuccess(true)
+        toast.error("Server error - please try again")
       }
     } catch (error) {
-      const message = error?.response?.data?.message
-      toast.error(message || "An error occurred")
+      console.error("Error occurred:", error)
+      console.error("Error response:", error?.response)
+      
+      let errorMessage = "An error occurred while submitting your application"
+      
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message
+      } else if (error?.message) {
+        if (error.message.includes("Network Error")) {
+          errorMessage = "Network error - please check your connection or try again later"
+        } else if (error.message.includes("timeout")) {
+          errorMessage = "Request timeout - please try again"
+        } else {
+          errorMessage = error.message
+        }
+      } else if (error?.code === "ECONNREFUSED") {
+        errorMessage = "Unable to connect to server - please try again later"
+      }
+      
+      console.log("Error message to show:", errorMessage)
+      toast.error(errorMessage)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      setUploadedFile({
+        name: file.name,
+        size: (file.size / 1024 / 1024).toFixed(2) // Convert to MB
+      })
+    } else {
+      setUploadedFile(null)
     }
   }
 
@@ -185,23 +233,6 @@ const Career = () => {
                         <p className="text-red-500 text-xs mt-1" role="alert">Required</p>
                       )}
                     </div>
-
-                    <div>
-                      <label className="block text-xs font-medium text-gray-700 mb-1">Application Type *</label>
-                      <select
-                        name="role"
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3C7CDD] focus:border-[#3C7CDD] bg-white"
-                        {...register("role", { required: true })}
-                        aria-invalid={errors.role ? "true" : "false"}
-                      >
-                        <option value="" disabled selected hidden>Select</option>
-                        <option value="job">Job</option>
-                        <option value="internship">Internship</option>
-                      </select>
-                      {errors.role?.type === "required" && (
-                        <p className="text-red-500 text-xs mt-1" role="alert">Required</p>
-                      )}
-                    </div>
                   </div>
 
                   {/* Location Column */}
@@ -289,23 +320,45 @@ const Career = () => {
                       <h3 className="text-lg font-semibold text-gray-900">Resume</h3>
                     </div>
 
-                    <div className="border-2 border-dashed border-[#A3C7F0] rounded-lg p-6 text-center bg-[#F8FBFF] hover:border-[#3C7CDD] transition-colors">
-                      <Upload className="w-8 h-8 text-[#3C7CDD] mx-auto mb-3" />
-                      <label htmlFor="cv" className="cursor-pointer">
-                        <span className="text-sm font-medium text-gray-900 block mb-1">Upload CV/Resume</span>
-                        <span className="text-xs text-gray-500 block mb-3">PDF only, max 1MB</span>
-                        <input
-                          type="file"
-                          name="cv"
-                          id="cv"
-                          className="hidden"
-                          accept=".pdf"
-                          {...register("cv", { required: true })}
-                          aria-invalid={errors.cv ? "true" : "false"}
-                        />
-                        <span className="inline-flex items-center px-3 py-1.5 bg-[#3C7CDD] text-white rounded-md hover:bg-[#2A5EBB] transition-colors text-xs">
-                          Choose File
-                        </span>
+                    <div className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer ${
+                      uploadedFile 
+                        ? 'border-green-300 bg-green-50' 
+                        : 'border-[#A3C7F0] bg-[#F8FBFF] hover:border-[#3C7CDD]'
+                    }`}>
+                      <input
+                        type="file"
+                        name="cv"
+                        id="cv"
+                        className="hidden"
+                        accept=".pdf"
+                        {...register("cv", { 
+                          required: true,
+                          onChange: (e) => handleFileChange(e)
+                        })}
+                        aria-invalid={errors.cv ? "true" : "false"}
+                      />
+                      <label htmlFor="cv" className="cursor-pointer block">
+                        {uploadedFile ? (
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-center text-green-600 mb-2">
+                              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <span className="text-sm font-medium text-green-700 block">{uploadedFile.name}</span>
+                            <span className="text-xs text-green-600 block">{uploadedFile.size} MB</span>
+                            <span className="text-xs text-green-600">Click to change file</span>
+                          </div>
+                        ) : (
+                          <div>
+                            <Upload className="w-8 h-8 text-[#3C7CDD] mx-auto mb-3" />
+                            <span className="text-sm font-medium text-gray-900 block mb-1">Upload CV/Resume</span>
+                            <span className="text-xs text-gray-500 block mb-3">PDF only, max 1MB</span>
+                            <span className="inline-flex items-center px-3 py-1.5 bg-[#3C7CDD] text-white rounded-md hover:bg-[#2A5EBB] transition-colors text-xs">
+                              Choose File
+                            </span>
+                          </div>
+                        )}
                       </label>
                       {errors.cv?.type === "required" && (
                         <p className="text-red-500 text-xs mt-2" role="alert">Resume required</p>
