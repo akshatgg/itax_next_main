@@ -178,6 +178,7 @@ export const AllCareers = () => {
                           {career.skills || 'N/A'}
                         </span>
                       </div>
+                      
                     </td>
 
                     {/* Address */}
