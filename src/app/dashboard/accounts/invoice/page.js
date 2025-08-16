@@ -8,9 +8,7 @@ import { USER_ROLES } from '@/utils/globals';
 
 export default function InvoicePage() {
   const user = getUserOnServer();
-  console.log('user', user);
   const businessProfile = getBusinessProfile();
-console.log('businessProfile', businessProfile);
   const isSuperAdmin = user?.userType === USER_ROLES.superAdmin;
 
   return (

@@ -1,119 +1,88 @@
-import { nodeAxios } from '@/lib/axios';
-import userbackAxios from '@/lib/userbackAxios';
-import InvoicePreview from '@/components/pagesComponents/dashboard/accounts/invoice/invoicePreview/InvoicePreview';
-import { getBusinessProfile } from '@/hooks/authProvider';
-import { getUserOnServer } from '@/lib/getServerSideToken';
-import { cookies } from 'next/headers';
+"use client"
+import { Suspense } from "react";
+import { cookies } from "next/headers";
+import userbackAxios from "@/lib/userbackAxios";
+import { getBusinessProfile } from "@/hooks/authProvider";
+import { getUserOnServer } from "@/lib/getServerSideToken";
 
-// Helper to get auth token from cookies
-async function getAuthToken() {
-  const cookieStore = cookies();
-  return cookieStore.get('token')?.value;
-}
-
-async function getInvoiceById(id) {
+// ✅ Generic authenticated fetch
+async function fetchWithAuth(url) {
   try {
-    // Get the auth token
-    const token = await getAuthToken();
-    
-    // Make the request with proper authorization
-    const response = await userbackAxios.get(`/invoice/invoices/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
+    const token = cookies().get("token")?.value;
+    if (!token) throw new Error("Missing authentication token");
+
+    const { data } = await userbackAxios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
     });
-    
-    console.log('Invoice response:', response.data);
-    return { respInvoice: response.data };
+
+    return { data };
   } catch (error) {
-    console.error('Invoice fetch error:', error?.response?.status, error?.response?.data || error.message);
-    return { errorInvoice: error };
+    console.error(`Fetch error [${url}]:`, error?.response?.status, error?.response?.data || error.message);
+    return { error };
   }
 }
 
-async function getPartyById(id) {
-  try {
-    // Get the auth token
-    const token = await getAuthToken();
-    
-    // Make the request with proper authorization
-    const response = await userbackAxios.get(`/invoice/parties/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-    
-    console.log('Party response:', response.data);
-    return { respParty: response.data };
-  } catch (error) {
-    console.error('Party fetch error:', error?.response?.status, error?.response?.data || error.message);
-    return { errorParty: error };
-  }
-}
-
-export default async function Page({ params }) {
-  // Get user first to have access to authentication data
+// ✅ Extract the heavy preview as a lazy-loaded client component
+async function InvoicePreviewWrapper({ slug }) {
   const user = await getUserOnServer();
-  
-  // Add better error handling with more detailed logging
-  const { respInvoice, errorInvoice } = await getInvoiceById(params.slug);
 
+  // 1. Fetch invoice
+  const { data: respInvoice, error: errorInvoice } = await fetchWithAuth(`/invoice/invoices/${slug}`);
   if (errorInvoice) {
-    // Get more detailed error information
-    const statusCode = errorInvoice.response?.status;
-    const errorMessage = errorInvoice.response?.data?.message || errorInvoice.message || 'Unknown error';
-    
-    console.error(`Error fetching invoice: ${statusCode} - ${errorMessage}`);
-    
-    // Return user-friendly error based on status code
-    if (statusCode === 403) {
+    const status = errorInvoice.response?.status;
+    const msg = errorInvoice.response?.data?.message || errorInvoice.message || "Unknown error";
+
+    if (status === 403) {
       return (
         <div className="p-8 text-center">
-          <h2 className="text-xl font-bold mb-2">Permission Error</h2>
-          <p>You don&apos;t have permission to view this invoice. Please verify your account has the necessary access rights.</p>
-          <p className="text-sm text-gray-500 mt-2">Error: {errorMessage}</p>
+          <h2 className="text-xl font-bold mb-2">Permission Denied</h2>
+          <p>You don&apos;t have permission to view this invoice.</p>
+          <p className="text-sm text-gray-500 mt-2">Error: {msg}</p>
         </div>
       );
     }
-    
-    return <div className="p-4">Error loading invoice: {errorMessage}</div>;
-  }
-  
-  if (!respInvoice) {
-    console.error('No invoice data returned');
-    return <div className="p-4">Invoice not found</div>;
+    return <div className="p-4">Error loading invoice: {msg}</div>;
   }
 
-  // Check for partyId before trying to fetch party
-  if (!respInvoice.partyId) {
-    console.error('Missing partyId in invoice data:', respInvoice);
-    return <div className="p-4">Invalid invoice data: Missing party information</div>;
+  if (!respInvoice?.partyId) {
+    return <div className="p-4">Invalid invoice data: Missing party</div>;
   }
 
-  const { respParty, errorParty } = await getPartyById(respInvoice.partyId);
-  
+  // 2. Fetch party + business profile concurrently
+  const [{ data: respParty, error: errorParty }, { response: businessProfile, error: businessError }] =
+    await Promise.all([
+      fetchWithAuth(`/invoice/parties/${respInvoice.partyId}`),
+      getBusinessProfile(),
+    ]);
+
   if (errorParty || !respParty) {
-    const errorMessage = errorParty?.response?.data?.message || errorParty?.message || 'Unknown error';
-    console.error('Error fetching party:', errorParty);
-    return <div className="p-4">Error loading party information: {errorMessage}</div>;
+    const msg = errorParty?.response?.data?.message || errorParty?.message || "Unknown error";
+    return <div className="p-4">Error loading party: {msg}</div>;
   }
 
-  const { response: businessProfile, error: businessProfileError } = await getBusinessProfile();
-
-  if (businessProfileError) {
-    console.error('Error fetching business profile:', businessProfileError);
+  if (businessError) {
+    console.warn("Business profile fetch failed:", businessError);
   }
+
+  // ✅ Import inside so it's lazily loaded
+  const InvoicePreview = (await import(
+    "@/components/pagesComponents/dashboard/accounts/invoice/invoicePreview/InvoicePreview"
+  )).default;
 
   return (
-    <div>
-      <InvoicePreview
-        respParty={respParty.party}
-        respInvoice={respInvoice}
-        user={user}
-        businessProfile={businessProfile?.data}
-      />
-    </div>
+    <InvoicePreview
+      respParty={respParty.party}
+      respInvoice={respInvoice}
+      user={user}
+      businessProfile={businessProfile?.data}
+    />
+  );
+}
+
+export default function Page({ params }) {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Loading invoice preview...</div>}>
+      <InvoicePreviewWrapper slug={params.slug} />
+    </Suspense>
   );
 }

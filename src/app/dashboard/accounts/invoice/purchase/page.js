@@ -1,65 +1,51 @@
 'use client';
-import Purchase from '@/components/pagesComponents/dashboard/accounts/invoice/purchase/Purchase';
-;
+
+import React, { Suspense, useEffect, useState } from 'react';
 import userAxios from '@/lib/userbackAxios';
-import { useEffect, useState } from 'react';
+const Purchase = React.lazy(() => import('./Purchase'));
+
+
 export default function Page() {
-  const [respAllInvoice, setRespAllInvoice] = useState(null);
+  const [invoices, setInvoices] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
   useEffect(() => {
-    const handleGetInvoices = async () => {
+    const fetchInvoices = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        setLoading(true);
-        setError({ error: null });
-        const resp = await userAxios.get('/invoice/invoices');
-        const salesInvoice = resp.data.invoices.filter((invoice) => {
-          return invoice.type === 'purchase';
-        });
-        const updatedSalesInvoice = await Promise.all(
-          salesInvoice.map(async (invoice) => {
-            const response = await userAxios.get(
-              'invoice/parties/' + invoice.partyId,
-            );
-            if (response.data.success)
-              invoice.partyName = response.data?.party?.partyName;
+        const { data } = await userAxios.get('/invoice/invoices');
+        const purchaseInvoices = (data?.invoices || []).filter(inv => inv.type === 'purchase');
+        const invoicesWithParty = await Promise.all(
+          purchaseInvoices.map(async (invoice) => {
+            try {
+              const { data: partyData } = await userAxios.get(`/invoice/parties/${invoice.partyId}`);
+              if (partyData?.success) invoice.partyName = partyData.party?.partyName || '-';
+            } catch (err) {
+              console.warn(`Failed to fetch party for invoice ${invoice.id}`, err);
+              invoice.partyName = '-';
+            }
             return invoice;
-          }),
+          })
         );
-        setRespAllInvoice(updatedSalesInvoice);
-      } catch (error) {
-        console.log(error);
-        setError({ isError: true, ...error });
+
+        setInvoices(invoicesWithParty);
+      } catch (err) {
+        console.error('Failed to fetch invoices:', err);
+        setError({ isError: true, message: err?.response?.data?.message || 'Something went wrong' });
       } finally {
         setLoading(false);
       }
     };
-    handleGetInvoices();
+
+    fetchInvoices();
   }, []);
 
   return (
-    <Purchase salesInvoices={respAllInvoice} loading={loading} error={error} />
+    <Suspense fallback={<div>Loading Page...</div>}>
+      <Purchase purchaseInvoices={invoices} loading={loading} error={error} />
+    </Suspense>
   );
 }
-// import Sales from "@/components/pagesComponents/dashboard/accounts/invoice/sales/Sales";
-// import Axios from "@/lib/Axios";
-// import { getCurrentUser } from "@/hooks/authProvider";
-// export default async function page() {
-//     const { token } = await getCurrentUser();
-//     try {
-//         const respAllInvoice = await Axios.get("/invoice/invoices",{
-//             headers:{
-//                 Authorization: "Bearer " + token
-//             }
-//         });
-//         const salesInvoice = respAllInvoice.data.invoices.filter((invoice)=>{
-//             return invoice.type === "sales"
-//         })
-//         return (
-//             <Sales salesInvoices={salesInvoice}/>
-//         );
-//     } catch (error) {
-//         console.log(error);
-//     }
-
-// }
