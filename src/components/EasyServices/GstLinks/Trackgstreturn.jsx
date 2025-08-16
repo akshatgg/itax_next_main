@@ -1,5 +1,5 @@
 "use client"
-import { useRef, useState } from "react"
+import { useRef, useState,useEffect } from "react"
 import useAuth from "../../../hooks/useAuth"
 import { useReactToPrint } from "react-to-print"
 import SearchResult_section from "@/components/pagesComponents/pageLayout/SearchResult_section.js"
@@ -24,6 +24,45 @@ export default function Trackgstreturn() {
     }
   }
 
+  // Handle manual year input with format validation
+  const handleYearInput = (event) => {
+    let value = event.target.value
+    
+    // Remove any non-digit/non-dash characters except FY
+    value = value.replace(/[^0-9\-FY\s]/g, '')
+    
+    // Auto-format as user types
+    if (value.match(/^\d{4}$/)) {
+      // If user types 2024, auto-suggest next year
+      const year = parseInt(value)
+      value = `FY ${year}-${(year + 1).toString().slice(-2)}`
+    } else if (value.match(/^\d{4}\-?\d{0,2}$/)) {
+      // If user types 2024-25 or 2024-2025
+      const parts = value.replace(/FY\s?/, '').split('-')
+      if (parts.length === 2) {
+        const startYear = parts[0]
+        const endYear = parts[1].length === 2 ? parts[1] : parts[1].slice(-2)
+        value = `FY ${startYear}-${endYear}`
+      }
+    }
+    
+    event.target.value = value
+  }
+
+  // Validate financial year format
+  const validateFinancialYear = (year) => {
+    if (!year || year === "Choose..") return false
+    
+    // Accept formats: "FY 2024-25", "2024-25", "2024-2025"
+    const patterns = [
+      /^FY\s?\d{4}-\d{2}$/,  // FY 2024-25
+      /^\d{4}-\d{2}$/,       // 2024-25
+      /^\d{4}-\d{4}$/        // 2024-2025
+    ]
+    
+    return patterns.some(pattern => pattern.test(year))
+  }
+
   const validateGSTIN = (gstin) => {
     const regex = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}[Z]{1}[0-9A-Z]{1}$/
     return regex.test(gstin)
@@ -32,8 +71,8 @@ export default function Trackgstreturn() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // Validate inputs
-    if (!validateGSTIN(gstinRef.current.value) || !yearRef.current.value || yearRef.current.value === "Choose..") {
+    // Validate inputs with enhanced year validation
+    if (!validateGSTIN(gstinRef.current.value) || !validateFinancialYear(yearRef.current.value)) {
       setError(true)
       return
     }
@@ -227,23 +266,49 @@ export default function Trackgstreturn() {
                 <Calendar className="h-4 w-4 mr-1" />
                 Financial Year
               </label>
-              <select
-                ref={yearRef}
-                className={`form-input w-full border p-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-300 focus:outline-none ${
-                  error && (!yearRef.current.value || yearRef.current.value === "Choose..")
-                    ? "border-red-500 bg-red-50"
-                    : ""
-                }`}
-                aria-label="Default select example"
-                defaultValue={""}
-              >
-                <option>Choose..</option>
-                <option value="FY 2023-24">2023-24</option>
-                <option value="FY 2022-23">2022-23</option>
-                <option value="FY 2021-22">2021-22</option>
-              </select>
-              {error && (!yearRef.current.value || yearRef.current.value === "Choose..") && (
-                <p className="text-xs text-red-500 mt-1">Please select a financial year</p>
+              <div className="relative">
+                <input
+                  type="text"
+                  ref={yearRef}
+                  list="financial-years"
+                  className={`form-input w-full border p-2 border-blue-500 rounded focus:ring-2 focus:ring-blue-300 focus:outline-none ${
+                    error && !validateFinancialYear(yearRef.current?.value)
+                      ? "border-red-500 bg-red-50"
+                      : ""
+                  }`}
+                  placeholder="Type or select: FY 2024-25"
+                  onChange={handleYearInput}
+                  aria-label="Financial Year Input"
+                />
+                <datalist id="financial-years">
+                  <option value="FY 2025-26">2025-26</option>
+                  <option value="FY 2024-25">2024-25</option>
+                  <option value="FY 2023-24">2023-24</option>
+                  <option value="FY 2022-23">2022-23</option>
+                  <option value="FY 2021-22">2021-22</option>
+                  <option value="FY 2020-21">2020-21</option>
+                  <option value="FY 2019-20">2019-20</option>
+                  <option value="FY 2018-19">2018-19</option>
+                  <option value="FY 2017-18">2017-18</option>
+                  <option value="FY 2016-17">2016-17</option>
+                  <option value="FY 2015-16">2015-16</option>
+                  <option value="FY 2014-15">2014-15</option>
+                  <option value="FY 2013-14">2013-14</option>
+                  <option value="FY 2012-13">2012-13</option>
+                  <option value="FY 2011-12">2011-12</option>
+                  <option value="FY 2010-11">2010-11</option>
+                </datalist>
+              </div>
+              <div className="mt-1">
+                <p className="text-xs text-gray-500">
+                  💡 Formats: <span className="font-mono">FY 2024-25</span>, <span className="font-mono">2024-25</span>, or <span className="font-mono">2024-2025</span>
+                </p>
+                {yearRef.current?.value && validateFinancialYear(yearRef.current.value) && (
+                  <p className="text-xs text-green-600 mt-1">✓ Valid financial year format</p>
+                )}
+              </div>
+              {error && !validateFinancialYear(yearRef.current?.value) && (
+                <p className="text-xs text-red-500 mt-1">Please enter or select a valid financial year</p>
               )}
             </div>
           </div>
@@ -331,7 +396,9 @@ export default function Trackgstreturn() {
                 {(!gstinRef.current.value || !validateGSTIN(gstinRef.current.value)) && (
                   <li>Enter a valid 15-character GSTIN</li>
                 )}
-                {(!yearRef.current.value || yearRef.current.value === "Choose..") && <li>Select a financial year</li>}
+                {!validateFinancialYear(yearRef.current?.value) && (
+                  <li>Enter a valid financial year (Format: FY 2024-25, 2024-25, or 2024-2025)</li>
+                )}
               </ul>
             </div>
           )}
@@ -377,12 +444,57 @@ export default function Trackgstreturn() {
             </div>
 
             {showdata && showdata?.data?.data?.data?.EFiledlist && showdata.data.data.data.EFiledlist.length > 0 ? (
-              <div className="overflow-x-auto scrollbar-thin">
-                <table className="w-full text-sm text-left text-gray-500 border-collapse">
+              <div 
+                className="overflow-x-auto"
+                style={{
+                  scrollbarWidth: 'thin',
+                  scrollbarColor: '#d1d5db #ffffff',
+                }}
+              >
+                <style jsx>{`
+                  div::-webkit-scrollbar {
+                    height: 8px;
+                    width: 8px;
+                  }
+                  
+                  div::-webkit-scrollbar-track {
+                    background: #ffffff;
+                    border-radius: 4px;
+                  }
+                  
+                  div::-webkit-scrollbar-thumb {
+                    background: #d1d5db;
+                    border-radius: 4px;
+                    border: 1px solid #ffffff;
+                  }
+                  
+                  div::-webkit-scrollbar-thumb:hover {
+                    background: #9ca3af;
+                  }
+                  
+                  div::-webkit-scrollbar-corner {
+                    background: #ffffff;
+                  }
+                  
+                  @media (max-width: 768px) {
+                    div::-webkit-scrollbar {
+                      height: 6px;
+                      width: 6px;
+                    }
+                  }
+                  
+                  @media (max-width: 480px) {
+                    div::-webkit-scrollbar {
+                      height: 4px;
+                      width: 4px;
+                    }
+                  }
+                `}</style>
+                <table className="w-full text-sm text-left text-gray-500 border-collapse min-w-[600px]">
                   <thead className="text-xs text-white bg-blue-600">
                     <tr>
                       {Object.keys(headers).map((col) => (
-                        <th className="px-4 py-2 font-semibold" key={col}>
+                        <th className="px-2 sm:px-4 py-2 font-semibold whitespace-nowrap" key={col}>
                           {col}
                         </th>
                       ))}
@@ -394,25 +506,25 @@ export default function Trackgstreturn() {
                         className={`${i % 2 === 0 ? "bg-white" : "bg-blue-50"} border-b hover:bg-gray-50 transition-colors`}
                         key={i}
                       >
-                        <td className="px-4 py-2 font-medium text-gray-900">
+                        <td className="px-2 sm:px-4 py-2 font-medium text-gray-900">
                           <div className="flex items-center">
-                            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded">
+                            <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded whitespace-nowrap">
                               {row.rtntype}
                             </span>
                           </div>
                         </td>
-                        <td className="px-4 py-2 font-mono text-xs">{row.arn}</td>
-                        <td className="px-4 py-2">{row.dof}</td>
-                        <td className="px-4 py-2">{row.mof}</td>
-                        <td className="px-4 py-2">{formatReturnPeriod(row.ret_prd)}</td>
-                        <td className="px-4 py-2">
+                        <td className="px-2 sm:px-4 py-2 font-mono text-xs break-all">{row.arn}</td>
+                        <td className="px-2 sm:px-4 py-2 whitespace-nowrap">{row.dof}</td>
+                        <td className="px-2 sm:px-4 py-2 whitespace-nowrap">{row.mof}</td>
+                        <td className="px-2 sm:px-4 py-2 whitespace-nowrap">{formatReturnPeriod(row.ret_prd)}</td>
+                        <td className="px-2 sm:px-4 py-2">
                           <span
-                            className={`px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(row.status)}`}
+                            className={`px-2 py-1 text-xs font-semibold rounded-full whitespace-nowrap ${getStatusColor(row.status)}`}
                           >
                             {row.status}
                           </span>
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="px-2 sm:px-4 py-2">
                           <span
                             className={`px-2 py-1 text-xs font-semibold rounded-full ${getValidityColor(row.valid)}`}
                           >

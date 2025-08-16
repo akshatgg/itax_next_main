@@ -76,15 +76,6 @@ export const careerTableHeaders = [
     ),
   },
   {
-    text: 'Skills',
-    dataField: 'skills',
-    formatter: (data) => (
-      <div className="flex   justify-start items-center">
-        <span className="font-medium">{data}</span>
-      </div>
-    ),
-  },
-  {
     text: 'Address',
     dataField: 'address',
     formatter: (data) => (

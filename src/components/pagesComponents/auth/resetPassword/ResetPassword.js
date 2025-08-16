@@ -2,26 +2,26 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
-// import { StoreContext } from '../../../store/store-context.js';
 import { Icon } from '@iconify/react';
 import api from '@/lib/userNextAxios';
 
 function SendOtpWithEmailForm(props) {
   const { handleSendEmail, email, setEmail, loading } = props;
-  const [emailError,setEmailError]=useState('')
+  const [emailError, setEmailError] = useState('');
 
-  const validateEmail=(email)=>{
-const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-return emailRegex.test(email)
-  }
-  const handleEmailChange=(value)=>{
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const handleEmailChange = (value) => {
     setEmail(value);
-    if(!validateEmail(value)){
-      setEmailError("Please enter a valid email address")
-    }else{
-      setEmailError('')
+    if (!validateEmail(value)) {
+      setEmailError('Please enter a valid email address');
+    } else {
+      setEmailError('');
     }
-  }
+  };
 
   return (
     <form
@@ -34,7 +34,7 @@ return emailRegex.test(email)
         </h3>
       </div>
       <div className="flex flex-col relative">
-        <label htmlFor="otp" className="text-sm font-medium">
+        <label htmlFor="email" className="text-sm font-medium">
           Enter email
         </label>
         <input
@@ -44,12 +44,15 @@ return emailRegex.test(email)
           id="email"
           placeholder="Email"
           value={email}
-          onChange={(e) =>  handleEmailChange(e.target.value)}
+          onChange={(e) => handleEmailChange(e.target.value)}
           className="py-2 px-3 mt-1 outline-none border focus:border-primary rounded"
         />
-        {emailError&& <div className='text-red-500'>{emailError}</div>}
+        {emailError && <div className="text-red-500">{emailError}</div>}
       </div>
-      <button disabled={loading} className="btn-primary">
+      <button
+        disabled={loading || emailError !== '' || email === ''}
+        className="btn-primary"
+      >
         {loading ? <span className="spinner"></span> : 'Send OTP'}
       </button>
     </form>
@@ -75,7 +78,7 @@ function VerifyOtp(props) {
           type="text"
           name="otp"
           id="otp"
-          placeholder="otp"
+          placeholder="OTP"
           value={otp}
           onChange={(e) => setOtp(e.target.value)}
           className="py-2 px-3 mt-1 outline-none border focus:border-primary rounded"
@@ -93,6 +96,7 @@ function NewPassword(props) {
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const [touched, setTouched] = useState(false);
+
   const {
     handleChangePassword,
     password,
@@ -101,7 +105,9 @@ function NewPassword(props) {
     setPassword2,
     loading,
   } = props;
+
   const samePassword = password === password2;
+
   return (
     <form
       className="px-5 md:px-12 py-10 grid gap-8 mx-5 md:mx-0"
@@ -113,7 +119,7 @@ function NewPassword(props) {
         </h3>
       </div>
       <div className="flex flex-col relative">
-        <label htmlFor="otp" className="text-sm font-medium">
+        <label htmlFor="password" className="text-sm font-medium">
           Enter New Password
         </label>
         <input
@@ -121,7 +127,7 @@ function NewPassword(props) {
           type={showPassword ? 'text' : 'password'}
           name="password"
           id="password"
-          placeholder="password"
+          placeholder="New Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="py-2 px-3 mt-1 outline-none border focus:border-primary rounded"
@@ -133,20 +139,18 @@ function NewPassword(props) {
         />
       </div>
       <div className="flex flex-col relative">
-        <label htmlFor="otp" className="text-sm font-medium">
+        <label htmlFor="password2" className="text-sm font-medium">
           Confirm Password
         </label>
         <input
-          autoFocus
           type={showPassword2 ? 'text' : 'password'}
           name="password2"
           id="password2"
-          placeholder="password2"
+          placeholder="Confirm Password"
           value={password2}
           onChange={(e) => {
             setTouched(true);
             setPassword2(e.target.value);
-            console.log(password);
           }}
           className="py-2 px-3 mt-1 outline-none border focus:border-primary rounded"
         />
@@ -155,9 +159,9 @@ function NewPassword(props) {
           icon={showPassword2 ? 'mdi:eye' : 'mdi:eye-off'}
           className=" select-none text-zinc-500 absolute right-3 top-9 text-xl cursor-pointer"
         />
-        {touched && !samePassword ? (
-          <div className="text-red-500">Password not matched.</div>
-        ) : null}
+        {touched && !samePassword && (
+          <div className="text-red-500">Passwords do not match.</div>
+        )}
       </div>
 
       <button
@@ -169,38 +173,39 @@ function NewPassword(props) {
     </form>
   );
 }
+
 export default function ResetPassword() {
-  // const [state] = useContext(StoreContext);
-
   const [otp, setOtp] = useState('');
-  const [otpKey, setOtpKey] = useState('');
-
+  const [otpKey, setOtpKey] = useState(null); // fixed here
   const [loading, setLoading] = useState(false);
   const [verified, setVerified] = useState(false);
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [password2, setPassword2] = useState('');
   const router = useRouter();
-  const [token, setToken] = useState('');
 
   const handleSendEmail = async (e) => {
     e.preventDefault();
-    console.log('this is the one');
 
     try {
       setLoading(true);
-      const { data } = await api.post(`/api/auth/resend-otp`, {
+      const response = await api.post(`/user/resend-otp-key`, {
         email: email,
-        type: 'newpassword',
       });
-      console.log(data);
-      if (data.status === 200) {
-        setOtpKey(data.data.otp_key);
-        toast.success(data.message);
+
+      console.log('✅ OTP Response:', response.data);
+
+      const otpKeyFromBackend = response.data?.data?.otp_key;
+
+      if (response.data?.success && typeof otpKeyFromBackend === 'number') {
+        setOtpKey(otpKeyFromBackend);
+        toast.success(response.data.message || 'OTP sent to your email.');
+      } else {
+        toast.error('Something went wrong while fetching OTP.');
       }
     } catch (error) {
-      console.log(' error : \n', error);
+      console.error('❌ Send OTP error:', error);
+      toast.error(error?.response?.data?.message || 'Failed to send OTP.');
     } finally {
       setLoading(false);
     }
@@ -208,55 +213,59 @@ export default function ResetPassword() {
 
   const handleVerify = async (e) => {
     e.preventDefault();
-
     try {
       setLoading(true);
-      const { data } = await api.post(`/api/auth/verify-otp`, {
-        email: email,
+
+      const { data } = await api.post(`/user/verify-otp-key`, {
+        email,
         otp_key: otpKey,
-        otp: otp,
-        type: 'newpassword',
+        otp,
       });
-      console.log(data);
-      if (data.status === 200) {
+
+      if (data.success) {
         toast.success(data.message);
-        setVerified(true);
-        // setToken(data.data.token);
+        setVerified(true); // show password form
+      } else {
+        toast.error(data.message || 'OTP verification failed.');
       }
     } catch (error) {
-      console.log('signup error : \n', error);
+      console.error('OTP verification error:\n', error);
+      toast.error(error?.response?.data?.message || 'OTP verification failed.');
     } finally {
       setLoading(false);
     }
   };
+
   const handleChangePassword = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const { data } = await api.post(
-        '/api/auth/update-password',
-        { email, newPassword: password, otp_key: otpKey, otp: otp },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-      if (data.status === 200) {
+
+      const { data } = await api.post(`/user/update-password-with-otp`, {
+        email,
+        otp_key: otpKey,
+        otp,
+        newPassword: password,
+      });
+
+      if (data.success) {
         toast.success(data.message);
         router.push('/login');
+      } else {
+        toast.error(data.message || 'Password update failed.');
       }
     } catch (error) {
-      console.log(token);
-      console.log('signup error : \n', error);
+      console.error('Password update error:\n', error);
+      toast.error(error?.response?.data?.message || 'Password update failed.');
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="flex justify-center items-center">
       <div className="max-w-sm w-screen md:w-full h-screen md:h-auto bg-white rounded-xl md:shadow-lg md:border">
-        {!otpKey ? (
+        {otpKey === null ? (
           <SendOtpWithEmailForm
             handleSendEmail={handleSendEmail}
             email={email}

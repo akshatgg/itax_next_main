@@ -10,8 +10,9 @@ import moment from 'moment';
 import Modal from '@/components/ui/Modal.js';
 import CreateInvoice from './invoice/CreateInvoice.js';
 import Loader from '@/components/partials/loading/Loader.js';
+import EinvoiceDashboard from '../einvoice/EinvoiceDashboard.js';
 
-export default function InvoiceDashboard_index({ businessProfile }) {
+export default function InvoiceDashboard_index({ businessProfile, einvoice }) {
   const [items, setItems] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -179,3 +180,47 @@ item: items || [],
     </div>
   );
 }
+
+
+
+
+export function EinvoiceDashboard_index({ businessProfile, einvoice }) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState({
+    search: '',
+    type: null,
+    status: null,
+  });
+  const [invoices, setInvoices] = useState(null);
+
+
+
+
+  const navCardData = {
+    invoice: invoices || [],
+    sale: invoices?.filter((inv) => inv.type === 'sales') || [],
+    purchase: invoices?.filter((inv) => inv.type === 'purchase') || [],
+    customer: invoices?.filter((inv) => inv.type === 'sales') || [],
+    supplier: invoices?.filter((inv) => inv.type === 'purchase') || [],
+    'cash/bank': invoices || [],
+  };
+
+
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-[75vh]">
+        <Image src="/loading.svg" width={50} height={50} alt="Loading..." />
+      </div>
+    );
+  }
+
+  return (
+    <div className="py-8">
+      <InvoiceDashboardNavItem navCardData={navCardData} einvoice={einvoice} />
+      <EinvoiceDashboard einvoice={einvoice} businessProfile={businessProfile} />
+    </div>
+  );
+}
+

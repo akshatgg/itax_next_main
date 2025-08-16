@@ -2,6 +2,7 @@ import { nodeAxios } from '@/lib/axios';
 import { cookies } from 'next/headers';
 import userbackAxios from '@/lib/userbackAxios';
 import { redirect } from 'next/navigation';
+import user from '@/app/dashboard/profile/user/page';
 
 // Function to check if token is expired
 function isTokenExpired(token) {
@@ -46,7 +47,7 @@ export async function getBusinessProfile() {
   }
   
   try {
-    const { data } = await nodeAxios.get('/business/profile', {
+    const { data } = await userbackAxios.get('/business/profile', {
       headers: {
         authorization: 'Bearer ' + token,
       },

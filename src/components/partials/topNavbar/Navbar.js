@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link.js';
-import { useContext, useEffect, useState, useCallback, useMemo } from 'react';
+import { useContext, useEffect, useState, useCallback, useMemo, useTransition } from 'react';
 import useAuth from '@/hooks/useAuth.js';
 import UserInfo from './topNavbarComponents/UserInfo';
 import { MdOutlineLocalGroceryStore } from 'react-icons/md';
@@ -10,9 +10,7 @@ import { StoreContext } from '@/store/store-context.js';
 import BillShillLink from '@/components/BillShillLink.jsx';
 import Image from 'next/image.js';
 import userbackAxios from '@/lib/userbackAxios';
-import { useRouter,usePathname } from 'next/navigation';
-import Loader from '@/components/partials/loading/Loader';
-
+import { useRouter, usePathname } from 'next/navigation';
 
 // Menu configurations
 const MENUS = {
@@ -165,7 +163,7 @@ const NAV_LINKS = [
   { href: '/downloads', label: 'Downloads' },
 ];
 
-// Icons
+// Icons - Memoized to prevent re-renders
 const ArrowIcon = ({ direction }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -184,6 +182,31 @@ const ArrowIcon = ({ direction }) => (
     />
   </svg>
 );
+
+// Smooth Navigation Button Component
+const SmoothNavButton = ({ onClick, children, className = "", disabled = false }) => {
+  const [isPending, startTransition] = useTransition();
+  
+  const handleClick = useCallback(() => {
+    if (disabled || isPending) return;
+    startTransition(() => {
+      onClick();
+    });
+  }, [onClick, disabled, isPending]);
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={disabled || isPending}
+      className={`${className} ${isPending ? 'opacity-70 cursor-wait' : ''} transition-opacity duration-200`}
+    >
+      {children}
+      {isPending && (
+        <span className="inline-block w-2 h-2 ml-2 bg-current rounded-full animate-pulse"></span>
+      )}
+    </button>
+  );
+};
 
 // Dropdown menu component
 const DropdownMenu = ({ title, items, hasSubMenu = false, onNavigate }) => (
@@ -205,9 +228,9 @@ const DropdownMenu = ({ title, items, hasSubMenu = false, onNavigate }) => (
             className="py-3 px-5 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 group-one relative"
           >
             <span>{item.menu}</span>
-            <ul className="absolute hidden left-56 top-0 group-one-hover:flex flex-col bg-white dark:-bg--clr-neutral-900 shadow-md rounded-md border py-3 z-[1000">
+            <ul className="absolute hidden left-56 top-0 group-one-hover:flex flex-col bg-white dark:-bg--clr-neutral-900 shadow-md rounded-md border py-3 z-[1000]">
               {item.subMenu.map((subItem) => (
-                <button
+                <SmoothNavButton
                   key={subItem.menu}
                   onClick={() => onNavigate(subItem.url)}
                   className="py-3 mx-2 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between"
@@ -218,14 +241,15 @@ const DropdownMenu = ({ title, items, hasSubMenu = false, onNavigate }) => (
                       UPCOMING
                     </span>
                   )}
-                </button>
+                </SmoothNavButton>
               ))}
             </ul>
           </li>
         ) : (
-          <button
+          <SmoothNavButton
             key={item.url}
             onClick={() => onNavigate(item.url)}
+            disabled={item.upcoming}
             className={`py-3 mx-2 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between ${
               item.upcoming ? 'pointer-events-none' : ''
             }`}
@@ -236,7 +260,7 @@ const DropdownMenu = ({ title, items, hasSubMenu = false, onNavigate }) => (
                 UPCOMING
               </span>
             )}
-          </button>
+          </SmoothNavButton>
         ),
       )}
     </ul>
@@ -248,12 +272,12 @@ const MobileMenuItem = ({ item, onLinkClick, type, toggleDisplay, onNavigate }) 
   if (type === 'simple') {
     return (
       <li>
-        <button
-          key={item.href}
+        <SmoothNavButton
           onClick={() => onNavigate(item.href)}
-          className="flex py-2 text-sm font-bold text-slate-800 dark:-text--clr-neutral-100">
-            {item.label}  
-          </button>
+          className="flex py-2 text-sm font-bold text-slate-800 dark:-text--clr-neutral-100 w-full text-left"
+        >
+          {item.label}
+        </SmoothNavButton>
       </li>
     );
   }
@@ -278,10 +302,10 @@ const MobileMenuItem = ({ item, onLinkClick, type, toggleDisplay, onNavigate }) 
                 className="py-2 pl-8 w-full font-semibold text-sm text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between"
               />
             ) : (
-              <button
+              <SmoothNavButton
                 key={element.menu}
                 onClick={() => onNavigate(element.url)}
-                className="py-2 pl-8 w-full font-semibold text-sm text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between"
+                className="py-2 pl-8 w-full font-semibold text-sm text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between text-left"
               >
                 <span>{element.menu}</span>
                 {element.upcoming && (
@@ -289,7 +313,7 @@ const MobileMenuItem = ({ item, onLinkClick, type, toggleDisplay, onNavigate }) 
                     UPCOMING
                   </span>
                 )}
-              </button>
+              </SmoothNavButton>
             ),
           )}
         </ul>
@@ -319,10 +343,10 @@ const MobileMenuItem = ({ item, onLinkClick, type, toggleDisplay, onNavigate }) 
             </span>
             <ul id={element.menu} className="hidden flex-col my-1">
               {element.subMenu.map((subElement) => (
-                <button
+                <SmoothNavButton
                   key={subElement.menu}
                   onClick={() => onNavigate(subElement.url)}
-                  className="py-2 pl-8 w-full font-semibold text-sm text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between"
+                  className="py-2 pl-8 w-full font-semibold text-sm text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between text-left"
                 >
                   <span>{subElement.menu}</span>
                   {subElement.upcoming && (
@@ -330,7 +354,7 @@ const MobileMenuItem = ({ item, onLinkClick, type, toggleDisplay, onNavigate }) 
                       UPCOMING
                     </span>
                   )}
-                </button>
+                </SmoothNavButton>
               ))}
             </ul>
           </li>
@@ -353,37 +377,36 @@ const toggleDisplay = (id) => {
 export default function Navbar({ className = '' }) {
   const { token, currentUser } = useAuth();
   const [hamburger, setHamburger] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [state] = useContext(StoreContext);
-  const [isNavigating, setIsNavigating] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
 
+  // Smooth navigation handler with visual feedback
   const handleNavigation = useCallback(
     (path) => {
-      setIsNavigating(true);
+      // Add subtle visual feedback during navigation
+      document.body.style.cursor = 'wait';
+      
       router.push(path);
+      setHamburger(false);
+      
+      // Reset cursor after a short delay
+      setTimeout(() => {
+        document.body.style.cursor = 'default';
+      }, 100);
     },
     [router],
   );
 
-  useEffect(() => {
-    if (isNavigating) {
-      setIsNavigating(false);
-    }
-
-  }, [pathname]);
-
+  // Optimized cart fetch with debouncing
   const fetchCartData = useCallback(async () => {
     if (!token) return;
 
     try {
-      setIsLoading(true);
-
       const [serviceResponse, startupResponse] = await Promise.all([
-        userbackAxios.get('/cart/'),
-        userbackAxios.get('/cartStartup/'),
+        userbackAxios.get('/cart/').catch(() => ({ data: { services: [] } })),
+        userbackAxios.get('/cartStartup/').catch(() => ({ data: { itemCount: 0 } })),
       ]);
 
       const serviceCount = serviceResponse.data?.services?.length || 0;
@@ -391,20 +414,20 @@ export default function Navbar({ className = '' }) {
       const totalCount = serviceCount + startupCount;
 
       setCartCount(totalCount);
-
-      console.log('Service items:', serviceCount);
-      console.log('Startup items:', startupCount);
-      console.log('Total cart items:', totalCount);
     } catch (error) {
       console.error('Error fetching cart data:', error);
-    } finally {
-      setIsLoading(false);
     }
   }, [token]);
 
+  // Debounced cart fetch
   useEffect(() => {
-    fetchCartData();
-  }, [fetchCartData, state.cartUpdateCount]);
+    if (token) {
+      const timeoutId = setTimeout(fetchCartData, 100);
+      return () => clearTimeout(timeoutId);
+    } else {
+      setCartCount(0);
+    }
+  }, [token, state.cartUpdateCount, fetchCartData]);
 
   const handleMobileMenuClick = useCallback(() => {
     setHamburger(false);
@@ -436,21 +459,14 @@ export default function Navbar({ className = '' }) {
 
   return (
     <div
-      className={`sticky top-0 left-0 right-0 z-[1000] bg-white border-b border-gray-200 transition-[padding] duration-200 ${className}`}
+      className={`sticky top-0 left-0 right-0 z-[1000] bg-white border-b border-gray-200 transition-all duration-300 ${className}`}
     >
-      {isNavigating && (
-        <div className="fixed inset-0 bg-white/60 flex justify-center items-center z-[1000]">
-          <div className="flex h-[70vh] justify-center items-center">
-            <Loader />
-          </div>
-        </div>
-      )}
       <nav className="max-w-7xl m-auto text-xs sticky top-0 min-h-10 py-1 px-5 flex items-center flex-wrap">
         {/* Logo */}
         <div>
           <Link
             href="/"
-            className="flex flex-shrink-0 justify-between items-center mx-auto"
+            className="flex flex-shrink-0 justify-between items-center mx-auto transition-transform duration-200 hover:scale-105"
           >
             <Image
               width={56}
@@ -458,6 +474,7 @@ export default function Navbar({ className = '' }) {
               src="/logo.svg"
               alt="logo"
               className="object-contain w-14"
+              priority
             />
           </Link>
         </div>
@@ -468,21 +485,27 @@ export default function Navbar({ className = '' }) {
           <DropdownMenu
             title="Easy Services"
             items={MENUS.ourServices}
-            hasSubMenu onNavigate={handleNavigation}
+            hasSubMenu 
+            onNavigate={handleNavigation}
           />
           <DropdownMenu
             title="Financial Calculators"
             items={MENUS.financialCalculator}
-            hasSubMenu onNavigate={handleNavigation}
+            hasSubMenu 
+            onNavigate={handleNavigation}
           />
 
           {NAV_LINKS.map((link) => (
             <li
               key={link.href}
-              onClick={() => handleNavigation(link.href)}
-              className="mx-2 cursor-pointer text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600"
+              className="mx-2 cursor-pointer text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 transition-colors duration-200"
             >
-              {link.label}
+              <SmoothNavButton
+                onClick={() => handleNavigation(link.href)}
+                className="p-2 -m-2"
+              >
+                {link.label}
+              </SmoothNavButton>
             </li>
           ))}
         </ul>
@@ -493,46 +516,51 @@ export default function Navbar({ className = '' }) {
             <div className="flex mx-3 md:mx-0">
               <StyledLink
                 href="/cart"
-                className="flex justify-center items-center bg-primary w-[45px] h-[45px] mx-3 text-white rounded-full font-semibold"
+                className="flex justify-center items-center bg-primary w-[45px] h-[45px] mx-3 text-white rounded-full font-semibold relative transition-transform duration-200 hover:scale-110"
               >
-                <Itag>{cartCount}</Itag>
                 <MdOutlineLocalGroceryStore size={24} />
-                <sup className="absolute top-2.5 right-2">{cartCount}</sup>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-2 bg-[#3C7CDDFF] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
               </StyledLink>
-              <UserInfo setIsNavigating={setIsNavigating}/>
+              <UserInfo />
             </div>
           ) : (
-            // <Link href="/login" className="btn-primary">
-            //   Login
-            // </Link>
-            <button onClick={() => handleNavigation('/login')} className="btn-primary">
+            <Link href="/login" className="btn-primary transition-all duration-200 hover:shadow-lg">
               Login
-            </button>
+            </Link>
           )}
         </div>
 
         {/* Hamburger Menu Button */}
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-          className="lg:hidden w-8 h-8"
+        <button
           onClick={() => setHamburger(!hamburger)}
+          className="lg:hidden w-8 h-8 p-1 transition-transform duration-200 hover:scale-110"
+          aria-label="Toggle menu"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-          />
-        </svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className={`w-full h-full transition-transform duration-300 ${hamburger ? 'rotate-90' : ''}`}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+            />
+          </svg>
+        </button>
       </nav>
 
       {/* Mobile Menu */}
       {hamburger && (
-        <div className="lg:hidden fixed top-15 left-0 w-full bg-black/50 min-h-screen h-full z-[1000] overflow-y-scroll">
-          <ul className="flex flex-col w-full bg-white dark:-bg--clr-neutral-900 shadow-md rounded-b-2xl px-5 pt-2 pb-5 mb-40">
+        <div className="lg:hidden fixed top-15 left-0 w-full bg-black/50 min-h-screen h-full z-[1000] overflow-y-scroll animate-fadeIn">
+          <ul className="flex flex-col w-full bg-white dark:-bg--clr-neutral-900 shadow-md rounded-b-2xl px-5 pt-2 pb-5 mb-40 transform transition-transform duration-300 translate-y-0">
             {mobileMenuItems.map((menuItem, index) => (
               <MobileMenuItem
                 key={index}

@@ -56,6 +56,73 @@ export const invoiceDashboardNavItems = [
       'p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500',
   },
 ];
+export const EinvoiceDashboardNavItems = [
+  {
+    linkTo: 'generated',
+    icon: 'material-symbols:fact-check',
+    title: 'generated',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-green-600 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-600',
+  },
+  {
+    linkTo: 'pending',
+    icon: 'material-symbols:schedule-outline',
+    title: 'pending',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-yellow-600 bg-yellow-100 rounded-full dark:text-yellow-100 dark:bg-yellow-600',
+  },
+  {
+    linkTo: 'failed',
+    icon: 'mdi:cancel',
+    title: 'failed',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-red-600 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-600',
+  },
+  {
+    linkTo: 'cancelled',
+    icon: 'material-symbols:cancel-outline-rounded',
+    title: 'cancelled',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-gray-500 bg-gray-100 rounded-full dark:text-gray-300 dark:bg-gray-600',
+  },
+  {
+    linkTo: 'items',
+    icon: 'solar:box-broken',
+    title: 'item',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-green-500 bg-green-100 rounded-full dark:text-green-100 dark:bg-green-500',
+  },
+  {
+    linkTo: 'parties/customer',
+    icon: 'ph:users-four',
+    title: 'customer',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-500',
+  },
+  {
+    linkTo: 'parties/supplier',
+    icon: 'ph:users-four',
+    title: 'supplier',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-red-500 bg-red-100 rounded-full dark:text-red-100 dark:bg-red-500',
+  },
+  {
+    linkTo: 'cash-bank',
+    icon: 'game-icons:cash',
+    title: 'cash/bank',
+    data: '0',
+    cssClass:
+      'p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500',
+  },
+];
+
 
 export const invoicesTableHeaders = [
   {
