@@ -15,7 +15,7 @@ import userAxios from '@/lib/userAxios';
 import Image from 'next/image';
 import Input from '@/components/ui/Input';
 import { IoMdDownload } from 'react-icons/io';
-import ExcelJS from 'exceljs';
+import * as XLSX from 'xlsx-js-style';
 
 function OverviewTable({
   handleEdit,
@@ -121,61 +121,58 @@ function OverviewTable({
   };
 
   //excel fil exported for invoice
-
-  const handleExport = async () => {
-    const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('Invoices');
-
-    const giveMaxWidth = (column) => {
-      let maxWidth = column.length;
-      invoices.forEach((element) => {
-        if (element[column] && element[column].length > maxWidth) {
-          maxWidth = element[column].length;
+  const handleExport = () => {
+    // Helper function to calculate column width
+    const giveMaxWidth = (columnKey) => {
+      let maxWidth = columnKey.length; // start with header length
+      invoices.forEach((row) => {
+        if (row[columnKey] && row[columnKey].toString().length > maxWidth) {
+          maxWidth = row[columnKey].toString().length;
         }
       });
-      return maxWidth;
+      return maxWidth + 2; // padding
     };
 
-    // Add header columns
-    worksheet.columns = Object.keys(tableData).map((col) => {
-      return {
-        header: col,
-        key: tableData[col],
-        width: giveMaxWidth(tableData[col]) + 2,
-      };
-    });
+    // Build header
+    const headerKeys = Object.keys(tableData);
+    const headerRow = headerKeys.map((key) => ({
+      v: key,
+      s: {
+        font: { bold: true },
+        alignment: { vertical: 'center', horizontal: 'center' },
+        fill: { fgColor: { rgb: 'CCCCCC' } }, // Grey background
+        protection: { locked: true }, // mark as locked
+      },
+    }));
 
-    // Add data to file
-    invoices.forEach((invoice) => {
-      worksheet.addRow(invoice);
-    });
+    // Build data rows
+    const dataRows = invoices.map((invoice) =>
+      headerKeys.map((header) => ({
+        v: invoice[tableData[header]] ?? '',
+        s: {
+          alignment: { vertical: 'center', horizontal: 'left' },
+          protection: { locked: true }, // lock each cell
+        },
+      })),
+    );
 
-    // Adding styles
-    worksheet.getRow(1).height = 40;
-    worksheet.getRow(1).font = { bold: true };
-    worksheet.getRow(1).eachCell((cell) => {
-      cell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFCCCCCC' }, // Grey background color
-      };
-      cell.alignment = { vertical: 'center' }; // Center text
-    });
-    worksheet.getRow(1).alignment = { vertical: 'middle' };
+    // Combine header + data
+    const wsData = [headerRow, ...dataRows];
 
-    // Generate Excel buffer
-    const buffer = await workbook.xlsx.writeBuffer();
+    // Create worksheet
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-    // Create Blob object and trigger download
-    const blob = new Blob([buffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    });
-    const downloadUrl = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = downloadUrl;
-    link.download = 'invoices.xlsx';
-    link.click();
-    URL.revokeObjectURL(downloadUrl);
+    // Set column widths dynamically
+    ws['!cols'] = headerKeys.map((header) => ({
+      wch: giveMaxWidth(tableData[header]),
+    }));
+
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Invoices');
+
+    // Export file
+    XLSX.writeFile(wb, 'invoices.xlsx');
   };
 
   useEffect(() => {

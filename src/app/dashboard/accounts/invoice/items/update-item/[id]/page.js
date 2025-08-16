@@ -1,4 +1,4 @@
-import CreateItem from "@/components/pagesComponents/dashboard/accounts/invoice/items/CreateItem"
+import CreateItem from "../../create-item/page"
 import userbackAxios from "@/lib/userbackAxios"
 
 // Move the function outside the component

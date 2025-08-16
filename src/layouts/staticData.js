@@ -7,13 +7,13 @@ export const DashboardSidebarItemsData = {
       iconName: 'material-symbols:dashboard',
       subMenu: false,
     },
-    // {
-    //   upcoming: false,
-    //   title: 'Easy GST Return',
-    //   linkTo: '/dashboard/easy-gst-return',
-    //   iconName: 'carbon:finance',
-    //   subMenu: false,
-    // },
+    {
+      upcoming: false,
+      title: 'Easy GST Return',
+      linkTo: '/gst-dashboard',
+      iconName: 'carbon:finance',
+      subMenu: false,
+    },
     {
       upcoming: false,
       title: 'ITR',
@@ -280,13 +280,13 @@ export const DashboardSidebarItemsData = {
         },
       ],
     },
-    // {
-    //   upcoming: false,
-    //   title: 'Easy GST Return',
-    //   linkTo: 'gstr',
-    //   iconName: 'carbon:finance',
-    //   subMenu: false,
-    // },
+    {
+      upcoming: false,
+      title: 'Easy GST Return',
+      linkTo: '/gst-dashboard',
+      iconName: 'carbon:finance',
+      subMenu: false,
+    },
     {
       upcoming: false,
       title: 'Invoice',
@@ -843,18 +843,18 @@ export const DashboardSidebarItemsData = {
       ],
     },
     {
-       upcoming: false,
-       title: 'Carrer',
-        iconName: 'material-symbols:dashboard',
-        subMenu: true,
-        subMenuItems: [
-          {
-            title: 'Job/Intern',
-            iconName: 'material-symbols:dashboard',
-            upcoming: false,
-            linkTo: '/dashboard/user-contacts/',
-          },
-        ],
+      upcoming: false,
+      title: 'Carrer',
+      iconName: 'material-symbols:dashboard',
+      subMenu: true,
+      subMenuItems: [
+        {
+          title: 'Job/Intern',
+          iconName: 'material-symbols:dashboard',
+          upcoming: false,
+          linkTo: '/dashboard/user-contacts/',
+        },
+      ],
     },
     {
       upcoming: false,
