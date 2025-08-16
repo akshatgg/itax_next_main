@@ -1,4 +1,4 @@
-"use client"
+
 import { Suspense } from "react";
 import { cookies } from "next/headers";
 import userbackAxios from "@/lib/userbackAxios";
