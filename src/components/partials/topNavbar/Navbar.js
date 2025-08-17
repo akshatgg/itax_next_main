@@ -183,16 +183,26 @@ const ArrowIcon = ({ direction }) => (
   </svg>
 );
 
-// Smooth Navigation Button Component
-const SmoothNavButton = ({ onClick, children, className = "", disabled = false }) => {
+// Smooth Navigation Button Component with optimized navigation
+const SmoothNavButton = ({ onClick, children, className = "", disabled = false, isPriority = false }) => {
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
   
   const handleClick = useCallback(() => {
     if (disabled || isPending) return;
+    
+    // For calculator routes, use a more optimized approach with immediate feedback
+    if (isPriority) {
+      // Start the transition with high priority
+      onClick();
+      return;
+    }
+    
+    // For other routes, use a normal transition
     startTransition(() => {
       onClick();
     });
-  }, [onClick, disabled, isPending]);
+  }, [onClick, disabled, isPending, isPriority]);
 
   return (
     <button
@@ -208,73 +218,219 @@ const SmoothNavButton = ({ onClick, children, className = "", disabled = false }
   );
 };
 
-// Dropdown menu component
-const DropdownMenu = ({ title, items, hasSubMenu = false, onNavigate }) => (
-  <li className="mx-2 cursor-pointer text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 group relative">
-    <div className="flex items-center py-5">
-      <span className="group-hover:hidden">
-        <ArrowIcon direction="down" />
-      </span>
-      <span className="hidden group-hover:block">
-        <ArrowIcon direction="right" />
-      </span>
-      {title}
-    </div>
-    <ul className="absolute hidden group-hover:flex flex-col bg-white dark:-bg--clr-neutral-900 shadow-md rounded-md p-3 border">
-      {items.map((item, index) =>
-        hasSubMenu ? (
-          <li
-            key={index}
-            className="py-3 px-5 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 group-one relative"
-          >
-            <span>{item.menu}</span>
-            <ul className="absolute hidden left-56 top-0 group-one-hover:flex flex-col bg-white dark:-bg--clr-neutral-900 shadow-md rounded-md border py-3 z-[1000]">
-              {item.subMenu.map((subItem) => (
-                <SmoothNavButton
-                  key={subItem.menu}
-                  onClick={() => onNavigate(subItem.url)}
-                  className="py-3 mx-2 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between"
-                >
-                  <span>{subItem.menu}</span>
-                  {subItem.upcoming && (
-                    <span className="text-xs px-2 py-0.5 rounded-full text-green-600 bg-green-50">
-                      UPCOMING
-                    </span>
-                  )}
-                </SmoothNavButton>
-              ))}
-            </ul>
-          </li>
-        ) : (
-          <SmoothNavButton
-            key={item.url}
-            onClick={() => onNavigate(item.url)}
-            disabled={item.upcoming}
-            className={`py-3 mx-2 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between ${
-              item.upcoming ? 'pointer-events-none' : ''
-            }`}
-          >
-            <span>{item.menu}</span>
-            {item.upcoming && (
-              <span className="text-xs px-2 py-0.5 rounded-full text-green-600 bg-green-50">
-                UPCOMING
-              </span>
-            )}
-          </SmoothNavButton>
-        ),
-      )}
-    </ul>
-  </li>
-);
+// Dropdown menu component with smart prefetching for all sections
+const DropdownMenu = ({ title, items, hasSubMenu = false, onNavigate }) => {
+  const router = useRouter();
+  const isCalculatorMenu = title === "Financial Calculators";
+  const isEasyServicesMenu = title === "Easy Services";
+  const isOurProductsMenu = title === "Our Products";
+  
+  // Smart prefetch popular routes when hovering over any menu
+  const handleMenuHover = useCallback(() => {
+    // Use a limited number of prefetches based on menu type to avoid overwhelming the browser
+    
+    if (isCalculatorMenu) {
+      // Prefetch popular calculator routes
+      const popularCalculators = [
+        '/financialcal/taxcalculator/new',
+        '/financialcal/gstcal',
+      ];
+      
+      popularCalculators.forEach(path => {
+        router.prefetch(path);
+      });
+    }
+    else if (isEasyServicesMenu) {
+      // Prefetch popular Easy Services routes
+      const popularServices = [
+        '/easyservice/searchbygstin',
+        '/easyservice/searchbypan',
+      ];
+      
+      popularServices.forEach(path => {
+        router.prefetch(path);
+      });
+    }
+    else if (isOurProductsMenu) {
+      // Prefetch Our Products routes
+      const popularProducts = [
+        '/ourproducts/library',
+        '/dashboard/itr/itr-filling/upload-form-16'
+      ];
+      
+      popularProducts.forEach(path => {
+        router.prefetch(path);
+      });
+    }
+    else if (title === "Blog") {
+      router.prefetch('/blogs');
+    }
+    else if (title === "Register a Startup") {
+      router.prefetch('/register-startup/registration');
+    }
+    else if (title === "APIs") {
+      router.prefetch('/apis/all_apis');
+    }
+    else if (title === "Downloads") {
+      router.prefetch('/downloads');
+    }
+  }, [isCalculatorMenu, isEasyServicesMenu, isOurProductsMenu, title, router]);
+  
+  return (
+    <li 
+      className="mx-2 cursor-pointer text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 group relative"
+      onMouseEnter={handleMenuHover}
+    >
+      <div className="flex items-center py-5">
+        <span className="group-hover:hidden">
+          <ArrowIcon direction="down" />
+        </span>
+        <span className="hidden group-hover:block">
+          <ArrowIcon direction="right" />
+        </span>
+        {title}
+      </div>
+      <ul className="absolute hidden group-hover:flex flex-col bg-white dark:-bg--clr-neutral-900 shadow-md rounded-md p-3 border">
+        {items.map((item, index) =>
+          hasSubMenu ? (
+            <li
+              key={index}
+              className="py-3 px-5 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 group-one relative"
+            >
+              <span>{item.menu}</span>
+              <ul className="absolute hidden left-56 top-0 group-one-hover:flex flex-col bg-white dark:-bg--clr-neutral-900 shadow-md rounded-md border py-3 z-[1000]">
+                {item.subMenu.map((subItem) => {
+                  const isCalculator = subItem.url && subItem.url.includes('/financialcal/');
+                  const isEasyService = subItem.url && subItem.url.includes('/easyservice/');
+                  const needsOptimization = isCalculator || isEasyService;
+                  
+                  return (
+                    <SmoothNavButton
+                      key={subItem.menu}
+                      onClick={() => onNavigate(subItem.url)}
+                      isPriority={needsOptimization}
+                      className="py-3 mx-2 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between"
+                      onMouseEnter={() => {
+                        if (needsOptimization) {
+                          // Prefetch on hover for immediate navigation
+                          router.prefetch(subItem.url);
+                        }
+                      }}
+                    >
+                      <span>{subItem.menu}</span>
+                      {subItem.upcoming && (
+                        <span className="text-xs px-2 py-0.5 rounded-full text-green-600 bg-green-50">
+                          UPCOMING
+                        </span>
+                      )}
+                    </SmoothNavButton>
+                  );
+                })}
+              </ul>
+            </li>
+          ) : (
+            <SmoothNavButton
+              key={item.url}
+              onClick={() => onNavigate(item.url)}
+              isPriority={item.url && item.url.includes('/financialcal/')}
+              disabled={item.upcoming}
+              className={`py-3 mx-2 w-56 font-bold text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between ${
+                item.upcoming ? 'pointer-events-none' : ''
+              }`}
+              onMouseEnter={() => {
+                if (item.url && item.url.includes('/financialcal/')) {
+                  router.prefetch(item.url);
+                }
+              }}
+            >
+              <span>{item.menu}</span>
+              {item.upcoming && (
+                <span className="text-xs px-2 py-0.5 rounded-full text-green-600 bg-green-50">
+                  UPCOMING
+                </span>
+              )}
+            </SmoothNavButton>
+          ),
+        )}
+      </ul>
+    </li>
+  );
+};
 
-// Mobile menu item component
+// Mobile menu item component with optimized calculator navigation
 const MobileMenuItem = ({ item, onLinkClick, type, toggleDisplay, onNavigate }) => {
+  const router = useRouter();
+  const isCalculatorMenu = type === 'dropdown' && item?.title === 'Financial Calculators';
+  
+  // Prefetch popular calculator routes when calculator section is expanded
+  const handleMenuExpand = useCallback(() => {
+    // Check if this is a menu that needs optimization
+    const isCalculatorMenu = item?.title === 'Financial Calculators';
+    const isEasyServicesMenu = item?.title === 'Easy Services';
+    const isOurProductsMenu = item?.id === 'ourProductsSubMenu';
+    
+    toggleDisplay(item.id);
+    
+    // For mobile, be more selective with prefetching to preserve bandwidth
+    if (isCalculatorMenu) {
+      // Prefetch just the two most common calculators
+      const popularCalculators = [
+        '/financialcal/taxcalculator/new',
+        '/financialcal/gstcal'
+      ];
+      
+      popularCalculators.forEach(path => {
+        router.prefetch(path);
+      });
+    } 
+    else if (isEasyServicesMenu) {
+      // Prefetch just the two most common Easy Services
+      const popularServices = [
+        '/easyservice/searchbygstin',
+        '/easyservice/searchbypan'
+      ];
+      
+      popularServices.forEach(path => {
+        router.prefetch(path);
+      });
+    }
+    else if (isOurProductsMenu) {
+      // Prefetch Our Products routes for mobile
+      const popularProducts = [
+        '/ourproducts/library',
+        '/dashboard/itr/itr-filling/upload-form-16'
+      ];
+      
+      popularProducts.forEach(path => {
+        router.prefetch(path);
+      });
+    }
+    // Blog, APIs, Downloads, and Register Startup are handled with individual links
+    // in the mobile menu and don't need prefetching at the submenu level
+  }, [item, toggleDisplay, router]);
+  
   if (type === 'simple') {
+    // Special handling for direct links in the mobile menu
+    const isBlogLink = item.href?.includes('/blogs');
+    const isAPILink = item.href?.includes('/apis');
+    const isDownloadLink = item.href?.includes('/downloads');
+    const isStartupLink = item.href?.includes('/register-startup');
+    
+    // Set priority flag for sections that need optimization
+    const isPriority = isBlogLink || isAPILink || isDownloadLink || isStartupLink;
+    
     return (
       <li>
         <SmoothNavButton
           onClick={() => onNavigate(item.href)}
+          isPriority={isPriority}
           className="flex py-2 text-sm font-bold text-slate-800 dark:-text--clr-neutral-100 w-full text-left"
+          onMouseEnter={() => {
+            if (isPriority) {
+              // Prefetch on hover for immediate navigation
+              router.prefetch(item.href);
+            }
+          }}
         >
           {item.label}
         </SmoothNavButton>
@@ -324,41 +480,49 @@ const MobileMenuItem = ({ item, onLinkClick, type, toggleDisplay, onNavigate }) 
   return (
     <li>
       <span
-        onClick={() => toggleDisplay(item.id)}
+        onClick={handleMenuExpand}
         className="flex py-2 text-sm font-bold text-slate-800 dark:-text--clr-neutral-100"
       >
         <ArrowIcon direction="right" />
         {item.title}
       </span>
       <ul id={item.id} className="hidden flex-col">
-        {item.items.map((element) => (
-          <li
-            onClick={() => toggleDisplay(element.menu)}
-            key={element.menu}
-            className="py-2 pl-5 w-full font-semibold text-sm text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600"
-          >
-            <span className="flex">
-              <ArrowIcon direction="right" />
-              {element.menu}
-            </span>
-            <ul id={element.menu} className="hidden flex-col my-1">
-              {element.subMenu.map((subElement) => (
-                <SmoothNavButton
-                  key={subElement.menu}
-                  onClick={() => onNavigate(subElement.url)}
-                  className="py-2 pl-8 w-full font-semibold text-sm text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between text-left"
-                >
-                  <span>{subElement.menu}</span>
-                  {subElement.upcoming && (
-                    <span className="text-xs px-2 py-0.5 rounded-full text-green-600 bg-green-50">
-                      UPCOMING
-                    </span>
-                  )}
-                </SmoothNavButton>
-              ))}
-            </ul>
-          </li>
-        ))}
+        {item.items.map((element) => {
+          const isCalculatorSection = isCalculatorMenu && element.menu;
+          
+          return (
+            <li
+              onClick={() => toggleDisplay(element.menu)}
+              key={element.menu}
+              className="py-2 pl-5 w-full font-semibold text-sm text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600"
+            >
+              <span className="flex">
+                <ArrowIcon direction="right" />
+                {element.menu}
+              </span>
+              <ul id={element.menu} className="hidden flex-col my-1">
+                {element.subMenu.map((subElement) => {
+                  const isCalculator = isCalculatorMenu && subElement.url;
+                  return (
+                    <SmoothNavButton
+                      key={subElement.menu}
+                      onClick={() => onNavigate(subElement.url)}
+                      isPriority={isCalculator}
+                      className="py-2 pl-8 w-full font-semibold text-sm text-slate-700 dark:-text--clr-neutral-100 hover:text-blue-600 flex items-center justify-between text-left"
+                    >
+                      <span>{subElement.menu}</span>
+                      {subElement.upcoming && (
+                        <span className="text-xs px-2 py-0.5 rounded-full text-green-600 bg-green-50">
+                          UPCOMING
+                        </span>
+                      )}
+                    </SmoothNavButton>
+                  );
+                })}
+              </ul>
+            </li>
+          );
+        })}
       </ul>
     </li>
   );
@@ -382,19 +546,86 @@ export default function Navbar({ className = '' }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Smooth navigation handler with visual feedback
+  // Universal optimized navigation handler for all sections
   const handleNavigation = useCallback(
     (path) => {
-      // Add subtle visual feedback during navigation
+      // Determine route type for specific optimizations
+      const isCalculator = path.includes('/financialcal/');
+      const isEasyService = path.includes('/easyservice/');
+      const isBlog = path.includes('/blogs');
+      const isProduct = path.includes('/ourproducts');
+      const isRegisterStartup = path.includes('/register-startup');
+      const isAPI = path.includes('/apis');
+      const isDownload = path.includes('/downloads');
+      
+      // All these sections need optimization
+      const needsOptimization = isCalculator || isEasyService || isBlog || 
+                               isProduct || isRegisterStartup || isAPI || isDownload;
+      
+      // Add immediate visual feedback
       document.body.style.cursor = 'wait';
       
-      router.push(path);
-      setHamburger(false);
-      
-      // Reset cursor after a short delay
-      setTimeout(() => {
-        document.body.style.cursor = 'default';
-      }, 100);
+      // For routes that need optimization, use an enhanced approach
+      if (needsOptimization) {
+        // Show a small loading indicator in the corner
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.id = 'nav-loading-indicator';
+        loadingIndicator.style.cssText = 'position:fixed;top:1rem;right:1rem;width:1.5rem;height:1.5rem;border:2px solid #f3f3f3;border-top:2px solid #3498db;border-radius:50%;animation:spin 1s linear infinite;z-index:9999;';
+        
+        // Add animation keyframes if they don't already exist
+        if (!document.getElementById('nav-loading-style')) {
+          const style = document.createElement('style');
+          style.id = 'nav-loading-style';
+          style.textContent = '@keyframes spin {0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);}}';
+          document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(loadingIndicator);
+        
+        // Use prefetch for optimized routes
+        router.prefetch(path);
+        
+        // Set page-specific optimizations
+        document.body.classList.add('route-transition');
+        
+        // Set section-specific class for targeted optimizations
+        if (isCalculator) document.body.classList.add('calculator-transition');
+        if (isEasyService) document.body.classList.add('easyservice-transition');
+        if (isBlog) document.body.classList.add('blog-transition');
+        if (isProduct) document.body.classList.add('product-transition');
+        if (isRegisterStartup) document.body.classList.add('startup-transition');
+        if (isAPI) document.body.classList.add('api-transition');
+        if (isDownload) document.body.classList.add('download-transition');
+        
+        // Navigate
+        router.push(path);
+        setHamburger(false);
+        
+        // Remove the loading indicator and transition classes after navigation
+        setTimeout(() => {
+          document.body.style.cursor = 'default';
+          document.body.classList.remove('route-transition');
+          document.body.classList.remove('calculator-transition');
+          document.body.classList.remove('easyservice-transition');
+          document.body.classList.remove('blog-transition');
+          document.body.classList.remove('product-transition');
+          document.body.classList.remove('startup-transition');
+          document.body.classList.remove('api-transition');
+          document.body.classList.remove('download-transition');
+          
+          if (loadingIndicator.parentNode) {
+            loadingIndicator.parentNode.removeChild(loadingIndicator);
+          }
+        }, 300);
+      } else {
+        // Standard navigation for other routes
+        router.push(path);
+        setHamburger(false);
+        
+        setTimeout(() => {
+          document.body.style.cursor = 'default';
+        }, 100);
+      }
     },
     [router],
   );
@@ -428,6 +659,91 @@ export default function Navbar({ className = '' }) {
       setCartCount(0);
     }
   }, [token, state.cartUpdateCount, fetchCartData]);
+  
+  // Smart prefetching system that adapts to user behavior
+  useEffect(() => {
+    // Intelligent prefetching that prioritizes routes based on importance
+    const prefetchStrategically = () => {
+      // High-priority routes - prefetch immediately
+      const highPriorityRoutes = [
+        // Most frequently accessed pages across sections
+        '/dashboard',
+        '/blogs',
+        '/register-startup/registration',
+        '/easyservice/searchbygstin',
+        '/financialcal/taxcalculator/new'
+      ];
+      
+      // Medium-priority routes - prefetch after a delay
+      const mediumPriorityRoutes = [
+        // Secondary popular routes
+        '/ourproducts/library',
+        '/easyservice/searchbypan',
+        '/apis/all_apis',
+        '/downloads',
+        '/financialcal/gstcal'
+      ];
+      
+      // Lower-priority routes - prefetch only when idle
+      const lowPriorityRoutes = [
+        '/financialcal/sipcal',
+        '/easyservice/ifscdetails',
+        '/easyservice/verifypandetails',
+        '/blogs/latest',
+        '/register-startup/company-registration'
+      ];
+      
+      // Adaptive prefetching strategy
+      
+      // 1. Immediately prefetch high-priority routes (staggered)
+      highPriorityRoutes.forEach((route, index) => {
+        setTimeout(() => {
+          router.prefetch(route);
+        }, index * 200);
+      });
+      
+      // 2. Wait for high-priority routes, then prefetch medium-priority
+      setTimeout(() => {
+        mediumPriorityRoutes.forEach((route, index) => {
+          setTimeout(() => {
+            router.prefetch(route);
+          }, index * 300);
+        });
+      }, 1000);
+      
+      // 3. Use requestIdleCallback for low-priority routes when browser is idle
+      if ('requestIdleCallback' in window) {
+        // Wait for browser idle time to load less critical routes
+        setTimeout(() => {
+          lowPriorityRoutes.forEach(route => {
+            window.requestIdleCallback(() => {
+              router.prefetch(route);
+            }, { timeout: 5000 });
+          });
+        }, 2000);
+      } else {
+        // Fallback for browsers without requestIdleCallback
+        setTimeout(() => {
+          lowPriorityRoutes.forEach((route, index) => {
+            setTimeout(() => {
+              router.prefetch(route);
+            }, index * 500);
+          });
+        }, 3000);
+      }
+    };
+    
+    // Run our strategic prefetching only after the page is fully loaded
+    if (typeof window !== 'undefined') {
+      if (document.readyState === 'complete') {
+        prefetchStrategically();
+      } else {
+        // Wait for load event before starting prefetch
+        window.addEventListener('load', prefetchStrategically);
+        return () => window.removeEventListener('load', prefetchStrategically);
+      }
+    }
+  }, [router]);
 
   const handleMobileMenuClick = useCallback(() => {
     setHamburger(false);

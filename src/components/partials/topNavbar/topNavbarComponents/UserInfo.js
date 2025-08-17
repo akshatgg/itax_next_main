@@ -2,7 +2,7 @@
 import Link from 'next/link.js';
 import Image from 'next/image.js';
 import { I } from '@/components/iconify/I.js';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 const userMenuData = [
   {
     linkTo: '/dashboard',
@@ -25,10 +25,13 @@ function UserInfoDashBoard__index(prop) {
   const { active, index, handleActive, linkTo, setIsNavigating } = prop;
   return (
     <li>
-      <Link href={linkTo}>
+      <Link href={linkTo} prefetch={true}>
         <button
           onClick={() => {
-            setIsNavigating?.(true); // ✅ Trigger navigation flag
+            if (setIsNavigating) {
+              // Show loading immediately for better UX
+              setIsNavigating(true);
+            }
             handleActive(index);
           }}
           className={` ${
@@ -75,7 +78,6 @@ function UserMenu(prop) {
       </li>
       {dataItem.map((element, index) => (
         <UserInfoDashBoard__index
-          linkTo=""
           {...element}
           active={active}
           handleActive={handleActive}
@@ -104,6 +106,20 @@ import Button, { BTN_SIZES } from '@/components/ui/Button';
 export default function UserInfo({ setIsNavigating }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { handleLogOut, currentUser } = useAuth();
+  
+  // Pre-fetch dashboard data when the menu is opened
+  useEffect(() => {
+    if (isMenuOpen) {
+      // Prefetch the dashboard route
+      const link = document.createElement('link');
+      link.rel = 'prefetch';
+      link.href = '/dashboard';
+      document.head.appendChild(link);
+      return () => {
+        document.head.removeChild(link);
+      };
+    }
+  }, [isMenuOpen]);
 
   return (
     <>

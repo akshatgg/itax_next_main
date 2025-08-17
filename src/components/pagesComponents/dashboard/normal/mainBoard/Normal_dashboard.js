@@ -15,11 +15,18 @@ export default function Normal_dashboard() {
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [invoiceData, setInvoiceData] = useState(null);
+  const [initialRender, setInitialRender] = useState(true);
 
   useEffect(() => {
+    // Show UI immediately with skeleton loading state
+    const timer = setTimeout(() => {
+      setInitialRender(false);
+    }, 100);
+    
     const fetchInvoices = async () => {
       try {
-        const { data } = await userAxios.get(`/invoice/invoices?page=1&limit=1000`);
+        // Reduce the initial data load - just get recent invoices first
+        const { data } = await userAxios.get(`/invoice/invoices?page=1&limit=20`);
         setInvoices(data.invoices);
       } catch (err) {
         console.error('Error fetching invoices', err);
@@ -28,15 +35,50 @@ export default function Normal_dashboard() {
       }
     };
 
+    // Start fetching data after component mounts
     fetchInvoices();
+    
+    return () => clearTimeout(timer);
   }, []);
 
-  if (loading) {
+  // Render a skeleton UI immediately during initial render
+  // This creates a better perceived performance
+  if (initialRender || loading) {
     return (
-      <div className="flex h-[70vh] justify-center items-center bg-gradient-to-br from-blue-50 to-white dark:from-blue-950 dark:to-gray-900">
-        <div className="flex flex-col items-center space-y-4">
-          <Loader />
-          <p className="text-blue-600 dark:text-blue-400 animate-pulse font-medium">Loading dashboard...</p>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-blue-950 dark:via-gray-900 dark:to-blue-950">
+        <div className="flex flex-col gap-6 p-6">
+          {/* Top Section Skeleton */}
+          <div className="flex flex-col lg:flex-row gap-6">
+            <div className="w-full lg:basis-[65%] space-y-6">
+              {/* Card Overview Skeleton */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 animate-pulse">
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4"></div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-24 bg-gray-100 dark:bg-gray-700 rounded"></div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Transaction Overview Skeleton */}
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 animate-pulse">
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+                <div className="space-y-3">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="h-16 bg-gray-100 dark:bg-gray-700 rounded"></div>
+                  ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Sales & Purchase Skeleton */}
+            <div className="w-full lg:basis-[35%]">
+              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 animate-pulse h-64">
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4"></div>
+                <div className="h-48 bg-gray-100 dark:bg-gray-700 rounded"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
