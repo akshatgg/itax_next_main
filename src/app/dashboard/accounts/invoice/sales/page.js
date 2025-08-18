@@ -33,7 +33,6 @@ export default function Page() {
 
         setInvoices(invoicesWithParty);
       } catch (err) {
-        console.error('Failed to fetch invoices:', err);
         setError({ isError: true, message: err?.response?.data?.message || 'Something went wrong' });
       } finally {
         setLoading(false);

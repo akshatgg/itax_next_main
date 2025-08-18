@@ -1,6 +1,5 @@
 import EditSaleForm from "./components/EditSaleForm";
 export default function page({searchParams}) {
-    // console.log(searchParams.id);
     const data = {
         invoiceNumber: "INV123",
         gstNumber: "12ABCDE1234F1Z9",
