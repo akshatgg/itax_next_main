@@ -16,6 +16,30 @@ import { TAX_TYPES_BY_STATES, UT_STATE_CODES } from './staticData';
 import moment from 'moment';
 // import { Input_GSTIN } from '@/components/formComponents/Inputs';
 import { useCallback } from 'react';
+
+// =====================  ⚡️ ADDED: lazy loading + perf helpers  =====================
+import dynamic from 'next/dynamic';
+import { Suspense, memo, useMemo } from 'react';
+
+// Lazy-load heavy child blocks (keeps original imports above intact as requested)
+const LazyItemsInputContainer = dynamic(() => import('./ItemsInputContainer'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full flex items-center justify-center py-6 text-sm opacity-70">Loading items…</div>
+  ),
+});
+
+const LazyNonInventoryTaxComponent = dynamic(
+  () => import('./ItemTaxTable/TaxTable'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full flex items-center justify-center py-6 text-sm opacity-70">Loading tax table…</div>
+    ),
+  }
+);
+// ==================================================================================
+
 export const formClassNames = {
   label: 'block  mb-1 text-sm font-medium text-gray-950/90 dark:text-white',
   input:
@@ -79,165 +103,132 @@ export default function CreateInvoice({
   const [partiesData, setPartiesData] = useState([]);
   const [itemsData, setItemsData] = useState([]);
 
+  const [nonInventoryTaxData, setNonInventoryTaxData] = useState({
+    totalTaxableValue: 0,
+    totalTaxAmount: 0,
+    totalInvoiceValue: 0,
+    cgst: 0,
+    sgst: 0,
+    igst: 0,
+    utgst: 0,
+    taxBreakdown: {},
+  });
 
+  const handleTaxCalculation = useCallback((taxData) => {
+    setNonInventoryTaxData(taxData);
 
-const [nonInventoryTaxData, setNonInventoryTaxData] = useState({
-  totalTaxableValue: 0,
-  totalTaxAmount: 0,
-  totalInvoiceValue: 0,
-  cgst: 0,
-  sgst: 0,
-  igst: 0,
-  utgst: 0,
-  taxBreakdown: {}
-});
+    // Update form values with calculated amounts
+    setValue('totalGst', taxData.totalTaxAmount.toString());
+    setValue('totalAmount', taxData.totalInvoiceValue.toString());
+    setValue('cgst', taxData.cgst.toString());
+    setValue('sgst', taxData.sgst.toString());
+    setValue('igst', taxData.igst.toString());
+    setValue('utgst', taxData.utgst.toString());
+  }, [setValue]);
 
-const handleTaxCalculation = useCallback((taxData) => {
-  setNonInventoryTaxData(taxData);
-  
-  // Update form values with calculated amounts
-  setValue('totalGst', taxData.totalTaxAmount.toString());
-  setValue('totalAmount', taxData.totalInvoiceValue.toString());
-  setValue('cgst', taxData.cgst.toString());
-  setValue('sgst', taxData.sgst.toString());
-  setValue('igst', taxData.igst.toString());
-  setValue('utgst', taxData.utgst.toString());
-}, [setValue]);
-
+  // =====================  ⚡️ ADDED: stable memo for allowed tax keys  =====================
+  const allowedTaxesMap = useMemo(() => ({
+    [TAX_TYPES_BY_STATES.intra]: ['igst'],
+    [TAX_TYPES_BY_STATES.inter]: ['cgst', 'sgst'],
+    [TAX_TYPES_BY_STATES.ut]: ['cgst', 'utgst'],
+  }), []);
+  // ======================================================================================
 
   // invoice submit handler
-const onSubmit = async (formData) => {
-  try {
-    setIsLoading(true);
-    const data = {
-      invoiceNumber: formData.invoiceNumber,
-      gstNumber: formData.gstNumber,
-      type: formData.type,
-      partyId: formData.partyId,
-      totalAmount: parseInt(formData.totalAmount),
-      totalGst: parseInt(formData.totalGst),
-      stateOfSupply: formData.stateOfSupply,
-      dueDate: new Date(formData.dueDate),
-      invoiceDate: new Date(formData.invoiceDate),
-      isInventory: formData.isInventory === 'true',
-      cgst: parseInt(formData.cgst),
-      sgst: parseInt(formData.sgst),
-      igst: parseInt(formData.igst),
-      utgst: parseInt(formData.utgst),
-      details: formData.details,
-      extraDetails: formData.extraDetails,
-      
-      // For inventory items
-      invoiceItems: formData.isInventory === 'true' && newItems
-        ? newItems.map((newItemObj) => ({
+  const onSubmit = async (formData) => {
+    try {
+      setIsLoading(true);
+      const data = {
+        invoiceNumber: formData.invoiceNumber,
+        gstNumber: formData.gstNumber,
+        type: formData.type,
+        partyId: formData.partyId,
+        totalAmount: parseInt(formData.totalAmount, 10), // radix for safety
+        totalGst: parseInt(formData.totalGst, 10),
+        stateOfSupply: formData.stateOfSupply,
+        dueDate: new Date(formData.dueDate),
+        invoiceDate: new Date(formData.invoiceDate),
+        isInventory: formData.isInventory === 'true',
+        cgst: parseInt(formData.cgst, 10),
+        sgst: parseInt(formData.sgst, 10),
+        igst: parseInt(formData.igst, 10),
+        utgst: parseInt(formData.utgst, 10),
+        details: formData.details,
+        extraDetails: formData.extraDetails,
+
+        // For inventory items
+        invoiceItems: formData.isInventory === 'true' && newItems
+          ? newItems.map((newItemObj) => ({
             itemId: newItemObj.item.id,
             quantity: newItemObj.quantity,
             discount: newItemObj.discount,
             taxPercent: newItemObj.taxPercent,
           }))
-        : [],
-      
-      // For non-inventory items - include tax breakdown
-      nonInventoryTaxBreakdown: formData.isInventory === 'false' 
-        ? nonInventoryTaxData.taxBreakdown 
-        : {},
-        
-      modeOfPayment:
-        formData.modeOfPayment === 'Select mode'
-          ? 'credit'
-          : formData.modeOfPayment,
-      credit: formData.credit,
-      status: formData.status,
-    };
-    
-    // Rest of your submission code...
-    let resp;
-    if (!currentInvoice) {
-      resp = await userAxios.post('/invoice/invoices', data);
-    } else {
-      resp = await userAxios.put(`/invoice/invoices/${currentInvoice.id}`, data);
-    }
-    
-    if (resp.status === 201) {
-      await refresh();
-      onClose();
-      toast.success('New invoice created ✅');
-    }
-    if (resp.status === 200) {
-      await refresh();
-      onClose();
-      toast.success('Invoice updated ✅');
-    }
-  } catch (error) {
-    toast.error('Error creating/updating invoice');
-    console.error(error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+          : [],
 
-const getParties = async () => {
-  try {
-    setIsLoading(true);
-    const pariesResponse = await userAxios.get('/invoice/parties');
-    setPartiesData(pariesResponse.data);
-    console.log("Fetched parties response:", pariesResponse.data); // Proper logging
-  } catch (error) {
-    console.log("Error fetching parties:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+        // For non-inventory items - include tax breakdown
+        nonInventoryTaxBreakdown: formData.isInventory === 'false'
+          ? nonInventoryTaxData.taxBreakdown
+          : {},
 
+        modeOfPayment:
+          formData.modeOfPayment === 'Select mode'
+            ? 'credit'
+            : formData.modeOfPayment,
+        credit: formData.credit,
+        status: formData.status,
+      };
 
-  const getItems = async () => {
-    try {
-      const itemsResponse = await userAxios.get('/invoice/items');
-      setItemsData(itemsResponse.data);
+      // Rest of your submission code...
+      let resp;
+      if (!currentInvoice) {
+        resp = await userAxios.post('/invoice/invoices', data);
+      } else {
+        resp = await userAxios.put(`/invoice/invoices/${currentInvoice.id}`, data);
+      }
+
+      if (resp.status === 201) {
+        await refresh();
+        onClose();
+        toast.success('New invoice created ✅');
+      }
+      if (resp.status === 200) {
+        await refresh();
+        onClose();
+        toast.success('Invoice updated ✅');
+      }
     } catch (error) {
-      console.log(error);
+      toast.error('Error creating/updating invoice');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // const getTax = (taxName, rate) => {
-  //   // intra = cgst/sgst, inter = igst, ut = utgst
-  //   // tax state is a map of rate with amount. i.e 1: 1000, 1.5: 2000
+  const getParties = async (signal) => {
+    try {
+      setIsLoading(true);
+      const pariesResponse = await userAxios.get('/invoice/parties', { signal });
+      setPartiesData(pariesResponse.data);
+    } catch (error) {
+      if (error?.name !== 'CanceledError') console.log("Error fetching parties:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  //   const allowedTaxes = {
-  //     [TAX_TYPES_BY_STATES.intra]: ['cgst', 'sgst'],
-  //     [TAX_TYPES_BY_STATES.inter]: ['igst'],
-  //     [TAX_TYPES_BY_STATES.ut]: ['cgst', 'utgst'],
-  //   };
-
-  //   // If no rate is specified, it sends the total gst tax,
-  //   if (taxType && allowedTaxes[taxType].includes(taxName) && !rate) {
-  //     let totalTax = 0;
-  //     Object.entries(tax).forEach(([key, value]) => {
-  //       if (key && value) {
-  //         const parsedKey = parseFloat(key); // gst tax rate;
-  //         const parseVal = parseInt(value, 10); // gst value;
-  //         totalTax += (parseVal * parsedKey) / 100;
-  //       }
-  //     });
-  //     return totalTax;
-  //   }
-
-  //   if (taxType && tax[rate] && allowedTaxes[taxType].includes(taxName)) {
-  //     return (parseInt(tax[rate], 10) * parseFloat(rate, 10)) / 100;
-  //   }
-
-  //   return 0;
-  // };
+  const getItems = async (signal) => {
+    try {
+      const itemsResponse = await userAxios.get('/invoice/items', { signal });
+      setItemsData(itemsResponse.data);
+    } catch (error) {
+      if (error?.name !== 'CanceledError') console.log(error);
+    }
+  };
 
   useEffect(() => {
     if (Array.isArray(newItems) && newItems.length > 0 && taxType) {
-      const getAllowedTaxes = {
-        [TAX_TYPES_BY_STATES.intra]: ['igst'],
-        [TAX_TYPES_BY_STATES.inter]: ['cgst', 'sgst'],
-        [TAX_TYPES_BY_STATES.ut]: ['cgst', 'utgst'],
-      };
-
-      const allowedTaxes = getAllowedTaxes[taxType];
+      const allowedTaxes = allowedTaxesMap[taxType];
 
       // taxamount and discountedprice
       const newAmounts = newItems.map((itemObj) => {
@@ -252,36 +243,44 @@ const getParties = async () => {
 
       // total invoice value
       const invoiceVal = newAmounts.reduce(
-        (acc, { taxAmount, discountedPrice }) => {
-          return acc + taxAmount + discountedPrice;
-        },
+        (acc, { taxAmount, discountedPrice }) => acc + taxAmount + discountedPrice,
         0,
       );
 
-      const totalGst = newAmounts.reduce((acc, { taxAmount }) => {
-        return acc + taxAmount;
-      }, 0);
+      const totalGst = newAmounts.reduce((acc, { taxAmount }) => acc + taxAmount, 0);
 
-      const numberOfTaxes = allowedTaxes?.length;
-      const singleTaxValue = totalGst / numberOfTaxes;
+      const numberOfTaxes = allowedTaxes?.length || 0;
+      const singleTaxValue = numberOfTaxes ? totalGst / numberOfTaxes : 0;
 
-      allowedTaxes.map((key) => {
+      allowedTaxes?.forEach((key) => {
         setValue(key, singleTaxValue.toString());
       });
 
       setValue('totalGst', totalGst.toString());
       setValue('totalAmount', invoiceVal.toString());
     }
-  }, [newItems, taxType, setValue]);
+  }, [newItems, taxType, setValue, allowedTaxesMap]);
 
   useEffect(() => {
-    getParties();
-    getItems();
+    // Abortable + parallel fetches for UX/perf
+    const controller = new AbortController();
+    getParties(controller.signal);
+    getItems(controller.signal);
+    return () => controller.abort();
   }, []);
 
   const gstin = watch('gstNumber');
   const modeOfPayment = watch('modeOfPayment');
   const isCredit = watch('credit');
+
+  // =====================  ⚡️ ADDED: sanitize GSTIN input in-place  =====================
+  useEffect(() => {
+    if (typeof gstin === 'string') {
+      const cleaned = gstin.replace(/\s+/g, '').toUpperCase();
+      if (cleaned !== gstin) setValue('gstNumber', cleaned, { shouldDirty: true });
+    }
+  }, [gstin, setValue]);
+  // =====================================================================================
 
   // setting state of supply
   useEffect(() => {
@@ -295,7 +294,6 @@ const getParties = async () => {
 
       // Add null check for businessProfile and gstin
       if (!businessProfile || !businessProfile.gstin) {
-        // If businessProfile or its gstin property is undefined, default to inter-state
         return setTaxType(TAX_TYPES_BY_STATES.inter);
       }
 
@@ -309,6 +307,7 @@ const getParties = async () => {
       return setTaxType(TAX_TYPES_BY_STATES.inter);
     }
   }, [gstin, setValue, businessProfile]);
+
   useEffect(() => {
     if (isCredit === true) {
       setValue('status', 'unpaid');
@@ -381,52 +380,56 @@ const getParties = async () => {
                 placeholder="Enter GSTIN"
                 className={formClassNames.input}
                 {...register('gstNumber')}
+                inputMode="text"
+                autoComplete="off"
+                spellCheck={false}
+                aria-label="GSTIN"
               />
               <p className=" text-xs text-red-500 h-4 px-2">
                 {errors.gstNumber && errors.gstNumber.message}
               </p>
             </li>
- <li className="space-y-1">
-  <label
-    htmlFor="partyId"
-    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-  >
-    Party
-  </label>
+            <li className="space-y-1">
+              <label
+                htmlFor="partyId"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+              >
+                Party
+              </label>
 
-  <div className="relative">
-    {partiesData?.parties?.length > 0 ? (
-      <select
-        id="partyId"
-        {...register("partyId")}
-        className="block w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-800 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 transition-all"
-      >
-        <option value="">Select a party</option>
-        {partiesData.parties.map((party, index) => (
-          <option key={index} value={party.id}>
-            {party.partyName}
-          </option>
-        ))}
-      </select>
-    ) : (
-      <div className="flex items-center justify-between bg-yellow-50 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100 px-4 py-2 rounded-md text-sm border border-yellow-300 dark:border-yellow-600">
-        <span>No parties found.</span>
-        <a
-          href="invoice/parties/add-party?type=customer"
-          className="text-blue-600 hover:underline hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400"
-        >
-          Add Party
-        </a>
-      </div>
-    )}
-  </div>
+              <div className="relative">
+                {partiesData?.parties?.length > 0 ? (
+                  <select
+                    id="partyId"
+                    {...register("partyId")}
+                    className="block w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-3 text-sm text-gray-800 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-600 transition-all"
+                  >
+                    <option value="">Select a party</option>
+                    {partiesData.parties.map((party, index) => (
+                      <option key={index} value={party.id}>
+                        {party.partyName}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="flex items-center justify-between bg-yellow-50 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-100 px-4 py-2 rounded-md text-sm border border-yellow-300 dark:border-yellow-600">
+                    <span>No parties found.</span>
+                    <a
+                      href="invoice/parties/add-party?type=customer"
+                      className="text-blue-600 hover:underline hover:text-blue-800 dark:text-blue-300 dark:hover:text-blue-400"
+                    >
+                      Add Party
+                    </a>
+                  </div>
+                )}
+              </div>
 
-  {errors.partyId && (
-    <p className="text-xs text-red-500 mt-1 px-1">
-      {errors.partyId.message}
-    </p>
-  )}
-</li>
+              {errors.partyId && (
+                <p className="text-xs text-red-500 mt-1 px-1">
+                  {errors.partyId.message}
+                </p>
+              )}
+            </li>
 
 
             <li>
@@ -501,9 +504,8 @@ const getParties = async () => {
                     {...register('credit')}
                   />
                   <div
-                    className={` ${
-                      watch('credit') ? 'bg-blue-400' : 'bg-gray-400'
-                    } h-6 w-11 rounded-full after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-all after:content-[''] hover:bg-gray-200 peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-primary-200 peer-disabled:cursor-not-allowed peer-disabled:bg-gray-100 peer-disabled:after:bg-gray-50`}
+                    className={` ${watch('credit') ? 'bg-blue-400' : 'bg-gray-400'
+                      } h-6 w-11 rounded-full after:absolute after:top-0.5 after:left-0.5 after:h-5 after:w-5 after:rounded-full after:bg-white after:shadow after:transition-all after:content-[''] hover:bg-gray-200 peer-checked:bg-primary-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:ring-4 peer-focus:ring-primary-200 peer-disabled:cursor-not-allowed peer-disabled:bg-gray-100 peer-disabled:after:bg-gray-50`}
                   ></div>
                 </label>
               </li>
@@ -615,22 +617,26 @@ const getParties = async () => {
               />
             </li>
 
-      {isInventory === 'false' && taxType && (
-  <div className="w-full md:col-span-4">
-    <NonInventoryTaxComponent 
-      taxType={taxType} 
-      onTaxCalculation={handleTaxCalculation}
-    />
-  </div>
-)}
+            {isInventory === 'false' && taxType && (
+              <div className="w-full md:col-span-4">
+                <Suspense fallback={<div className="py-6 text-sm opacity-70">Loading tax table…</div>}>
+                  <LazyNonInventoryTaxComponent
+                    taxType={taxType}
+                    onTaxCalculation={handleTaxCalculation}
+                  />
+                </Suspense>
+              </div>
+            )}
 
             {isInventory === 'true' && (
-              <ItemsInputContainer
-                register={register}
-                itemsData={itemsData}
-                newItems={newItems}
-                setNewItems={setNewItems}
-              />
+              <Suspense fallback={<div className="py-6 text-sm opacity-70">Loading items…</div>}>
+                <LazyItemsInputContainer
+                  register={register}
+                  itemsData={itemsData}
+                  newItems={newItems}
+                  setNewItems={setNewItems}
+                />
+              </Suspense>
             )}
 
             {taxType === TAX_TYPES_BY_STATES.inter && (
@@ -769,7 +775,7 @@ const getParties = async () => {
                     width={30}
                     height={25}
                     alt="Loading.."
-                  />  
+                  />
                   <p>Creating..</p>
                 </div>
               ) : currentInvoice ? (
@@ -784,3 +790,6 @@ const getParties = async () => {
     </>
   );
 }
+
+// =====================  ⚡️ ADDED: optional memoized export (non-breaking)  =====================
+export const CreateInvoiceMemo = memo(CreateInvoice);
