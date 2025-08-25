@@ -7,32 +7,39 @@ import CustomLabel from '../GSTRHomeComponent/CustomLabel';
 
 const GSTRPermanentInfo = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
       <Header />
-      <div className="p-4 max-w-7xl mx-auto">
-        <div className="flex flex-wrap justify-between p-2 m-2 gap-4 items-center">
+      <div className="p-6 max-w-7xl mx-auto">
+
+        {/* Top Section */}
+        <div className="flex flex-wrap justify-between items-center p-4 mb-4 bg-white rounded-2xl shadow-sm border">
           <div className="flex flex-col sm:flex-row items-center gap-2">
-            <h2 className="text-base text-blue-950 font-semibold">
+            <h2 className="text-base text-blue-900 font-semibold">
               Registration Status:
             </h2>
-            <h2 className="text-base text-black">
+            <h2 className="text-base text-gray-800">
               Registered & Active as Regular taxpayer
             </h2>
           </div>
-          <div className="flex flex-col sm:flex-row items-center gap-2">
-            <CustomText variant="news">
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <CustomText variant="news" className="text-xs text-red-600">
               * Important Amendment for GSTN
             </CustomText>
-            <CustomText variant="news">
+            <CustomText variant="news" className="text-xs text-orange-600">
               * Important Details from GSTN
             </CustomText>
           </div>
           <CustomButton className="ml-4">Registration Details</CustomButton>
         </div>
+
         <hr className="h-px my-4 bg-gray-300 border-0" />
-        <div>
+
+        {/* Form Section */}
+        <div className="bg-white p-6 rounded-2xl shadow-md border">
           <form>
-            <div className="grid gap-4 mb-4 md:grid-cols-2">
+
+            {/* Basic Info */}
+            <div className="grid gap-6 mb-6 md:grid-cols-2">
               <div>
                 <CustomLabel htmlFor="gstn">
                   GSTN (Registration Number)
@@ -42,21 +49,22 @@ const GSTRPermanentInfo = () => {
                   id="gstn"
                   placeholder="GSTN"
                   required
+                  className="mt-1"
                 />
               </div>
               <div>
                 <CustomLabel htmlFor="last_name">
                   Legal Name As Per PAN
                 </CustomLabel>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="flex items-center mt-1">
                   <CustomInput
                     type="text"
                     id="last_name"
                     placeholder="Full Name"
                     required
-                    style={{ flex: 1 }}
+                    className="flex-1"
                   />
-                  <CustomButton type="button" variant="inputbutton">
+                  <CustomButton type="button" variant="inputbutton" className="ml-2">
                     Edit
                   </CustomButton>
                 </div>
@@ -68,6 +76,7 @@ const GSTRPermanentInfo = () => {
                   id="company"
                   placeholder="Flowbite"
                   required
+                  className="mt-1"
                 />
               </div>
               <div>
@@ -78,6 +87,7 @@ const GSTRPermanentInfo = () => {
                   placeholder="Trade Name"
                   pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
                   required
+                  className="mt-1"
                 />
               </div>
               <div>
@@ -90,9 +100,12 @@ const GSTRPermanentInfo = () => {
                     { value: 'option2', label: 'Option 2' },
                     { value: 'option3', label: 'Option 3' },
                   ]}
+                  className="mt-1"
                 />
               </div>
-              <div className="grid gap-4 mb-4 md:grid-cols-2">
+
+              {/* State + Country */}
+              <div className="grid gap-6 md:grid-cols-2">
                 <CustomInput
                   type="dropdown"
                   id="website"
@@ -103,7 +116,6 @@ const GSTRPermanentInfo = () => {
                     { value: 'option3', label: 'Option 3' },
                   ]}
                 />
-
                 <CustomInput
                   type="dropdown"
                   id="website"
@@ -115,29 +127,27 @@ const GSTRPermanentInfo = () => {
                   ]}
                 />
               </div>
+
+              {/* Communication + Bank */}
               <div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="flex items-center">
                   <CustomInput
                     type="dropdown"
                     id="website"
-                    placeholder="Communication  Address  :"
+                    placeholder="Communication Address :"
                     options={[
                       { value: 'option1', label: 'Option 1' },
                       { value: 'option2', label: 'Option 2' },
                       { value: 'option3', label: 'Option 3' },
                     ]}
                   />
-                  <CustomButton
-                    type="button"
-                    style={{ marginLeft: '8px' }}
-                    variant="inputbutton"
-                  >
+                  <CustomButton type="button" className="ml-2" variant="inputbutton">
                     ...
                   </CustomButton>
                 </div>
               </div>
               <div>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div className="flex items-center">
                   <CustomInput
                     type="dropdown"
                     id="website"
@@ -148,44 +158,39 @@ const GSTRPermanentInfo = () => {
                       { value: 'option3', label: 'Option 3' },
                     ]}
                   />
-                  <CustomButton type="button" variant="inputbutton">
+                  <CustomButton type="button" className="ml-2" variant="inputbutton">
                     Edit
                   </CustomButton>
                 </div>
               </div>
             </div>
-            <div className="grid gap-4 mb-4 md:grid-cols-3">
+
+            {/* Registration Info */}
+            <div className="grid gap-4 mb-6 md:grid-cols-3 text-sm">
               <CustomLabel htmlFor="last_name">Registration Date :</CustomLabel>
               <CustomLabel htmlFor="last_name">
                 Registration Cancellation Date
-              </CustomLabel>{' '}
+              </CustomLabel>
               <CustomLabel htmlFor="last_name">
                 Is Newly migrated taxpayer
               </CustomLabel>
             </div>
-            <hr className="h-1 my-4 bg-gray-400 border-0 dark:bg-gray-800" />
-            <div className="grid gap-4 mb-4 md:grid-cols-2">
+
+            <hr className="h-1 my-6 bg-gray-300 border-0" />
+
+            {/* Turnover Info */}
+            <div className="grid gap-6 mb-6 md:grid-cols-2">
               <div>
                 <CustomLabel htmlFor="gstn">
                   Aggregate Turnover in the preceding FY
                 </CustomLabel>
-                <CustomInput
-                  type="text"
-                  id="gstn"
-                  placeholder="GSTN"
-                  required
-                />
+                <CustomInput type="text" id="gstn" placeholder="GSTN" required />
               </div>
               <div>
                 <CustomLabel htmlFor="gstn">
                   Pan Base aggregate Turnover in the preceding FY
                 </CustomLabel>
-                <CustomInput
-                  type="text"
-                  id="gstn"
-                  placeholder="GSTN"
-                  required
-                />
+                <CustomInput type="text" id="gstn" placeholder="GSTN" required />
               </div>
               <div>
                 <CustomInput
@@ -199,13 +204,14 @@ const GSTRPermanentInfo = () => {
                   ]}
                 />
               </div>
-              <div className="grid gap-4 mb-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-2">
                 <CustomButton>QRMP Preference Setting</CustomButton>
-                <CustomInput></CustomInput>
+                <CustomInput />
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+            {/* Auditor */}
+            <div className="flex items-center mb-6">
               <CustomInput
                 type="dropdown"
                 id="website"
@@ -216,46 +222,25 @@ const GSTRPermanentInfo = () => {
                   { value: 'option3', label: 'Option 3' },
                 ]}
               />
-              <CustomButton type="button" variant="inputbutton">
+              <CustomButton type="button" className="ml-2" variant="inputbutton">
                 Edit
               </CustomButton>
             </div>
 
-            <div className="grid gap-4 mb-4 md:grid-cols-6 text-center items-center mt-4">
+            {/* Authorized Person */}
+            <div className="grid gap-4 mb-6 md:grid-cols-6 items-center text-center">
               <CustomLabel htmlFor="company" variant="warning">
                 Primary Authorized Person
               </CustomLabel>
-              <CustomInput
-                type="text"
-                id="company"
-                placeholder="Name"
-                required
-              />
-              <CustomInput
-                type="text"
-                id="company"
-                placeholder="PAN"
-                required
-              />
-              <CustomInput
-                type="text"
-                id="company"
-                placeholder="AADHAR"
-                required
-              />
-              <CustomInput
-                type="text"
-                id="company"
-                placeholder="Mobile (For OTP)"
-                required
-              />
-              <CustomInput
-                type="text"
-                id="company"
-                placeholder="EMAIL (For OTP)"
-                required
-              />
+              <CustomInput type="text" id="company" placeholder="Name" required />
+              <CustomInput type="text" id="company" placeholder="PAN" required />
+              <CustomInput type="text" id="company" placeholder="AADHAR" required />
+              <CustomInput type="text" id="company" placeholder="Mobile (For OTP)" required />
+              <CustomInput type="text" id="company" placeholder="EMAIL (For OTP)" required />
             </div>
+
+
+
             <hr className="h-1 my-4 bg-gray-400 border-0 dark:bg-gray-800" />
             <div className="flex justify-center">
               <CustomLabel
@@ -348,3 +333,255 @@ const GSTRPermanentInfo = () => {
 };
 
 export default GSTRPermanentInfo;
+
+
+// import React from 'react';
+// import CustomButton from '../GSTRHomeComponent/CustomButton';
+// import CustomText from '../GSTRHomeComponent/CustomText';
+// import Header from '../GSTRHomeComponent/Header';
+// import CustomInput from '../GSTRHomeComponent/CustomInput';
+// import CustomLabel from '../GSTRHomeComponent/CustomLabel';
+
+// const GSTRPermanentInfo = () => {
+//   return (
+//     <div className="min-h-screen bg-gray-100">
+//       <Header />
+//       <div className="p-6 max-w-7xl mx-auto">
+
+//         {/* Top Section */}
+//         <div className="flex flex-wrap justify-between items-center p-4 mb-4 bg-white rounded-2xl shadow-sm border">
+//           <div className="flex flex-col sm:flex-row items-center gap-2">
+//             <h2 className="text-base text-blue-900 font-semibold">
+//               Registration Status:
+//             </h2>
+//             <h2 className="text-base text-gray-800">
+//               Registered & Active as Regular taxpayer
+//             </h2>
+//           </div>
+//           <div className="flex flex-col sm:flex-row items-center gap-3">
+//             <CustomText variant="news" className="text-xs text-red-600">
+//               * Important Amendment for GSTN
+//             </CustomText>
+//             <CustomText variant="news" className="text-xs text-orange-600">
+//               * Important Details from GSTN
+//             </CustomText>
+//           </div>
+//           <CustomButton className="ml-4">Registration Details</CustomButton>
+//         </div>
+
+//         <hr className="h-px my-4 bg-gray-300 border-0" />
+
+//         {/* Form Section */}
+//         <div className="bg-white p-6 rounded-2xl shadow-md border">
+//           <form>
+
+//             {/* Basic Info */}
+//             <div className="grid gap-6 mb-6 md:grid-cols-2">
+//               <div>
+//                 <CustomLabel htmlFor="gstn">
+//                   GSTN (Registration Number)
+//                 </CustomLabel>
+//                 <CustomInput
+//                   type="text"
+//                   id="gstn"
+//                   placeholder="GSTN"
+//                   required
+//                   className="mt-1"
+//                 />
+//               </div>
+//               <div>
+//                 <CustomLabel htmlFor="last_name">
+//                   Legal Name As Per PAN
+//                 </CustomLabel>
+//                 <div className="flex items-center mt-1">
+//                   <CustomInput
+//                     type="text"
+//                     id="last_name"
+//                     placeholder="Full Name"
+//                     required
+//                     className="flex-1"
+//                   />
+//                   <CustomButton type="button" variant="inputbutton" className="ml-2">
+//                     Edit
+//                   </CustomButton>
+//                 </div>
+//               </div>
+//               <div>
+//                 <CustomLabel htmlFor="company">PAN Of Business</CustomLabel>
+//                 <CustomInput
+//                   type="text"
+//                   id="company"
+//                   placeholder="Flowbite"
+//                   required
+//                   className="mt-1"
+//                 />
+//               </div>
+//               <div>
+//                 <CustomLabel htmlFor="phone">Trade Name (Optional)</CustomLabel>
+//                 <CustomInput
+//                   type="tel"
+//                   id="phone"
+//                   placeholder="Trade Name"
+//                   pattern="[0-9]{3}-[0-9]{2}-[0-9]{3}"
+//                   required
+//                   className="mt-1"
+//                 />
+//               </div>
+//               <div>
+//                 <CustomInput
+//                   type="dropdown"
+//                   id="website"
+//                   placeholder="Constitution/ states of Business :"
+//                   options={[
+//                     { value: 'option1', label: 'Option 1' },
+//                     { value: 'option2', label: 'Option 2' },
+//                     { value: 'option3', label: 'Option 3' },
+//                   ]}
+//                   className="mt-1"
+//                 />
+//               </div>
+
+//               {/* State + Country */}
+//               <div className="grid gap-6 md:grid-cols-2">
+//                 <CustomInput
+//                   type="dropdown"
+//                   id="website"
+//                   placeholder="State"
+//                   options={[
+//                     { value: 'option1', label: 'Option 1' },
+//                     { value: 'option2', label: 'Option 2' },
+//                     { value: 'option3', label: 'Option 3' },
+//                   ]}
+//                 />
+//                 <CustomInput
+//                   type="dropdown"
+//                   id="website"
+//                   placeholder="Country"
+//                   options={[
+//                     { value: 'option1', label: 'Option 1' },
+//                     { value: 'option2', label: 'Option 2' },
+//                     { value: 'option3', label: 'Option 3' },
+//                   ]}
+//                 />
+//               </div>
+
+//               {/* Communication + Bank */}
+//               <div>
+//                 <div className="flex items-center">
+//                   <CustomInput
+//                     type="dropdown"
+//                     id="website"
+//                     placeholder="Communication Address :"
+//                     options={[
+//                       { value: 'option1', label: 'Option 1' },
+//                       { value: 'option2', label: 'Option 2' },
+//                       { value: 'option3', label: 'Option 3' },
+//                     ]}
+//                   />
+//                   <CustomButton type="button" className="ml-2" variant="inputbutton">
+//                     ...
+//                   </CustomButton>
+//                 </div>
+//               </div>
+//               <div>
+//                 <div className="flex items-center">
+//                   <CustomInput
+//                     type="dropdown"
+//                     id="website"
+//                     placeholder="Bank Detail"
+//                     options={[
+//                       { value: 'option1', label: 'Option 1' },
+//                       { value: 'option2', label: 'Option 2' },
+//                       { value: 'option3', label: 'Option 3' },
+//                     ]}
+//                   />
+//                   <CustomButton type="button" className="ml-2" variant="inputbutton">
+//                     Edit
+//                   </CustomButton>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Registration Info */}
+//             <div className="grid gap-4 mb-6 md:grid-cols-3 text-sm">
+//               <CustomLabel htmlFor="last_name">Registration Date :</CustomLabel>
+//               <CustomLabel htmlFor="last_name">
+//                 Registration Cancellation Date
+//               </CustomLabel>
+//               <CustomLabel htmlFor="last_name">
+//                 Is Newly migrated taxpayer
+//               </CustomLabel>
+//             </div>
+
+//             <hr className="h-1 my-6 bg-gray-300 border-0" />
+
+//             {/* Turnover Info */}
+//             <div className="grid gap-6 mb-6 md:grid-cols-2">
+//               <div>
+//                 <CustomLabel htmlFor="gstn">
+//                   Aggregate Turnover in the preceding FY
+//                 </CustomLabel>
+//                 <CustomInput type="text" id="gstn" placeholder="GSTN" required />
+//               </div>
+//               <div>
+//                 <CustomLabel htmlFor="gstn">
+//                   Pan Base aggregate Turnover in the preceding FY
+//                 </CustomLabel>
+//                 <CustomInput type="text" id="gstn" placeholder="GSTN" required />
+//               </div>
+//               <div>
+//                 <CustomInput
+//                   type="dropdown"
+//                   id="website"
+//                   placeholder="Registration Opted As(Update Manually)"
+//                   options={[
+//                     { value: 'option1', label: 'Option 1' },
+//                     { value: 'option2', label: 'Option 2' },
+//                     { value: 'option3', label: 'Option 3' },
+//                   ]}
+//                 />
+//               </div>
+//               <div className="grid gap-4 md:grid-cols-2">
+//                 <CustomButton>QRMP Preference Setting</CustomButton>
+//                 <CustomInput />
+//               </div>
+//             </div>
+
+//             {/* Auditor */}
+//             <div className="flex items-center mb-6">
+//               <CustomInput
+//                 type="dropdown"
+//                 id="website"
+//                 placeholder="Select auditor (From 9C)"
+//                 options={[
+//                   { value: 'option1', label: 'Option 1' },
+//                   { value: 'option2', label: 'Option 2' },
+//                   { value: 'option3', label: 'Option 3' },
+//                 ]}
+//               />
+//               <CustomButton type="button" className="ml-2" variant="inputbutton">
+//                 Edit
+//               </CustomButton>
+//             </div>
+
+//             {/* Authorized Person */}
+//             <div className="grid gap-4 mb-6 md:grid-cols-6 items-center text-center">
+//               <CustomLabel htmlFor="company" variant="warning">
+//                 Primary Authorized Person
+//               </CustomLabel>
+//               <CustomInput type="text" id="company" placeholder="Name" required />
+//               <CustomInput type="text" id="company" placeholder="PAN" required />
+//               <CustomInput type="text" id="company" placeholder="AADHAR" required />
+//               <CustomInput type="text" id="company" placeholder="Mobile (For OTP)" required />
+//               <CustomInput type="text" id="company" placeholder="EMAIL (For OTP)" required />
+//             </div>
+
+
+//           </form>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default GSTRPermanentInfo;

@@ -26,26 +26,16 @@ export default function LoginForm() {
       if (email && password) {
         setLoading(true);
         const response = await userbackAxios.post('/user/login', {
-
           email,
           password,
-
         });
-          // const response = await userAxios.post('/api/auth/login', { email, password });
-          const { data } = response; // Extract data separately
-          console.log(data);
-        
-        
-        
-        console.log(data?.data?.token);
-        console.log(data?.data?.user);
-        
+        const { data } = response; // Extract data separately
+
         if (response.status === 200 && data?.data?.token) {
           setCookie('token', data.data.token);
           setCookie('currentUser', data.data.user);
           toast.success('Login successful');
-          console.log("login successsfully");
-          
+
           router.push('/');
         } else {
           toast.error(data.message);
@@ -68,8 +58,8 @@ export default function LoginForm() {
       }
     } finally {
       setLoading(false);
-     
-      
+
+
     }
   };
 
