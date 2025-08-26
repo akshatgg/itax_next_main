@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-// TextComponent for rendering text with customizable styles
 function TextComponent({ children, className }) {
-  return <p className={`text-base font-bold ${className}`}>{children}</p>;
+  return (
+    <p className={`text-base font-semibold text-white ${className}`}>
+      {children}
+    </p>
+  );
 }
 
 TextComponent.propTypes = {
@@ -12,14 +15,22 @@ TextComponent.propTypes = {
 };
 
 TextComponent.defaultProps = {
-  className: 'text-white', // Default color
+  className: '',
 };
 
-// ColorComponent for handling background and border colors
-function ColorComponent({ children, bgColor, borderColor, className }) {
+function ColorComponent({ children, className }) {
   return (
     <div
-      className={`flex flex-wrap gap-5 justify-between py-3 pr-3.5 pl-8 max-w-full border border-solid w-full max-md:pl-5 ${bgColor} ${borderColor} ${className}`}
+      className={`
+        flex flex-col md:flex-row md:items-center flex-wrap justify-between
+        gap-4 md:gap-6
+        py-4 px-6 md:px-10
+        w-full max-w-full
+        border border-solid rounded-md
+        bg-gradient-to-r from-blue-800 via-blue-700 to-blue-600
+        border-blue-500
+        ${className}
+      `}
     >
       {children}
     </div>
@@ -28,27 +39,24 @@ function ColorComponent({ children, bgColor, borderColor, className }) {
 
 ColorComponent.propTypes = {
   children: PropTypes.node.isRequired,
-  bgColor: PropTypes.string,
-  borderColor: PropTypes.string,
   className: PropTypes.string,
 };
 
 ColorComponent.defaultProps = {
-  bgColor: 'bg-gradient-to-r from-blue-800 via-blue-700 to-blue-600', // Premium gradient background
-  borderColor: 'border-blue-500', // Premium border color
   className: '',
 };
 
-// Header component using the TextComponent and ColorComponent
 function Header() {
   return (
     <header>
       <ColorComponent>
-        <TextComponent>AAR PHARMACY(23DNNPS1..)</TextComponent>
-        <TextComponent className="my-auto text-white">
-          Itax easy private limited
+        <TextComponent className="truncate max-w-xs md:max-w-none">
+          AAR PHARMACY (23DNNPS1..)
         </TextComponent>
-        <div className="flex gap-10">
+        <TextComponent className="my-2 md:my-0 whitespace-nowrap">
+          Itax Easy Private Limited
+        </TextComponent>
+        <div className="flex justify-start md:justify-end w-full md:w-auto">
           <TextComponent>F.Y: 2022-23 (Dec)</TextComponent>
         </div>
       </ColorComponent>

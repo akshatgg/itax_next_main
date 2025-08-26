@@ -8,6 +8,75 @@
     -webkit-appearance: none;
     margin: 0;
   }
+  
+  /* Optimize performance for calculators */
+  .optimize-performance * {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+  
+  /* Better calculator loading experience */
+  .calculator-container {
+    min-height: 70vh;
+  }
+  
+  /* Page-specific performance optimizations */
+  .blog-page .non-essential-animation,
+  .products-page .non-essential-animation,
+  .apis-page .non-essential-animation,
+  .downloads-page .non-essential-animation,
+  .register-startup-page .non-essential-animation,
+  .profile-page .non-essential-animation {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* Optimize profile page specifically */
+  .profile-page {
+    content-visibility: auto;
+  }
+  
+  /* Improved rendering for profile page components */
+  .profile-container {
+    will-change: contents;
+    contain: paint;
+  }
+  
+  /* Improve page transition performance */
+  .page-transition-ready {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Instant appearance for calculator components */
+  .calculator-container * {
+    backface-visibility: hidden;
+  }
+  
+  /* Better Easy Service loading experience */
+  .easy-service-container {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Optimize Easy Service pages */
+  .easy-service-page * {
+    backface-visibility: hidden;
+  }
+  
+  /* Route transition optimization */
+  .route-transition {
+    pointer-events: none;
+  }
+  
+  /* Prevent layout shifts during page transitions */
+  body.route-transition * {
+    animation: none !important;
+    transition: none !important;
+  }
 
   :root {
     --primary: 216 70% 55%;

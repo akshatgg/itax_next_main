@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import UserProfile from '@/components/pagesComponents/profile/UserProfile';
-import BusinessProfile from '@/components/pagesComponents/profile/BusinessProfile';
+import { useState, lazy, Suspense, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react'; // use any icon library or SVG
+
+// Lazy load the profile components for better performance
+const UserProfile = lazy(() => import('@/components/pagesComponents/profile/UserProfile'));
+const BusinessProfile = lazy(() => import('@/components/pagesComponents/profile/BusinessProfile'));
 
 export default function ProfileIndex() {
   const [activetav, setActiveTab] = useState(1);
@@ -17,6 +19,32 @@ export default function ProfileIndex() {
   const handleBack = () => {
     router.back();
   };
+
+  // Prefetch the inactive tab after the active one has loaded
+  useEffect(() => {
+    // Set a small delay to prioritize current tab rendering
+    const timer = setTimeout(() => {
+      if (activetav === 1) {
+        // Prefetch BusinessProfile if we're on UserProfile
+        import('@/components/pagesComponents/profile/BusinessProfile');
+      } else {
+        // Prefetch UserProfile if we're on BusinessProfile
+        import('@/components/pagesComponents/profile/UserProfile');
+      }
+    }, 1500);
+    
+    return () => clearTimeout(timer);
+  }, [activetav]);
+
+  // Component for tab content loading state
+  const TabContentLoading = () => (
+    <div className="w-full h-64 flex items-center justify-center">
+      <div className="flex flex-col items-center space-y-4">
+        <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-gray-500">Loading profile data...</p>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -66,8 +94,10 @@ export default function ProfileIndex() {
 
       {/* Tab Content */}
       <div className="w-[min(1100px,90%)] mx-auto mt-6">
-        {activetav === 1 && <UserProfile />}
-        {activetav === 2 && <BusinessProfile />}
+        <Suspense fallback={<TabContentLoading />}>
+          {activetav === 1 && <UserProfile />}
+          {activetav === 2 && <BusinessProfile />}
+        </Suspense>
       </div>
     </>
   );

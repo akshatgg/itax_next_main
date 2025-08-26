@@ -8,6 +8,8 @@ import ReduxProvider from '@/store/redux-provider';
 import Script from 'next/script';
 import { Suspense } from 'react';
 import Loader from '@/components/partials/loading/Loader';
+import PerformanceOptimizer from '@/components/performance/PerformanceOptimizer';
+import ProfilePrefetch from '@/components/performance/ProfilePrefetch';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -28,6 +30,8 @@ export default function RootLayout({ children }) {
           <Script src="https://ebz-static.s3.ap-south-1.amazonaws.com/easecheckout/v2.0.0/easebuzz-checkout-v2.min.js" />
           <body id="root" className={`${inter.className} text-slate-800`}>
             <ToastContainer />
+            <PerformanceOptimizer />
+            <ProfilePrefetch />
             <AppLayout>
               <Suspense
                 fallback={
