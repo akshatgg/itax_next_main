@@ -1,4 +1,4 @@
-import NavigationBar from './GSTRHomeComponent/GSTRNavigation';
+import { NavigationBar } from './GSTRHomeComponent/GSTRNavigation';
 import MyComponent from './GSTRHomeComponent/GSTRSecondNavigation';
 import GSTLedgerComponent from './GSTRHomeComponent/GSTRLedgerComponent';
 import LinkComponent from './GSTRHomeComponent/GSTROtherLinkComponent';

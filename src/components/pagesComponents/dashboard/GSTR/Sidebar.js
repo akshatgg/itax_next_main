@@ -9,18 +9,19 @@ import {
     FileText,
     CreditCard,
     BarChart,
+    ReceiptIndianRupee
 } from "lucide-react";
 
 const menuItems = [
-    { label: "GST Dashboard", href: "/gst-return", icon: FileText, color: "text-yellow-400" },
     { label: "MyAccount", href: "/myaccount", icon: User, color: "text-green-400" },
-    { label: "GSTR 1", href: "/easy-itr", icon: NotebookPen, color: "text-blue-400" },
-    { label: "GSTR 2", href: "/investment", icon: NotebookPen, color: "text-pink-300" },
-    { label: "GSTR 3", href: "/invoice", icon: NotebookPen, color: "text-purple-400" },
-    { label: "GSTR 4", href: "/finance", icon: NotebookPen, color: "text-orange-400" },
-    { label: "Transaction", href: "/transaction", icon: CreditCard, color: "text-teal-400" },
-    { label: "Report", href: "/report", icon: BarChart, color: "text-red-400" },
-    { label: "Billpayment", href: "/billpayment", icon: CreditCard, color: "text-indigo-400" },
+    { label: "GSTR 1", href: "/gst-dashboard/gstr1", icon: NotebookPen, color: "text-red-300" },
+    { label: "GSTR 2A", href: "/gst-dashboard/gstr2A", icon: NotebookPen, color: "text-green-300" },
+    { label: "GSTR 2B", href: "/gst-dashboard/gstr2B", icon: NotebookPen, color: "text-purple-400" },
+    { label: "GSTR 3", href: "/gst-dashboard/gstr3", icon: NotebookPen, color: "text-orange-400" },
+    { label: "GSTR 4", href: "/gst-dashboard/gstr4", icon: NotebookPen, color: "text-yellow-400" },
+    { label: "Transaction", href: "/gst-dashboard/transaction", icon: CreditCard, color: "text-teal-400" },
+    { label: "Report", href: "/gst-dashboard/report", icon: BarChart, color: "text-cyan-300" },
+    { label: "Bill Payment", href: "/gst-dashboard/billpayment", icon: ReceiptIndianRupee, color: "text-white-400" },
 ];
 
 export default function Sidebar({ isOpen, toggleSidebar }) {

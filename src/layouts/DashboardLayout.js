@@ -83,7 +83,6 @@ import useAuth from '@/hooks/useAuth';
 import { USER_ROLES } from '@/utils/globals';
 import { usePathname } from 'next/navigation';
 import { DashboardSidebarItemsData } from './staticData.js';
-import Navbar from '@/components/partials/topNavbar/Navbar.js';
 import BackButton from '@/components/pagesComponents/dashboard/BackButton';
 import SideBar from '@/components/pagesComponents/dashboard/sidebar/SideBar';
 import Loader from '@/components/partials/loading/Loader.js';
@@ -131,9 +130,6 @@ export default function DashboardLayout({ children }) {
         handleSidebar={handleSidebar}
         setIsNavigating={setIsNavigating}
       />
-
-      {/* Top Navbar */}
-      <Navbar handleSidebar={handleSidebar} isSidebarOpen={isSidebarOpen} />
 
       {/* Main Content */}
       <main
