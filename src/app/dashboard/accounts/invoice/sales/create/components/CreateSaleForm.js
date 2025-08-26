@@ -75,7 +75,6 @@ export default function CreateSaleForm({ parties }) {
       }
     } catch (error) {
       toast.success('Error ' + error?.response?.data?.error);
-      console.log(error);
     } finally {
       setIsLoading_Submit(false);
     }

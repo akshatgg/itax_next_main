@@ -71,7 +71,6 @@ export default function AllParties(props) {
     try {
       fetchPartiesData();
     } catch (error) {
-      console.error('Error fetching parties data:', error);
       toast.error('Failed to load parties data');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -79,10 +78,8 @@ export default function AllParties(props) {
 
   const handleDeleteParty = async (id) => {
     try {
-      console.log(`Attempting to delete party with ID: ${id}`);
       setIsLoading(true);
       const resp = await userAxios.delete(`/invoice/parties/${id}`);
-      console.log('Delete API response:', resp);
 
       if (resp.data.success) {
         fetchPartiesData();
@@ -91,13 +88,11 @@ export default function AllParties(props) {
         );
         setDeleteConfirm(null);
       } else {
-        console.error('Delete API returned unsuccessful response:', resp.data);
         toast.error(
           `Something went wrong. ${type === 'customer' ? 'Customer' : 'Supplier'} Not Deleted`,
         );
       }
     } catch (error) {
-      console.error('Error deleting party:', error);
       toast.error(
         `Failed to delete ${type === 'customer' ? 'customer' : 'supplier'}.`,
       );

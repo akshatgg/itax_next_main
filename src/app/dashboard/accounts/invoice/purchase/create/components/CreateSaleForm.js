@@ -74,8 +74,7 @@ export default function CreateSaleForm({ parties }) {
         router.push(`/dashboard/accounts/invoice/${resp.data.id}`);
       }
     } catch (error) {
-      toast.success('Error ' + error?.response?.data?.error);
-      console.log(error);
+      toast.error('Error ' + error?.response?.data?.error);
     } finally {
       setIsLoading_Submit(false);
     }

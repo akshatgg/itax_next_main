@@ -30,7 +30,6 @@ export default function Page() {
         const resp = await userAxios.get(`/invoice/invoices/${id}`);
         setCertainInvoice(resp.data);
       } catch (error) {
-        console.log(error);
         setError({ isError: true, ...error });
       } finally {
         setLoading(false);
@@ -44,13 +43,11 @@ export default function Page() {
       setLoadingDelete(true);
       setError({ error: null });
       const resp = await userAxios.delete(`/invoice/invoices/${id}`);
-      console.log(resp);
       if (resp.status === 200) {
         toast.success('Invoice Deleted');
         router.replace('/dashboard/accounts/invoice/sales');
       }
     } catch (error) {
-      console.log(error);
       toast.error('something went wrong');
       setError({ isError: true, ...error });
     } finally {
@@ -71,7 +68,6 @@ export default function Page() {
       </div>
     );
   }
-  // console.log(certainInvoice)
   return (
     <>
       <div className=" mx-auto w-[calc(100%-1rem)] max-w-7xl py-4 ">

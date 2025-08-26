@@ -34,7 +34,6 @@ export default function CustomerDetails(props) {
           (state) => state.code === party?.gstin?.substring(0, 2),
         ),
       );
-      // console.log(getValues("partyGstin"))
       setValue('phone', party?.phone || '');
       setValue('partyAddress', party?.address || '');
       setValue('partyGstin', party?.gstin || '');
