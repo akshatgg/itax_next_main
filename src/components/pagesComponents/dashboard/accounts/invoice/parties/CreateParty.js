@@ -54,7 +54,8 @@ export default function CreateParty() {
           // Populate the form with the party details
           Object.keys(party).forEach((key) => setValue(key, party[key]))
         } catch (error) {
-          console.log(error)
+          setIsRespError(true)
+          toast.error(error.response?.data?.message || "Failed to fetch parties.")
         }
       }
       fetchPartyDetails()
@@ -63,7 +64,6 @@ export default function CreateParty() {
 
   const onCreateOrUpdateParty = async (formData) => {
     try {
-      console.log("Form data received:", formData)
       setIsLoading(true)
       setIsRespError(false)
 
@@ -83,7 +83,6 @@ export default function CreateParty() {
         bankBranch: formData.bankBranch || "",
       }
 
-      console.log("Data being sent to API:", JsonData)
 
       let response
       const apiUrl = partyId ? `/invoice/parties/${partyId}` : "/invoice/parties"
@@ -104,7 +103,6 @@ export default function CreateParty() {
         })
       }
 
-      console.log("API Response:", response)
 
       if (response.data.success) {
         toast.success(`Party ${partyId ? "Updated" : "Created"}`)
@@ -117,8 +115,6 @@ export default function CreateParty() {
     } catch (error) {
       setIsLoading(false)
       setIsRespError(true)
-      console.error("Error:", error)
-      console.error("Error Response:", error.response?.data)
       toast.error(error.response?.data?.message || "An error occurred. Please try again.")
     }
   }

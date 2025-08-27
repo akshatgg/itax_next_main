@@ -19,22 +19,4 @@ export default async function CreateSale() {
       />
     </Suspense>
   );
-
-  // try {
-  //   const pariesResponse = await nodeAxios.get('/invoice/parties');
-  //   return (
-  //     <div>
-  //       <CreateSaleForm parties={pariesResponse?.data?.parties || []} />
-  //     </div>
-  //   );
-  // } catch (error) {
-  //   console.log(error);
-  //   return (
-  //     <ErrorComponent
-  //       message={error.message}
-  //       info={error.info}
-  //       type={error.type}
-  //     />
-  //   );
-  // }
 }

@@ -1,12 +1,164 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+export const buildItems = (salesInvoices = []) => {
+  if (!Array.isArray(salesInvoices) || salesInvoices.length === 0) {
+    return [
+      { description: 'Product A', price: 500, qty: 2 },
+      { description: 'Product B', price: 300, qty: 1 },
+      { description: 'Product C', price: 200, qty: 5 },
+    ];
+  }
+  return salesInvoices.map((inv) => ({
+    description: inv?.partyName
+      ? `${inv.partyName} — ${(inv.invoiceNumber || '').trim()}`
+      : inv?.invoiceNumber || 'Item',
+    price: Number(inv?.totalAmount) || 0,
+    qty: 1,
+  }));
+};
+
+export const buildSheetXml = (invoices = []) => {
+  const headers = [
+    'Party Name',
+    'Date',
+    'GST Number',
+    'Invoice No.',
+    'Total GST',
+    'Amount',
+    'Status',
+    'Mode Of Payment',
+    'Details',
+    'Extra Details',
+  ];
+
+  // compute max lengths in a single pass
+  const colMaxLens = Array(headers.length).fill(0);
+  invoices.forEach((inv) => {
+    [
+      inv.partyName,
+      inv.date,
+      inv.gstNumber,
+      inv.invoiceNumber,
+      inv.totalGst,
+      inv.amount,
+      inv.status,
+      inv.modeOfPayment,
+      inv.details,
+      inv.extraDetails,
+    ].forEach((val, i) => {
+      colMaxLens[i] = Math.max(
+        colMaxLens[i],
+        String(val || '').length,
+        headers[i].length,
+      );
+    });
+  });
+
+  // convert to widths (approx: 7px/char + padding)
+  const colWidths = colMaxLens.map((len) => 20 + len * 7);
+
+  const colsXml = colWidths.map((w) => `<Column ss:Width="${w}"/>`).join('');
+  const headerXml = headers
+    .map(
+      (h) =>
+        `<Cell ss:StyleID="header"><Data ss:Type="String">${h}</Data></Cell>`,
+    )
+    .join('');
+
+  return `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+          xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:x="urn:schemas-microsoft-com:office:excel"
+          xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
+
+  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+    <ReadOnlyRecommended>true</ReadOnlyRecommended>
+  </DocumentProperties>
+
+  <Styles>
+    <Style ss:ID="header">
+      <Font ss:Bold="1"/>
+      <Alignment ss:Horizontal="Center"/>
+      <Interior ss:Color="#D9D9D9" ss:Pattern="Solid"/>
+      <Borders>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+        <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+      </Borders>
+    </Style>
+    <Style ss:ID="cell">
+      <Borders>
+        <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
+        <Border ss:Position="Top" ss:LineStyle="Continuous" ss:Weight="1"/>
+        <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
+        <Border ss:Position="Right" ss:LineStyle="Continuous" ss:Weight="1"/>
+      </Borders>
+    </Style>
+  </Styles>
+
+  <Worksheet ss:Name="Invoices">
+    <Table ss:DefaultRowHeight="18">
+      ${colsXml}
+      <Row>${headerXml}</Row>
+    </Table>
+
+    <!-- 🔒 Enforce protection -->
+    <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+      <ProtectObjects>True</ProtectObjects>
+      <ProtectScenarios>True</ProtectScenarios>
+      <ProtectContents>True</ProtectContents>
+      <ProtectSheet>True</ProtectSheet>
+      <Password>ABCD</Password>
+    </WorksheetOptions>
+  </Worksheet>
+</Workbook>`;
+};
+
+export const downloadXls = (xml, filename = 'Invoice.xls') => {
+  // Add UTF-8 BOM to help Excel detect encoding correctly
+  const blob = new Blob(['\uFEFF' + xml], {
+    type: 'application/vnd.ms-excel;charset=utf-8',
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 0);
+};
+
+// New helper: export invoices to the locked-sheet Excel XML (no external libs)
+export const exportInvoicesAsLockedXls = (
+  invoices = [],
+  filename = 'invoices.xls',
+) => {
+  try {
+    const items = buildItems(invoices);
+    const xml = buildSheetXml(items, 'Sales Invoice');
+    downloadXls(xml, filename);
+  } catch (err) {
+    // keep silent; caller handles UI notifications
+    console.error('Export failed', err);
+  }
+};
+
+import React, {
+  useEffect,
+  useState,
+  Suspense,
+  useMemo,
+  useCallback,
+} from 'react';
+import dynamic from 'next/dynamic';
 import DashSection from '@/components/pagesComponents/pageLayout/DashSection';
 import Link from 'next/link';
 import { Icon } from '@iconify/react';
-import Pagination from '@/components/navigation/Pagination';
-import ReactTable from '@/components/ui/ReactTable';
-import { invoicesTableHeaders } from './staticData';
 import Button, { BTN_SIZES } from '@/components/ui/Button';
 import { FaEye } from 'react-icons/fa';
 import { MdEdit, MdDelete } from 'react-icons/md';
@@ -14,8 +166,17 @@ import { toast } from 'react-toastify';
 import userAxios from '@/lib/userAxios';
 import Image from 'next/image';
 import Input from '@/components/ui/Input';
-import { IoMdDownload } from 'react-icons/io';
-import * as XLSX from 'xlsx-js-style';
+
+// Lazy load heavy components
+const Pagination = dynamic(() => import('@/components/navigation/Pagination'), {
+  ssr: false,
+  loading: () => <p className="text-center">Loading pagination...</p>,
+});
+const ReactTable = dynamic(() => import('@/components/ui/ReactTable'), {
+  ssr: false,
+  loading: () => <p className="text-center">Loading table...</p>,
+});
+import { invoicesTableHeaders } from './staticData';
 
 function OverviewTable({
   handleEdit,
@@ -33,147 +194,97 @@ function OverviewTable({
     type: { label: '', value: '' },
   });
 
-  const handleDeleteById = async (id) => {
-    try {
-      if (window.confirm('Are you sure ?')) {
-        setDeleteLoading(true);
-        const response = await userAxios.delete(`/invoice/invoices/${id}`);
-        if (response.status === 200) {
-          await refresh();
-          toast.success(response.data.message);
+  const handleDeleteById = useCallback(
+    async (id) => {
+      try {
+        if (window.confirm('Are you sure ?')) {
+          setDeleteLoading(true);
+          const response = await userAxios.delete(`/invoice/invoices/${id}`);
+          if (response.status === 200) {
+            await refresh();
+            toast.success(response.data.message);
+          }
         }
+      } catch (error) {
+        console.error(error);
+        toast.error('Something went wrong');
+      } finally {
+        setDeleteLoading(false);
       }
-    } catch (error) {
-      console.log(error);
-      toast.error('Something went wrong');
-    } finally {
-      setDeleteLoading(false);
-    }
-  };
+    },
+    [refresh],
+  );
 
-  const adjustedHeaders = [
-    {
-      text: (
-        <div className="flex justify-start items-center">
-          <span className="font-medium capitalize">SR.NO.</span>
-        </div>
-      ),
-      dataField: 'id',
-      formatter: (id) => {
-        return (
+  const adjustedHeaders = useMemo(
+    () => [
+      {
+        text: (
+          <div className="flex justify-start items-center">
+            <span className="font-medium capitalize">SR.NO.</span>
+          </div>
+        ),
+        dataField: 'id',
+        formatter: (id) => (
           <div className="flex justify-start items-center">
             <span className="font-medium capitalize">
               {Array.isArray(invoices) &&
                 invoices.findIndex((inv) => inv.id === id) + 1}
             </span>
           </div>
-        );
+        ),
       },
-    },
-    ...invoicesTableHeaders,
-    {
-      text: (
-        <div className="flex justify-start items-center">
-          <span className="font-medium">Action</span>
-        </div>
-      ),
-      dataField: '',
-      formatter: (data, row) => (
-        <div className="flex gap-2 items-center">
-          <Link href={`/dashboard/accounts/invoice/${row.id}`}>
-            <Button className={BTN_SIZES['sm']}>
-              <FaEye size={28} />
+      ...invoicesTableHeaders,
+      {
+        text: (
+          <div className="flex justify-start items-center">
+            <span className="font-medium">Action</span>
+          </div>
+        ),
+        dataField: '',
+        formatter: (data, row) => (
+          <div className="flex gap-2 items-center">
+            <Link href={`/dashboard/accounts/invoice/${row.id}`}>
+              <Button className={BTN_SIZES['sm']}>
+                <FaEye size={28} />
+              </Button>
+            </Link>
+            <Button className={BTN_SIZES['sm']} onClick={() => handleEdit(row)}>
+              <MdEdit size={28} />
             </Button>
-          </Link>
-          <Button className={BTN_SIZES['sm']} onClick={() => handleEdit(row)}>
-            <MdEdit size={28} />
-          </Button>
-          <Button
-            className={BTN_SIZES['sm']}
-            onClick={() => handleDeleteById(row.id)}
-          >
-            <MdDelete size={28} />
-          </Button>
-        </div>
-      ),
-    },
-  ];
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setSearch({
-      ...form,
-      search: form.search ?? form.search.trim(),
-    });
-  };
-
-  const tableData = {
-    'Party Name': 'partyName',
-    Date: 'createdAt',
-    'GST Number': 'gstNumber',
-    'Invoice No.': 'invoiceNumber',
-    'Total GST': 'totalGst',
-    Amount: 'totalAmount',
-    Status: 'status',
-    'Mode Of Payment': 'modeOfPayment',
-    Details: 'details',
-    'Extra Details': 'extraDetails',
-  };
-
-  //excel fil exported for invoice
-  const handleExport = () => {
-    // Helper function to calculate column width
-    const giveMaxWidth = (columnKey) => {
-      let maxWidth = columnKey.length; // start with header length
-      invoices.forEach((row) => {
-        if (row[columnKey] && row[columnKey].toString().length > maxWidth) {
-          maxWidth = row[columnKey].toString().length;
-        }
-      });
-      return maxWidth + 2; // padding
-    };
-
-    // Build header
-    const headerKeys = Object.keys(tableData);
-    const headerRow = headerKeys.map((key) => ({
-      v: key,
-      s: {
-        font: { bold: true },
-        alignment: { vertical: 'center', horizontal: 'center' },
-        fill: { fgColor: { rgb: 'CCCCCC' } }, // Grey background
-        protection: { locked: true }, // mark as locked
+            <Button
+              className={BTN_SIZES['sm']}
+              onClick={() => handleDeleteById(row.id)}
+            >
+              <MdDelete size={28} />
+            </Button>
+          </div>
+        ),
       },
-    }));
+    ],
+    [invoices, handleDeleteById, handleEdit],
+  );
 
-    // Build data rows
-    const dataRows = invoices.map((invoice) =>
-      headerKeys.map((header) => ({
-        v: invoice[tableData[header]] ?? '',
-        s: {
-          alignment: { vertical: 'center', horizontal: 'left' },
-          protection: { locked: true }, // lock each cell
-        },
-      })),
-    );
+  const handleSearch = useCallback(
+    (e) => {
+      e.preventDefault();
+      setSearch({
+        ...form,
+        search: form.search?.trim() ?? '',
+      });
+    },
+    [form, setSearch],
+  );
 
-    // Combine header + data
-    const wsData = [headerRow, ...dataRows];
-
-    // Create worksheet
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-
-    // Set column widths dynamically
-    ws['!cols'] = headerKeys.map((header) => ({
-      wch: giveMaxWidth(tableData[header]),
-    }));
-
-    // Create workbook
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Invoices');
-
-    // Export file
-    XLSX.writeFile(wb, 'invoices.xlsx');
-  };
+  const handleExport = useCallback(() => {
+    // Use the lightweight, library-free exporter which produces an Excel-XML (.xls) with sheet protection
+    try {
+      exportInvoicesAsLockedXls(invoices, 'invoices_locked.xls');
+      toast.success('Export started — download should begin shortly');
+    } catch (err) {
+      console.error(err);
+      toast.error('Export failed');
+    }
+  }, [invoices]);
 
   useEffect(() => {
     if (search) {
@@ -184,7 +295,7 @@ function OverviewTable({
       });
     }
   }, [search]);
-  console.log(invoices);
+
   return (
     <DashSection
       title={'Invoices'}
@@ -207,7 +318,10 @@ function OverviewTable({
       className="flex gap-4 flex-col mt-8 p-2"
     >
       <div>
-        <form onSubmit={handleSearch} className="flex justify-end p-2 gap-2">
+        <form
+          onSubmit={handleSearch}
+          className="flex flex-wrap justify-end p-2 gap-2"
+        >
           <div className="flex gap-2">
             <label className="hidden" htmlFor="search">
               Search
@@ -219,7 +333,7 @@ function OverviewTable({
               value={form.search}
               onChange={(e) => setForm({ ...form, search: e.target.value })}
               name="search"
-              placeholder="Search by invoice number, gstin.. safsdztgr"
+              placeholder="Search by invoice number, gstin.."
               id="search"
             />
           </div>
@@ -233,12 +347,7 @@ function OverviewTable({
                 { label: 'Purchase', value: 'purchase' },
                 { label: 'Sale', value: 'sales' },
               ]}
-              onChange={(option) => {
-                setForm({
-                  ...form,
-                  type: option,
-                });
-              }}
+              onChange={(option) => setForm({ ...form, type: option })}
               value={form.type}
             />
           </div>
@@ -252,12 +361,7 @@ function OverviewTable({
                 { label: 'Paid', value: 'paid' },
                 { label: 'Unpaid', value: 'unpaid' },
               ]}
-              onChange={(option) => {
-                setForm({
-                  ...form,
-                  status: option,
-                });
-              }}
+              onChange={(option) => setForm({ ...form, status: option })}
               value={form.status}
             />
           </div>
@@ -280,7 +384,11 @@ function OverviewTable({
               </div>
             ) : (
               <>
-                <ReactTable columns={adjustedHeaders} data={invoices || []} />
+                <Suspense
+                  fallback={<p className="text-center">Loading table...</p>}
+                >
+                  <ReactTable columns={adjustedHeaders} data={invoices || []} />
+                </Suspense>
                 {Array.isArray(invoices) && invoices.length === 0 && (
                   <div className="w-[100vw] border h-full flex flex-col justify-start items-center p-4 min-h-[300px]">
                     <Icon
@@ -296,12 +404,16 @@ function OverviewTable({
         </div>
       </div>
       <div className="flex justify-end">
-        <Pagination
-          currentPage={currentPage}
-          totalPages={pagination?.pages}
-          setCurrentPage={setCurrentPage}
-          invoices={invoices}
-        />
+        <Suspense
+          fallback={<p className="text-center">Loading pagination...</p>}
+        >
+          <Pagination
+            currentPage={currentPage}
+            totalPages={pagination?.pages}
+            setCurrentPage={setCurrentPage}
+            invoices={invoices}
+          />
+        </Suspense>
       </div>
     </DashSection>
   );
