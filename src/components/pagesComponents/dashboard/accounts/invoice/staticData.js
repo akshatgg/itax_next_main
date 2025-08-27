@@ -56,6 +56,7 @@ export const invoiceDashboardNavItems = [
       'p-3 mr-4 text-orange-500 bg-orange-100 rounded-full dark:text-orange-100 dark:bg-orange-500',
   },
 ];
+
 export const EinvoiceDashboardNavItems = [
   {
     linkTo: 'generated',
@@ -124,115 +125,278 @@ export const EinvoiceDashboardNavItems = [
 ];
 
 
+// export const invoicesTableHeaders = [
+
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium capitalize">INVOICE NUMBER</span>
+//       </div>
+//     ),
+//     dataField: 'invoiceNumber',
+//     formatter: (data) => (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium capitalize">{`${data || 'N/A'}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium capitalize">CGST</span>
+//       </div>
+//     ),
+//     dataField: 'cgst',
+//     formatter: (data) => (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">{`₹${data || 0}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium capitalize">SGST</span>
+//       </div>
+//     ),
+//     dataField: 'sgst',
+//     formatter: (data) => (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">{`₹${data || 0}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">IGST</span>
+//       </div>
+//     ),
+//     dataField: 'igst',
+//     formatter: (data) => (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">{`₹${data || 0}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">UTGST</span>
+//       </div>
+//     ),
+//     dataField: 'utgst',
+//     formatter: (data) => (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">{`₹${data || 0}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">TOTAL GST</span>
+//       </div>
+//     ),
+//     dataField: 'totalGst',
+//     formatter: (data) => (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">{`₹${data || 0}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">Taxable Value</span>
+//       </div>
+//     ),
+//     dataField: 'totalGst',
+//     formatter: (data, row) => (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">{`₹${data ? row.totalAmount - data : 0}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex items-center max-w-xs">
+//         <span className="font-medium">TOTAL AMOUNT</span>
+//       </div>
+//     ),
+//     dataField: 'totalAmount',
+//     formatter: (data) => (
+//       <div className="flex items-center max-w-xs">
+//         <span className="font-medium">{`₹${data || 0}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex items-center max-w-xs">
+//         <span className="font-medium">PAYMENT</span>
+//       </div>
+//     ),
+//     dataField: 'modeOfPayment',
+//     formatter: (data, row) => {
+//       const status = row.status;
+//       return (
+//         <div className="flex items-center max-w-xs">
+//           <span className="font-medium uppercase">{`${status || 'N/A'}`}</span>
+//         </div>
+//       );
+//     },
+//   },
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">TYPE</span>
+//       </div>
+//     ),
+//     dataField: 'type',
+//     formatter: (data) => (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium capitalize">{`${data || 'N/A'}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium">CREDIT</span>
+//       </div>
+//     ),
+//     dataField: 'credit',
+//     formatter: (data) => (
+//       <div className="flex justify-start items-center">
+//         <span className="font-medium capitalize">{`${data === false ? 'No' : 'Yes' || 'N/A'}`}</span>
+//       </div>
+//     ),
+//   },
+//   {
+//     text: (
+//       <div className="flex justify-start items-center">
+//       <span className="font-medium">GST NUMBER</span>
+//       </div>
+//     ),
+//     dataField: 'gstNumber',
+//     formatter: (data) => (
+//       <div className="flex justify-start items-center">
+//       <span className="font-medium capitalize">{`${data || 'N/A'}`}</span>
+//       </div>
+//     ),
+//   },
+// ];
+
 export const invoicesTableHeaders = [
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium capitalize">INVOICE NUMBER</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">INVOICE NUMBER</span>
       </div>
     ),
     dataField: 'invoiceNumber',
     formatter: (data) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium capitalize">{`${data || 'N/A'}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize truncate max-w-[20px]">{`${data || 'N/A'}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium capitalize">CGST</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">CGST</span>
       </div>
     ),
     dataField: 'cgst',
     formatter: (data) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium">{`₹${data || 0}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">{`₹${data || 0}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium capitalize">SGST</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">SGST</span>
       </div>
     ),
     dataField: 'sgst',
     formatter: (data) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium">{`₹${data || 0}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">{`₹${data || 0}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium">IGST</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">IGST</span>
       </div>
     ),
     dataField: 'igst',
     formatter: (data) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium">{`₹${data || 0}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">{`₹${data || 0}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium">UTGST</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">UTGST</span>
       </div>
     ),
     dataField: 'utgst',
     formatter: (data) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium">{`₹${data || 0}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">{`₹${data || 0}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium">TOTAL GST</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">TOTAL GST</span>
       </div>
     ),
     dataField: 'totalGst',
     formatter: (data) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium">{`₹${data || 0}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">{`₹${data || 0}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium">Taxable Value</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">Taxable Value</span>
       </div>
     ),
     dataField: 'totalGst',
     formatter: (data, row) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium">{`₹${data ? row.totalAmount - data : 0}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">{`₹${data ? row.totalAmount - data : 0}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex items-center max-w-xs">
-        <span className="font-medium">TOTAL AMOUNT</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">TOTAL AMOUNT</span>
       </div>
     ),
     dataField: 'totalAmount',
     formatter: (data) => (
       <div className="flex items-center max-w-xs">
-        <span className="font-medium">{`₹${data || 0}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">{`₹${data || 0}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex items-center max-w-xs">
-        <span className="font-medium">PAYMENT</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">PAYMENT</span>
       </div>
     ),
     dataField: 'modeOfPayment',
@@ -240,7 +404,7 @@ export const invoicesTableHeaders = [
       const status = row.status;
       return (
         <div className="flex items-center max-w-xs">
-          <span className="font-medium uppercase">{`${status || 'N/A'}`}</span>
+          <span className="text-[8px] sm:text-[10px] capitalize">{`${status || 'N/A'}`}</span>
         </div>
       );
     },
@@ -248,39 +412,39 @@ export const invoicesTableHeaders = [
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium">TYPE</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">TYPE</span>
       </div>
     ),
     dataField: 'type',
     formatter: (data) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium capitalize">{`${data || 'N/A'}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">{`${data || 'N/A'}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium">CREDIT</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">CREDIT</span>
       </div>
     ),
     dataField: 'credit',
     formatter: (data) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium capitalize">{`${data === false ? 'No' : 'Yes' || 'N/A'}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">{`${data === false ? 'No' : 'Yes' || 'N/A'}`}</span>
       </div>
     ),
   },
   {
     text: (
       <div className="flex justify-start items-center">
-        <span className="font-medium">GST NUMBER</span>
+        <span className="text-[8px] sm:text-[10px] capitalize">GST NUMBER</span>
       </div>
     ),
     dataField: 'gstNumber',
     formatter: (data) => (
       <div className="flex justify-start items-center">
-        <span className="font-medium capitalize">{`${data || 'N/A'}`}</span>
+        <span className="text-[8px] sm:text-[10px] capitalize truncate max-w-[20px]">{`${data || 'N/A'}`}</span>
       </div>
     ),
   },

@@ -14,7 +14,7 @@ console.log('businessProfile', businessProfile);
   const isSuperAdmin = user?.userType === USER_ROLES.superAdmin;
 
   return (
-    <>
+    <div>
       {isSuperAdmin ? (
         <Invoice_Dashboard />
       ) : (
@@ -22,6 +22,6 @@ console.log('businessProfile', businessProfile);
           businessProfile={businessProfile?.response?.data?.profile}
         />
       )}
-    </>
+    </div>
   );
 }

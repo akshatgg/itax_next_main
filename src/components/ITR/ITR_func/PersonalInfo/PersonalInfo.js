@@ -1,7 +1,4 @@
-
 "use client";
-
-
 import { useContext, useState, useEffect } from "react";
 import useAuth from "@/hooks/useAuth";
 import { StoreContext } from "@/store/store-context";
@@ -13,10 +10,10 @@ import * as Yup from "yup";
 import userAxios from "@/lib/userAxios";
 import { InputStyles } from "@/app/styles/InputStyles";
 export default function PresonalInfo({ setSection,userProfile }) {
+    
     const { token } = useAuth();
     const [state, dispatch] = useContext(StoreContext);
     const info = state.itr.personalInfo.personalInfo;
-
     const [isAadharLinked, setIsAadharLinked] = useState(false);
 
     const handleSubmit = (values) => {
@@ -133,246 +130,164 @@ export default function PresonalInfo({ setSection,userProfile }) {
     }, [formik.values.aadhaar]);
 
     return (
-        <form onSubmit={formik.handleSubmit}>
-            <div className="mx-auto max-w-4xl w-full bg-white shadow-md">
-                <div className="md:grid md:grid-cols-2 flex flex-col p-4 mx-4 [&_div]:flex-col gap-5">
-                    <div className="flex">
-                        <label htmlFor="pan" className={InputStyles.label}>
-                            PAN Number
-                        </label>
-                        <div className="flex mt-1">
-                            <input
-                                type="text"
-                                name="pan"
-                                id="pan"
-                                value={formik.values.pan}
-                                onChange={formik.handleChange}
-                                className={
-                                    InputStyles.input +
-                                    ` uppercase ${
-                                        formik.touched.pan && formik.errors.pan
-                                            ? InputStyles.error_border
-                                            : "focus:border-neutral-900"
-                                    }`
-                                }
-                            />
-                            {formik.touched.pan && formik.errors.pan && (
-                                <span className={InputStyles.error_msg}>
-                                    {formik.errors.pan}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                    <div className="flex">
-                        <label htmlFor="aadhaar" className={InputStyles.label}>
-                            Aadhaar Number
-                        </label>
-                        <div className="flex mt-1">
-                            <input
-                                type="text"
-                                name="aadhaar"
-                                id="aadhaar"
-                                value={formik.values.aadhaar}
-                                onChange={formik.handleChange}
-                                className={
-                                    InputStyles.input +
-                                    ` uppercase ${
-                                        formik.touched.aadhaar &&
-                                        formik.errors.aadhaar
-                                            ? InputStyles.error_border
-                                            : "focus:border-neutral-900"
-                                    }`
-                                }
-                            />
-                            {formik.touched.aadhaar &&
-                                formik.errors.aadhaar && (
-                                    <span className={InputStyles.error_msg}>
-                                        {formik.errors.aadhaar}
-                                    </span>
-                                )}
-                        </div>
-                    </div>
-                    <div className="flex">
-                        <label
-                            htmlFor="firstName"
-                            className={InputStyles.label}
-                        >
-                            First Name
-                        </label>
-                        <input
-                            type="text"
-                            name="firstName"
-                            value={formik.values.firstName}
-                            onChange={formik.handleChange}
-                            id="firstName"
-                            className={
-                                InputStyles.input +
-                                ` ${
-                                    formik.touched.firstName &&
-                                    formik.errors.firstName
-                                        ? InputStyles.error_border
-                                        : "focus:border-neutral-900"
-                                }`
-                            }
-                        />
-                        {formik.touched.firstName &&
-                            formik.errors.firstName && (
-                                <span className={InputStyles.error_msg}>
-                                    {formik.errors.firstName}
-                                </span>
-                            )}
-                    </div>
-                    <div className="flex flex-col">
-                        <label
-                            htmlFor="middleName"
-                            className={InputStyles.label}
-                        >
-                            Middle Name (optional)
-                        </label>
-                        <input
-                            type="text"
-                            name="middleName"
-                            value={formik.values.middleName}
-                            onChange={formik.handleChange}
-                            id="middleName"
-                            className={
-                                InputStyles.input +
-                                ` ${
-                                    formik.touched.middleName &&
-                                    formik.errors.middleName
-                                        ? InputStyles.error_border
-                                        : "focus:border-neutral-900"
-                                }`
-                            }
-                        />
-                    </div>
-                    <div className="flex">
-                        <label htmlFor="lastName" className={InputStyles.label}>
-                            Last Name
-                        </label>
-                        <input
-                            type="text"
-                            name="lastName"
-                            value={formik.values.lastName}
-                            onChange={formik.handleChange}
-                            id="lastName"
-                            className={
-                                InputStyles.input +
-                                ` ${
-                                    formik.touched.lastName &&
-                                    formik.errors.lastName
-                                        ? InputStyles.error_border
-                                        : "focus:border-neutral-900"
-                                }`
-                            }
-                        />
-                        {formik.touched.lastName && formik.errors.lastName && (
-                            <span className={InputStyles.error_msg}>
-                                {formik.errors.lastName}
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex">
-                        <label htmlFor="gender" className={InputStyles.label}>
-                            Gender
-                        </label>
-                        <select
-                            as="select"
-                            name="gender"
-                            value={formik.values.gender}
-                            onChange={formik.handleChange}
-                            id="gender"
-                            className={
-                                InputStyles.selectInput +
-                                ` ${
-                                    formik.touched.gender &&
-                                    formik.errors.gender
-                                        ? InputStyles.error_border
-                                        : "focus:border-neutral-900"
-                                }`
-                            }
-                        >
-                            <option value="">--Select--</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                        </select>
-                        {formik.touched.gender && formik.errors.gender && (
-                            <span className={InputStyles.error_msg}>
-                                {formik.errors.gender}
-                            </span>
-                        )}
-                    </div>
-                    <div className="flex">
-                        <label
-                            htmlFor="dateOfBirth"
-                            className={InputStyles.label}
-                        >
-                            Date of Birth
-                        </label>
-                        <input
-                            type="date"
-                            name="dateOfBirth"
-                            value={formik.values.dateOfBirth}
-                            onChange={formik.handleChange}
-                            id="dateOfBirth"
-                            className={
-                                InputStyles.input +
-                                ` ${
-                                    formik.touched.dateOfBirth &&
-                                    formik.errors.dateOfBirth
-                                        ? InputStyles.error_border
-                                        : "focus:border-neutral-900"
-                                }`
-                            }
-                        />
-                        {formik.touched.dateOfBirth &&
-                            formik.errors.dateOfBirth && (
-                                <span className={InputStyles.error_msg}>
-                                    {formik.errors.dateOfBirth}
-                                </span>
-                            )}
-                    </div>
-                    <div className="flex">
-                        <label
-                            htmlFor="fatherName"
-                            className={InputStyles.label}
-                        >
-                            Father&apos;s Name
-                        </label>
-                        <input
-                            type="text"
-                            name="fatherName"
-                            id="fatherName"
-                            value={formik.values.fatherName}
-                            onChange={formik.handleChange}
-                            className={
-                                InputStyles.input +
-                                ` ${
-                                    formik.touched.fatherName &&
-                                    formik.errors.fatherName
-                                        ? InputStyles.error_border
-                                        : "focus:border-neutral-900"
-                                }`
-                            }
-                        />
-                        {formik.touched.fatherName &&
-                            formik.errors.fatherName && (
-                                <span className={InputStyles.error_msg}>
-                                    {formik.errors.fatherName}
-                                </span>
-                            )}
-                    </div>
-                </div>
-                <div className="flex mt-10">
-                    <button
-                        type="submit"
-                        className="transition-colors bg-primary hover:bg-blue-950 px-16 py-3 text-white rounded-md font-semibold text-sm cursor-pointer  mx-auto"
-                    >
-                        Save
-                    </button>
-                </div>
-            </div>
-        </form>
+      
+<form onSubmit={formik.handleSubmit} >
+  <div className={InputStyles.formWrapper}>
+    <h2 className={InputStyles.title}>Personal Information</h2>
+
+    <div className={InputStyles.gridLayout}>
+      {/* PAN */}
+      <div className="flex flex-col">
+        <label htmlFor="pan" className={InputStyles.label}>PAN Number</label>
+        <input
+          type="text"
+          name="pan"
+          id="pan"
+          value={formik.values.pan}
+          onChange={formik.handleChange}
+          className={`${InputStyles.input} uppercase ${
+            formik.touched.pan && formik.errors.pan ? InputStyles.error_border : ""
+          }`}
+        />
+        {formik.touched.pan && formik.errors.pan && (
+          <span className={InputStyles.error_msg}>{formik.errors.pan}</span>
+        )}
+      </div>
+
+      {/* Aadhaar */}
+      <div className="flex flex-col">
+        <label htmlFor="aadhaar" className={InputStyles.label}>Aadhaar Number</label>
+        <input
+          type="text"
+          name="aadhaar"
+          id="aadhaar"
+          value={formik.values.aadhaar}
+          onChange={formik.handleChange}
+          className={`${InputStyles.input} uppercase ${
+            formik.touched.aadhaar && formik.errors.aadhaar ? InputStyles.error_border : ""
+          }`}
+        />
+        {formik.touched.aadhaar && formik.errors.aadhaar && (
+          <span className={InputStyles.error_msg}>{formik.errors.aadhaar}</span>
+        )}
+      </div>
+
+      {/* First Name */}
+      <div className="flex flex-col">
+        <label htmlFor="firstName" className={InputStyles.label}>First Name</label>
+        <input
+          type="text"
+          name="firstName"
+          id="firstName"
+          value={formik.values.firstName}
+          onChange={formik.handleChange}
+          className={`${InputStyles.input} ${
+            formik.touched.firstName && formik.errors.firstName ? InputStyles.error_border : ""
+          }`}
+        />
+        {formik.touched.firstName && formik.errors.firstName && (
+          <span className={InputStyles.error_msg}>{formik.errors.firstName}</span>
+        )}
+      </div>
+
+      {/* Middle Name */}
+      <div className="flex flex-col">
+        <label htmlFor="middleName" className={InputStyles.label}>Middle Name (Optional)</label>
+        <input
+          type="text"
+          name="middleName"
+          id="middleName"
+          value={formik.values.middleName}
+          onChange={formik.handleChange}
+          className={`${InputStyles.input} ${
+            formik.touched.middleName && formik.errors.middleName ? InputStyles.error_border : ""
+          }`}
+        />
+      </div>
+
+      {/* Last Name */}
+      <div className="flex flex-col">
+        <label htmlFor="lastName" className={InputStyles.label}>Last Name</label>
+        <input
+          type="text"
+          name="lastName"
+          id="lastName"
+          value={formik.values.lastName}
+          onChange={formik.handleChange}
+          className={`${InputStyles.input} ${
+            formik.touched.lastName && formik.errors.lastName ? InputStyles.error_border : ""
+          }`}
+        />
+        {formik.touched.lastName && formik.errors.lastName && (
+          <span className={InputStyles.error_msg}>{formik.errors.lastName}</span>
+        )}
+      </div>
+
+      {/* Gender */}
+      <div className="flex flex-col">
+        <label htmlFor="gender" className={InputStyles.label}>Gender</label>
+        <select
+          name="gender"
+          id="gender"
+          value={formik.values.gender}
+          onChange={formik.handleChange}
+          className={`${InputStyles.selectInput} ${
+            formik.touched.gender && formik.errors.gender ? InputStyles.error_border : ""
+          }`}
+        >
+          <option value="">--Select--</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+        {formik.touched.gender && formik.errors.gender && (
+          <span className={InputStyles.error_msg}>{formik.errors.gender}</span>
+        )}
+      </div>
+
+      {/* DOB */}
+      <div className="flex flex-col">
+        <label htmlFor="dateOfBirth" className={InputStyles.label}>Date of Birth</label>
+        <input
+          type="date"
+          name="dateOfBirth"
+          id="dateOfBirth"
+          value={formik.values.dateOfBirth}
+          onChange={formik.handleChange}
+          className={`${InputStyles.input} ${
+            formik.touched.dateOfBirth && formik.errors.dateOfBirth ? InputStyles.error_border : ""
+          }`}
+        />
+        {formik.touched.dateOfBirth && formik.errors.dateOfBirth && (
+          <span className={InputStyles.error_msg}>{formik.errors.dateOfBirth}</span>
+        )}
+      </div>
+
+      {/* Father's Name */}
+      <div className="flex flex-col">
+        <label htmlFor="fatherName" className={InputStyles.label}>Father's Name</label>
+        <input
+          type="text"
+          name="fatherName"
+          id="fatherName"
+          value={formik.values.fatherName}
+          onChange={formik.handleChange}
+          className={`${InputStyles.input} ${
+            formik.touched.fatherName && formik.errors.fatherName ? InputStyles.error_border : ""
+          }`}
+        />
+        {formik.touched.fatherName && formik.errors.fatherName && (
+          <span className={InputStyles.error_msg}>{formik.errors.fatherName}</span>
+        )}
+      </div>
+    </div>
+    {/* Submit Button */}
+    <div className="flex justify-center pt-4">
+      <button type="submit" className={InputStyles.submitBtn}>
+        Save
+      </button>
+    </div>
+  </div>
+</form>
     );
 }

@@ -43,8 +43,8 @@ export default function StoreProvider({ children }) {
 
     imagePDF: null,
     cartUpdateCount: 0,
+    
     // cartDetail: JSON.parse(localStorage.getItem("cartData")) || [],
-
     // apiCart: JSON.parse(localStorage.getItem("apiCart")) || [],
 
     itr_type: {

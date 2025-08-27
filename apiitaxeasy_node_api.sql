@@ -18,7 +18,8 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `apiitaxeasy_node_api`
+-- Database: `apiitax
+_node_api`
 --
 
 -- --------------------------------------------------------

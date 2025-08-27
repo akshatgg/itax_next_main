@@ -3,6 +3,9 @@ import { StoreContext } from "@/store/store-context";
 import Actions from "@/store/actions";
 import { ErrorMessage, Field, FieldArray, Form, Formik } from "formik";
 import * as Yup from "yup";
+import { InputStyles } from "@/app/styles/InputStyles";
+// import { H2 } from "@/components/pagesComponents/pageLayout/Headings";
+
 
 export default function HouseProperty({ setSection }) {
   const [state, dispatch] = useContext(StoreContext);
@@ -157,26 +160,29 @@ export default function HouseProperty({ setSection }) {
       })}
       onSubmit={(values) => handleSubmit(values)}
     >
-      {({ values }) => (
+      {/* {({ values }) => ( */}
+            {({ handleSubmit }) => (
+            
         <>
-          <Form>
-            <div className="mx-auto max-w-4xl w-full px-4">
-              <h3 className="border-b font-semibold mb-5">
+         <form onSubmit={formik.handleSubmit}>
+           <div className={InputStyles.formWrapper}>
+              <h2 className={InputStyles.title}>
                 House Property Details
-              </h3>
-              <div className="md:grid md:grid-cols-2 flex flex-col gap-5">
+              </h2>
+              <div className={InputStyles.gridLayout}>
                 <div className="flex flex-col">
                   <label
                     htmlFor="typeOfHouseProperty"
-                    className="text-sm font-medium"
-                  >
+                    className={InputStyles.label}                  >
                     Type of House Property
                   </label>
+
                   <Field
                     as="select"
                     name="typeOfHouseProperty"
                     id="typeOfHouseProperty"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
+                  // className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
                   >
                     <option value="">--Select--</option>
                     <option value="Self occupied">Self occupied</option>
@@ -185,14 +191,15 @@ export default function HouseProperty({ setSection }) {
                       Deemed let out property
                     </option>
                   </Field>
+
                   <ErrorMessage name="typeOfHouseProperty" />
                 </div>
               </div>
               {values.typeOfHouseProperty !== "Self occupied" && (
                 <>
-                  <h3 className="border-b font-semibold mb-5 mt-8">
+                  <h2 className={InputStyles.title}>
                     Estimated Income from the House Property
-                  </h3>
+                  </h2>
                   <div className="md:grid md:grid-cols-2 flex flex-col gap-5">
                     <div className="flex flex-col">
                       <label
@@ -205,7 +212,7 @@ export default function HouseProperty({ setSection }) {
                         type="text"
                         name="estimatedAnnualRentReceivable"
                         id="estimatedAnnualRentReceivable"
-                        className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                        className={InputStyles.selectInput}
                       />
                       <ErrorMessage name="estimatedAnnualRentReceivable" />
                     </div>
@@ -220,16 +227,16 @@ export default function HouseProperty({ setSection }) {
                         type="text"
                         name="houseTaxPaidByYou"
                         id="houseTaxPaidByYou"
-                        className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                        className={InputStyles.selectInput}
                       />
                       <ErrorMessage name="houseTaxPaidByYou" />
                     </div>
                   </div>
                 </>
               )}
-              <h3 className="border-b font-semibold mb-5 mt-8">
+                  <h2 className={InputStyles.title}>
                 Interest paid on housing loan for this house property
-              </h3>
+              </h2>
               <div className="md:grid md:grid-cols-2 flex flex-col gap-5">
                 <div className="flex flex-col">
                   <label
@@ -242,17 +249,17 @@ export default function HouseProperty({ setSection }) {
                     type="number"
                     name="interestPaidOnLoanForThisHouseProperty"
                     id="interestPaidOnLoanForThisHouseProperty"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
                   />
                   <ErrorMessage name="interestPaidOnLoanForThisHouseProperty" />
                 </div>
               </div>
               {values.typeOfHouseProperty !== "Rental" && (
                 <>
-                  <h3 className="border-b font-semibold mb-5 mt-8">
+                  <h2 className={InputStyles.title}>
                     Interest paid during the pre-construction period of house
                     property
-                  </h3>
+                  </h2>
                   <div className="md:grid md:grid-cols-2 flex flex-col gap-5">
                     <div className="flex flex-col">
                       <label
@@ -266,7 +273,7 @@ export default function HouseProperty({ setSection }) {
                         as="select"
                         name="theFinancialYearPreviousToCompletionOfConstruction"
                         id="theFinancialYearPreviousToCompletionOfConstruction"
-                        className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                        className={InputStyles.selectInput}
                       >
                         <option value="">--Select--</option>
                         <option value="2023-24">2023-24</option>
@@ -288,43 +295,49 @@ export default function HouseProperty({ setSection }) {
                         type="text"
                         name="totalInterestAmountPaidDuringThePreConstructionPeriod"
                         id="totalInterestAmountPaidDuringThePreConstructionPeriod"
-                        className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                        className={InputStyles.selectInput}
                       />
                       <ErrorMessage name="totalInterestAmountPaidDuringThePreConstructionPeriod" />
                     </div>
                   </div>
                 </>
               )}
-              <h3 className="border-b font-semibold mb-5 mt-8">
+                  <h2 className={InputStyles.title}>
                 Your House Address
-              </h3>
-              <div className="md:grid md:grid-cols-2 flex flex-col gap-5">
+              </h2>
+              <div
+                // className="md:grid md:grid-cols-2 flex flex-col gap-5"
+                className={InputStyles.title}
+              >
                 <div className="flex flex-col">
-                  <label htmlFor="flat" className="text-sm font-medium">
+                  <label htmlFor="flat" 
+                  className="text-sm font-medium"
+                  >
                     Flat/Door/Block Number
                   </label>
                   <Field
                     type="text"
                     name="flat"
                     id="flat"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.label}
+                  // className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
                   />
                   <ErrorMessage name="flat" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="premiseName" className="text-sm font-medium">
+                  <label htmlFor="premiseName" className={InputStyles.label}>
                     Premise Name
                   </label>
                   <Field
                     type="text"
                     name="premiseName"
                     id="premiseName"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
                   />
                   <ErrorMessage name="premiseName" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="road" className="text-sm font-medium">
+                  <label htmlFor="road" className={InputStyles.label}>
                     Road / Street
                   </label>
                   <Field
@@ -336,50 +349,50 @@ export default function HouseProperty({ setSection }) {
                   <ErrorMessage name="road" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="pincode" className="text-sm font-medium">
+                  <label htmlFor="pincode" className={InputStyles.label}>
                     Pincode
                   </label>
                   <Field
                     type="number"
                     name="pincode"
                     id="pincode"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
                   />
                   <ErrorMessage name="pincode" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="area" className="text-sm font-medium">
+                  <label htmlFor="area" className={InputStyles.label}>
                     Area / Locality
                   </label>
                   <Field
                     type="text"
                     name="area"
                     id="area"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
                   />
                   <ErrorMessage name="area" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="city" className="text-sm font-medium">
+                  <label htmlFor="city" className={InputStyles.label}>
                     Town / City
                   </label>
                   <Field
                     type="text"
                     name="city"
                     id="city"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
                   />
                   <ErrorMessage name="city" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="state" className="text-sm font-medium">
+                  <label htmlFor="state" className={InputStyles.label}>
                     State
                   </label>
                   <Field
                     as="select"
                     name="state"
                     id="state"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
                   >
                     <option value="">--Select--</option>
                     {stateList.map((item) => (
@@ -391,19 +404,19 @@ export default function HouseProperty({ setSection }) {
                   <ErrorMessage name="state" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="country" className="text-sm font-medium">
+                  <label htmlFor="country" className={InputStyles.label}>
                     Country
                   </label>
                   <Field
                     type="text"
                     name="country"
                     id="country"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
                   />
                   <ErrorMessage name="country" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="mobile" className="text-sm font-medium">
+                  <label htmlFor="mobile" className={InputStyles.label}>
                     Mobile
                   </label>
                   <Field
@@ -411,12 +424,12 @@ export default function HouseProperty({ setSection }) {
                     name="mobile"
                     id="mobile"
                     placeholder="Mobile number"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
                   />
                   <ErrorMessage name="mobile" />
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="email" className="text-sm font-medium">
+                  <label htmlFor="email" className={InputStyles.label}>
                     Email
                   </label>
                   <Field
@@ -424,7 +437,7 @@ export default function HouseProperty({ setSection }) {
                     name="email"
                     id="email"
                     placeholder="Email"
-                    className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
+                    className={InputStyles.selectInput}
                   />
                   <ErrorMessage name="email" />
                 </div>
@@ -432,9 +445,9 @@ export default function HouseProperty({ setSection }) {
 
               {values.typeOfHouseProperty !== "Self occupied" && (
                 <>
-                  <h3 className="border-b font-semibold mb-5 mt-8">
+                  <h2 className={InputStyles.title}>
                     Co-Owners Details
-                  </h3>
+                  </h2>
                   <div>
                     <FieldArray
                       name="coOwnersDetails"
@@ -443,60 +456,62 @@ export default function HouseProperty({ setSection }) {
                         return (
                           <div>
                             {coOwnersDetails &&
-                            values.typeOfHouseProperty !== "Self occupied" &&
-                            coOwnersDetails.length > 0
+                              values.typeOfHouseProperty !== "Self occupied" &&
+                              coOwnersDetails.length > 0
                               ? coOwnersDetails.map((owner, index) => (
-                                  <div key={index}>
-                                    <button
-                                      type="button"
-                                      className="block font-bold my-3 bg-blue-600 rounded-md px-2 text-white ml-auto"
-                                      onClick={() => arrayHelpers.remove(index)}
-                                    >
-                                      &#10007;
-                                    </button>
-                                    <div
-                                      className="md:grid md:grid-cols-3 flex flex-col gap-5 mb-5"
-                                      key={index}
-                                    >
-                                      <div className="flex flex-col col-span-1">
-                                        <Field
-                                          placeholder="Name Of Co-owner"
-                                          className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
-                                          name={`coOwnersDetails.${index}.nameOfCoOwner_`}
-                                        />
-                                        <ErrorMessage
-                                          name={`coOwnersDetails.${index}.nameOfCoOwner_`}
-                                        />
-                                      </div>
+                                <div key={index} lassName="flex justify-center pt-4">
+                                  <button
+                                    type="button"
+                                    className={InputStyles.submitBtn}
+                                    // className="block font-bold my-3 bg-blue-600 rounded-md px-2 text-white ml-auto"
+                                    onClick={() => arrayHelpers.remove(index)}
+                                  >
+                                    &#10007;
+                                  </button>
+                                  <div
+                                    className="md:grid md:grid-cols-3 flex flex-col gap-5 mb-5"
+                                    key={index}
+                                  >
+                                    <div className="flex flex-col col-span-1">
+                                      <Field
+                                        placeholder="Name Of Co-owner"
+                                        className={InputStyles.selectInput}
+                                        name={`coOwnersDetails.${index}.nameOfCoOwner_`}
+                                      />
+                                      <ErrorMessage
+                                        name={`coOwnersDetails.${index}.nameOfCoOwner_`}
+                                      />
+                                    </div>
 
-                                      <div className="flex flex-col col-span-1">
-                                        <Field
-                                          className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
-                                          placeholder="Pan Of Co-owner"
-                                          name={`coOwnersDetails.${index}.panOfCoOwner_`}
-                                        />
-                                        <ErrorMessage
-                                          name={`coOwnersDetails.${index}.panOfCoOwner_`}
-                                        />
-                                      </div>
+                                    <div className="flex flex-col col-span-1">
+                                      <Field
+                                        className={InputStyles.selectInput}
+                                        placeholder="Pan Of Co-owner"
+                                        name={`coOwnersDetails.${index}.panOfCoOwner_`}
+                                      />
+                                      <ErrorMessage
+                                        name={`coOwnersDetails.${index}.panOfCoOwner_`}
+                                      />
+                                    </div>
 
-                                      <div className="flex flex-col col-span-1">
-                                        <Field
-                                          className="h-12 px-3 mt-1 outline-none border border-gray-400 focus:border-primary rounded"
-                                          placeholder="Percentage Share"
-                                          name={`coOwnersDetails.${index}.percentageShare_`}
-                                        />
-                                        <ErrorMessage
-                                          name={`coOwnersDetails.${index}.percentageShare_`}
-                                        />
-                                      </div>
+                                    <div className="flex flex-col col-span-1">
+                                      <Field
+                                        className={InputStyles.selectInput}
+                                        placeholder="Percentage Share"
+                                        name={`coOwnersDetails.${index}.percentageShare_`}
+                                      />
+                                      <ErrorMessage
+                                        name={`coOwnersDetails.${index}.percentageShare_`}
+                                      />
                                     </div>
                                   </div>
-                                ))
+                                </div>
+                              ))
                               : null}
                             <button
                               type="button"
-                              className="block font-semibold px-5 text-blue-600 mt-3 ml-auto"
+                              className={InputStyles.submitBtn}
+                              // className="block font-semibold px-5 text-blue-600 mt-3 ml-auto"
                               onClick={() =>
                                 arrayHelpers.push({
                                   nameOfCoOwner_: "",
@@ -514,15 +529,19 @@ export default function HouseProperty({ setSection }) {
                   </div>
                 </>
               )}
+             <div className="flex justify-center items-center">
               <button
                 type="submit"
-                className="block bg-primary px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer mt-5 mx-auto"
+                // className={InputStyles.submitBtn}
+              className="block bg-primary px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer mt-5 mx-auto"
               >
                 Save
               </button>
+              </div>
             </div>
-          </Form>
+          </form>
         </>
+
       )}
     </Formik>
   );

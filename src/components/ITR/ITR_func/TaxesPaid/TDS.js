@@ -1,110 +1,110 @@
 "use client";
 
-import { useState } from 'react';
-import NonSalaryTDS from './TDS/NonSalaryTDS';
-import TDSonSale from './TDS/TDSonSale';
-import TCS from './TDS/TCS';
+import { useState } from "react";
+import NonSalaryTDS from "./TDS/NonSalaryTDS";
+import TDSonSale from "./TDS/TDSonSale";
+import TCS from "./TDS/TCS";
+import { InputStyles } from "@/app/styles/InputStyles";
+import { I } from "@/components/iconify/I";
 
 export default function TDS() {
-    const [section, setSection] = useState();
+  const [section, setSection] = useState();
 
-    return (
-        <>
-            {section === 'Non Salary TDS' ? (
-                <NonSalaryTDS setSection={setSection} />
-            ) : section === 'TDS on Sale' ? (
-                <TDSonSale setSection={setSection} />
-            ) : section === 'TCS' ? (
-                <TCS setSection={setSection} />
-            ) : (
-                <div className="mx-auto max-w-4xl w-full">
-                    <div className='overflow-hidden'>
-                    <h3 className="border-b font-semibold mb-5">
-                        TDS on Salary Income
-                    </h3>
-                    <table className="text-sm text-left my-5 w-full">
-                        <thead>
-                            <tr className="bg-zinc-100">
-                                <th className="border">Status</th>
-                                <th className="border">S.No.</th>
-                                <th className="border">Name of Employer</th>
-                                <th className="border">TDS Deducted</th>
-                                <th className="border">Salary Income</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td className="border">1</td>
-                                <td className="border">200</td>
-                                <td className="border">200</td>
-                                <td className="border">200</td>
-                                <td className="border">200</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    </div>
+  return (
+    <>
+      {section === "Non Salary TDS" ? (
+        <NonSalaryTDS setSection={setSection} />
+      ) : section === "TDS on Sale" ? (
+        <TDSonSale setSection={setSection} />
+      ) : section === "TCS" ? (
+        <TCS setSection={setSection} />
+      ) : (
+        <div className={InputStyles.section80Deduction}>
+          <h2 
+        //   className="text-2xl font-bold text-blue-900 mb-6 text-center border-b pb-2"
+          className={InputStyles.tdstitle}
+          >
+            TDS & TCS Information
+          </h2>
 
-                    <div className="md:grid md:grid-cols-3 flex flex-col items-center gap-10 mt-10 md:px-2 px-4">
-                        <div className="col-span-2">
-                            <p className="font-semibold">Non Salary TDS</p>
-                            <small>
-                                Non Salary TDS In this section, add TDS entries
-                                on interest income, professional or consulting
-                                income, etc. (Other than TDS on Salary and Sale
-                                of Immovable Property).
-                            </small>
-                        </div>
-                        <div className="w-full">
-                            <button
-                                onClick={() => setSection('Non Salary TDS')}
-                                className="bg-primary px-4 py-3 text-white w-full rounded-md font-semibold text-sm cursor-pointer block col-span-1"
-                            >
-                                Add Entry
-                            </button>
-                        </div>
+          {/* Salary Table */}
+          <div className={InputStyles.table}>
+            <table className="min-w-full text-sm text-left">
+              <thead className={InputStyles.tableHeader}>
+                <tr>
+                  <th className="px-4 py-2 border">Status</th>
+                  <th className="px-4 py-2 border">S.No.</th>
+                  <th className="px-4 py-2 border">Name of Employer</th>
+                  <th className="px-4 py-2 border">TDS Deducted</th>
+                  <th className="px-4 py-2 border">Salary Income</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className={InputStyles.tableRow}>
+                  <td className="px-4 py-2 border">Active</td>
+                  <td className="px-4 py-2 border">1</td>
+                  <td className="px-4 py-2 border">ABC Corp</td>
+                  <td className="px-4 py-2 border">₹10,000</td>
+                  <td className="px-4 py-2 border">₹8,00,000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
 
-                        <div className="col-span-2">
-                            <p className="font-semibold">
-                                TDS on Sale/Rent of Immovable Property
-                            </p>
-                            <small>
-                                If you sell/rent land, house, property or
-                                building etc (immovable property) etc, the
-                                buyer/tenant may have deducted TDS at the rate
-                                of 1% on the sale price of the property/rental
-                                and issued you a TDS certificate.You need to
-                                specify those TDS deduction details here.
-                            </small>
-                        </div>
-                        <div className="flex w-full">
-                            <button
-                                onClick={() => setSection('TDS on Sale')}
-                                className="bg-primary px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer w-full block col-span-1"
-                            >
-                                Add Entry
-                            </button>
-                        </div>
+          {/* Sections */}
+          <div className="grid md:grid-cols-3 gap-6 mt-10">
 
-                        <div className="col-span-2">
-                            <p className="font-semibold">
-                                Taxes Collected at Source (TCS)
-                            </p>
-                            <small>
-                                In this section, you can add TCS entries (For
-                                example - on purchase of cars).
-                            </small>
-                        </div>
-                        <div className="flex w-full">
-                            <button
-                                onClick={() => setSection('TCS')}
-                                className="bg-primary px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer w-full block col-span-1"
-                            >
-                                Add Entry
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
-    );
+            {/* Non Salary TDS */}
+            <div className={InputStyles.card}>
+              <div>
+                <h3 className={InputStyles.cardTitle}>Non Salary TDS</h3>
+                <p className={InputStyles.cardDesc}>
+                  Add TDS entries on interest income, professional/consulting income etc. Excludes salary and property sale.
+                </p>
+              </div>
+              <button
+                onClick={() => setSection("Non Salary TDS")}
+                className={InputStyles.submitBtn}
+              >
+                Add Entry
+              </button>
+            </div>
+
+            {/* TDS on Sale */}
+            <div className={InputStyles.card}>
+              <div>
+                <h3 className={InputStyles.cardTitle}>TDS on Sale/Rent of Property</h3>
+                <p className={InputStyles.cardDesc}>
+                  Add details of TDS deducted by buyer/tenant on sale or rent of immovable property.
+                </p>
+              </div>
+              <button
+                onClick={() => setSection("TDS on Sale")}
+                className={InputStyles.submitBtn}
+              >
+                Add Entry
+              </button>
+            </div>
+
+            {/* TCS */}
+            <div className={InputStyles.card}>
+              <div>
+                <h3 className={InputStyles.cardTitle}>Tax Collected at Source (TCS)</h3>
+                <p className={InputStyles.cardDesc}>
+                  Add TCS entries like purchase of high-value items (e.g. cars).
+                </p>
+              </div>
+              <button
+                onClick={() => setSection("TCS")}
+                className={InputStyles.submitBtn}
+              >
+                Add Entry
+              </button>
+            </div>
+
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

@@ -1,959 +1,347 @@
-import DownloadButton from './DownloadButton';
 
-const Depreciationtable = () => {
+'use client';
+import React, { useMemo, useCallback } from 'react';
+
+export default function Depreciationtable() {
+  // —— Company details ——
+  const COMPANY = useMemo(
+    () => ({
+      name: 'iTax-Easy Pvt. Ltd.',
+      address1: ' Sat 1, Flat - 811, Logix Zest Blossom, Sector 143, Noida 201306 ( U.P)',
+      address2: 'Main Branch: G - 41, Gandhi Nagar, Near Defence Colony, Padav Gwalior 474002 (M.P)',
+    }),
+    []
+  );
+  const LOGO_SRC = '/logo.svg';
+
+  // Today (DD-MM-YYYY)
+  const TODAY = useMemo(() => {
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()}`;
+  }, []);
+
+  // —— Primary color for watermark (blue) ——
+  const WM_COLOR = 'rgba(29, 78, 216, 1)'; // Tailwind blue-700
+
+  // Blue tiled SVG watermark (print only)
+  const WM_DATA_URI = useMemo(() => {
+    const svg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="280" height="180">
+        <g transform="rotate(-30,140,90)">
+          <text x="20" y="95"
+                font-family="Arial, Helvetica, sans-serif"
+                font-size="34"
+                fill="${WM_COLOR}"
+                fill-opacity="0.20">
+            iTax-Easy
+          </text>
+        </g>
+      </svg>`;
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+  }, []);
+
+  // Print handler
+  const exportPDFFile = useCallback(() => {
+    const area = document.getElementById('print-area');
+    if (!area) {
+      alert('Nothing to print: #print-area not found.');
+      return;
+    }
+    const hasText = area.innerText.replace(/\s+/g, '').length > 0;
+    const hasRich = !!area.querySelector('img,table,svg,canvas,[data-printable]');
+    if (!hasText && !hasRich) {
+      area.setAttribute('data-empty', 'true');
+      alert('No content to print.');
+      return;
+    }
+    area.removeAttribute('data-empty');
+    window.print();
+  }, []);
+
   return (
     <>
-      <div>
-        <h5 className="text-center my-5">Depreciation Table</h5>
-        {/* <h6 className="text-center">[See Rule 5]</h6>
-        <p className="text-danger text-center">
-          (Rates changed w.e.f. A.Y. 2018-19 has been shown in red color)
-        </p> */}
-        <div>
-          <div className="flex justify-end">
-            <DownloadButton
-              id={'#depreciationtable'}
-              fileName={'Depreciationtable.pdf'}
-            >
-              Download
-            </DownloadButton>
+      {/* Print CSS: force colors to appear in PDF, keep header with content, set margins, add watermark */}
+      <style jsx global>{`
+        @media print {
+          html, body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+          /* Hide everything by default; then reveal #print-area only */
+          body * { visibility: hidden !important; }
+          #print-area, #print-area * { visibility: visible !important; }
+
+          /* Keep background & text colors in print */
+          #print-area, #print-area * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+          }
+
+          #print-area {
+            position: absolute; left: 0; top: 0; width: 100%;
+            background-image: url('${WM_DATA_URI}');
+            background-repeat: repeat;
+            background-size: 280px 180px;
+          }
+
+          /* If flagged empty, suppress page entirely */
+          #print-area[data-empty="true"] { display: none !important; }
+
+          /* Keep the header block with the next section */
+          .no-break { break-inside: avoid !important; page-break-inside: avoid !important; }
+          .keep-with-next { break-after: avoid-page !important; page-break-after: avoid !important; }
+
+          /* Better table pagination */
+          thead { display: table-header-group; }
+          tfoot { display: table-footer-group; }
+          tr, thead tr { break-inside: avoid !important; page-break-inside: avoid !important; }
+
+          /* Unclamp common wrappers */
+          .print-unclamp { overflow: visible !important; }
+          .print-block { display: block !important; }
+          .print-mx-0 { margin-left: 0 !important; margin-right: 0 !important; }
+          .print-p-0 { padding: 0 !important; }
+
+          .noprint { display: none !important; }
+
+          /* Page setup */
+          @page { size: A4; margin: 14mm; }
+
+          /* Remove any extra top gap on first child */
+          #print-area > *:first-child { margin-top: 0 !important; padding-top: 0 !important; }
+        }
+      `}</style>
+
+      {/* Controls (screen only) */}
+      <div className="noprint mb-4 flex justify-end gap-2">
+        <button
+          onClick={exportPDFFile}
+          className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
+        >
+          Download PDF (Main Content Only)
+        </button>
+      </div>
+
+      {/* ======== PRINTABLE AREA (blue theme) ======== */}
+      <div id="print-area" className="text-[13px] text-blue-800">
+        {/* Header (print only) — keeps the next block on the same page */}
+        <div className="hidden print:block no-break keep-with-next">
+          <h5 className="my-3 text-center text-base font-semibold text-blue-900">
+            Depreciation Table
+          </h5>
+
+          {/* Just under heading: left logo, right company info + date */}
+          <div className="mb-2 flex items-start justify-between gap-4">
+            {/* Left: Logo */}
+            <div className="shrink-0">
+              <img src={LOGO_SRC} alt="Company logo" className="h-9 w-auto" />
+            </div>
+
+            {/* Right: Company info & date */}
+            <div className="text-right leading-tight">
+              <div className="font-semibold text-blue-900">{COMPANY.name}</div>
+              <div>{COMPANY.address1}</div>
+              <div>{COMPANY.address2}</div>
+              <div className="mt-1">Date: {TODAY}</div>
+            </div>
           </div>
-          <div class="flex flex-col">
-            <div class="overflow-x-auto sm:-mx-6 lg:-mx-8">
-              <div class="py-2 inline-block min-w-full sm:px-6 lg:px-8">
-                <div class="overflow-x-auto">
-                  <table
-                    className="table border-collapse border border-gray-300 "
-                    id="depreciationtable"
-                  >
-                    <thead class="border-b">
-                      <tr className="bg-blue-300">
-                        <th className="border border-gray-300 p-2 font-semibold"></th>
-                        <th
-                          className="border border-gray-300 p-2 font-semibold"
-                          align="left"
-                        >
-                          Block of Assets
-                        </th>
-                        <th className="border border-gray-300 p-2 font-semibold">
-                          Depreciation allowance as percentage of written down
-                          value
-                        </th>
-                        <th className="border border-gray-300 p-2 font-semibold">
-                          Depreciation allowance as percentage of written down
-                          value
-                        </th>
-                        <th className="border border-gray-300 p-2 font-semibold">
-                          Depreciation allowance as percentage of written down
-                          value
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="h-10 text-left">
-                        <td
-                          className="border border-gray-300 p-2"
-                          colSpan={2}
-                        ></td>
-                        <td className="border border-gray-300 p-2">
-                          A.Y 2018-19 onwards
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          A.Y. 2006-07 to 2017-18
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          A.Y. 2003-04 to 2005-06
-                        </td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <th colSpan={2}>
-                          I. Buildings{' '}
-                          <p className="text-info">
-                            {' '}
-                            [See Notes 1 to 4 below the Table]
-                          </p>
-                        </th>
-                        <td className="border border-gray-300 p-2"></td>
-                        <td className="border border-gray-300 p-2"></td>
-                        <td className="border border-gray-300 p-2"></td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="table-primary">(1)</td>
-                        <td className="table-primary">
-                          Buildings which are used mainly for residential
-                          purposes except hotels and boarding houses
-                        </td>
-                        <td className="table-primary">5</td>
-                        <td className="table-primary">5</td>
-                        <td className="table-primary">5</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(2)</td>
-                        <td className="border border-gray-300 p-2">
-                          Building other than those used mainly for residential
-                          purposes and not covered by sub-items (1) above and
-                          (3) below
-                        </td>
-                        <td className="border border-gray-300 p-2">10</td>
-                        <td className="border border-gray-300 p-2">10</td>
-                        <td className="border border-gray-300 p-2">10</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="table-primary">(3)</td>
-                        <td className="table-primary">
-                          Building acquired on or after the 1st day of
-                          September, 2002 for installing machinery and plant
-                          forming part of water supply project or water
-                          treatment system and which is put to use for the
-                          purpose of business of providing infrastructure
-                          facilities under clause (i) of sub-section (4) of
-                          section 80-IA
-                        </td>
-                        <td className="table-primary">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="table-primary">100</td>
-                        <td className="table-primary">100</td>
-                      </tr>
+        </div>
 
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(4)</td>
-                        <td className="border border-gray-300 p-2">
-                          Purely temporary erections such as wooden structures
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <th colSpan={2}>II. Furniture and Fittings </th>
-                        <td className="border border-gray-300 p-2"></td>
-                        <td className="border border-gray-300 p-2"></td>
-                        <td className="border border-gray-300 p-2"></td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(1)</td>
-                        <td className="border border-gray-300 p-2">
-                          Furniture and Fittings including electrical fittings
-                          [See Note 5 below the Table]
-                        </td>
-                        <td className="border border-gray-300 p-2">10</td>
-                        <td className="border border-gray-300 p-2">10</td>
-                        <td className="border border-gray-300 p-2">15</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <th colSpan={2}>III. Machinery and Plant </th>
-                        <td className="border border-gray-300 p-2"></td>
-                        <td className="border border-gray-300 p-2"></td>
-                        <td className="border border-gray-300 p-2"></td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(1)</td>
-                        <td className="border border-gray-300 p-2">
-                          Machinery and plant other than those covered by
-                          sub-items (2), (3) and (8) below
-                        </td>
-                        <td className="border border-gray-300 p-2">15</td>
-                        <td className="border border-gray-300 p-2">15</td>
-                        <td className="border border-gray-300 p-2">25</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(2)</td>
-                        <td className="border border-gray-300 p-2">
-                          Motor cars, other than those used in a business of
-                          running them on hire, acquired or put to use on or
-                          after the 1st day of April, 1990
-                        </td>
-                        <td className="border border-gray-300 p-2">15</td>
-                        <td className="border border-gray-300 p-2">15</td>
-                        <td className="border border-gray-300 p-2">20</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(3) (i)</td>
-                        <td className="border border-gray-300 p-2">
-                          Aeroplanes – Aeroengines
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">40</td>
-                        <td className="border border-gray-300 p-2">40</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(ii)</td>
-                        <td className="border border-gray-300 p-2">
-                          Motor buses, motor lorries and motor taxis used in a
-                          business of running them on hire
-                        </td>
-                        <td className="border border-gray-300 p-2">30</td>
-                        <td className="border border-gray-300 p-2">30</td>
-                        <td className="border border-gray-300 p-2">40</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(iii)</td>
-                        <td className="border border-gray-300 p-2">
-                          Commercial vehicle which is acquired by the assessee
-                          on or after the 1st day of October, 1998, but before
-                          the 1st day of April, 1999 and is put to use for any
-                          period before the 1st day of April, 1999 for the
-                          purposes of business or profession in accordance with
-                          the third proviso to clause (ii) of sub-section (1) of
-                          section 32 [See Note 6 below the Table]
-                        </td>
-                        <td className="border border-gray-300 p-2">40</td>
-                        <td className="border border-gray-300 p-2">40</td>
-                        <td className="border border-gray-300 p-2">40</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(iv)</td>
-                        <td className="border border-gray-300 p-2">
-                          New commercial vehicle which is acquired on or after
-                          the 1st day of October, 1998 but before the 1st day of
-                          April, 1999 in replacement of condemned vehicle of
-                          over 15 years of age and is put to use for any period
-                          before the 1st day of April, 1999 for the purposes of
-                          business or profession in accordance with the third
-                          proviso to clause (ii) of sub-section (1) of section
-                          32 [See Note 6 below the Table]
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">60</td>
-                        <td className="border border-gray-300 p-2">60</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(v)</td>
-                        <td className="border border-gray-300 p-2">
-                          New commercial vehicle which is acquired on or after
-                          the Ist day of April, 1999 but before the Ist day of
-                          April, 2000 in replacement of condemned vehicle of
-                          over 15 years of age and is put to use before the 1st
-                          day of April, 2000 for the purposes of business or
-                          profession in accordance with the second proviso to
-                          clause (ii) sub-section (1) of section 32 [See Note 6
-                          below the Table]
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">60</td>
-                        <td className="border border-gray-300 p-2">60</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(vi)</td>
-                        <td className="border border-gray-300 p-2">
-                          New commercial vehicle which is acquired on or after
-                          the 1st day of April, 2001 but before the 1st day of
-                          April, 2002 and is put to use before the 1st day of
-                          April, 2002 for the purposes of business or profession
-                          [See Note 6 below the Table]
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">50</td>
-                        <td className="border border-gray-300 p-2">50</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(vii)</td>
-                        <td className="border border-gray-300 p-2">
-                          Moulds used in rubber and plastic goods factories
-                        </td>
-                        <td className="border border-gray-300 p-2">30</td>
-                        <td className="border border-gray-300 p-2">30</td>
-                        <td className="border border-gray-300 p-2">50</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(viii)</td>
-                        <td className="border border-gray-300 p-2">
-                          Air Pollution control equipment being <br />
-                          (a) Electrostatic precipitation systems <br />
-                          (b) Felt-filter systems <br />
-                          (c) Dust collector systems <br />
-                          (d) Scrubber-counter
-                          current/venturi/packed-bed/cyclonic scrubbers <br />
-                          (e) Ash handling system and evacuation being
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(ix)</td>
-                        <td className="border border-gray-300 p-2">
-                          Water pollution control equipment being (a) Mechanical
-                          screen systems <br />
-                          (b) Aerated detritus chambers (including air
-                          compressor) <br />
-                          (c) Mechanically skimmed oil and grease removal
-                          systems <br />
-                          (d) Chemical feed systems and flash mixing equipment{' '}
-                          <br />
-                          (e) Mechanical flocculators and mechanical reactors{' '}
-                          <br />
-                          (f) Diffused air/mechanically aerated activated sludge
-                          systems <br />
-                          (g) Aerated lagoon systems <br />
-                          (h) Biofilters <br />
-                          (i) Methane-recovery anaerobic digester systems <br />
-                          (j) Air floatation systems <br />
-                          (k) Air/steam stripping systems <br />
-                          (l) Urea hydrolysis systems <br />
-                          (m) Marine outfall systems <br />
-                          (n) Centrifuge for dewatering sludge <br />
-                          (o) Rotating biological contractor or bio-disc <br />
-                          (p) Ion exchange resin column <br />
-                          (q) Activated carbon column
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(x)</td>
-                        <td className="border border-gray-300 p-2">
-                          (a) Solidwaste control equipments, being-
-                          caustic/lime/chrome/mineral/ cryolite recovery system{' '}
-                          <br />
-                          (b) Solidwaste recycling and resource recovery systems
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(xi)</td>
-                        <td className="border border-gray-300 p-2">
-                          Machinery and plant used in semi-conductor industry
-                          convering all integrated circuits (ICs) (excluding
-                          hybrid integrated circuits) ranging from small scale
-                          integration (SSI) to large scale integration/very
-                          large scale integration (LSI/VLSI) as also discrete
-                          semi-conductor devices such as diodes, transistors,
-                          thyristors, triacs, etc.) other than those covered by
-                          entries (viii), (ix) and (x) of this sub-item and
-                          sub-item (8) below
-                        </td>
-                        <td className="border border-gray-300 p-2">30</td>
-                        <td className="border border-gray-300 p-2">30</td>
-                        <td className="border border-gray-300 p-2">40</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(xia)</td>
-                        <td className="border border-gray-300 p-2">
-                          Life saving medical equipment, being- (a) D.C.
-                          Defibrillators for internal use and pace makers <br />
-                          (b) Haemodialysors <br />
-                          (c) Heart lung machine <br />
-                          (d) Cobalt Therapy Unit <br />
-                          (e) Colour Doppler <br />
-                          (f) SPECT Gamma Camera <br />
-                          (g) Vascular Angiography System including Digital
-                          subtraction Angiography <br />
-                          (h) Ventilator used with anaesthesia apparatus <br />
-                          (i) Magnetic Resonance Imaging System <br />
-                          (j) Surgical Laser <br />
-                          (k) Ventilators other than those used with anaesthesia{' '}
-                          <br />
-                          (l) Gamma knife <br />
-                          (m) Bone Marrow Transplant Equipment including
-                          silastic long standing intravenous catheters for
-                          chemotherapy <br />
-                          (n) Fibreoptic endoscopes including Paediatirc
-                          resectoscope/audit resectoscope, Peritoneoscopes,
-                          Arthoscope, Microlaryngoscope, Fibreoptic Flexible
-                          Nasal Pharyngo Bronchoscope, Fibreoptic Flexible
-                          Laryngo Bronchoscope, Video Laryngo Bronchoscope and
-                          Video Oesophago Gastroscope, Stroboscope, Fibreoptic
-                          Flexible Oesophago Gastroscope <br />
-                          (o) Laparoscope (single incision)
-                        </td>
-                        <td className="border border-gray-300 p-2">40</td>
-                        <td className="border border-gray-300 p-2">40</td>
-                        <td className="border border-gray-300 p-2">40</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(4)</td>
-                        <td className="border border-gray-300 p-2">
-                          Containers made of glass or plastic used as re-fills
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">50</td>
-                        <td className="border border-gray-300 p-2">50</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(5)</td>
-                        <td className="border border-gray-300 p-2">
-                          Computers including computer software [See note 7
-                          below the Table]
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">60</td>
-                        <td className="border border-gray-300 p-2">60</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(6)</td>
-                        <td className="border border-gray-300 p-2">
-                          Machinery and plant, used in weaving, processing and
-                          garment sector of textile industry, which is purchased
-                          under TUFS on or after the 1st day of April, 2001 but
-                          before the 1st day of April, 2004 and is put to use
-                          before the 1st day of April, 2004 [See Note 8 below
-                          the Table]
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">50</td>
-                        <td className="border border-gray-300 p-2">50</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(7)</td>
-                        <td className="border border-gray-300 p-2">
-                          Machinery and plant, acquired and installed on or
-                          after the 1st day of September, 2002 in a water supply
-                          project or a water treatment system and which is put
-                          to use for the purpose of business of providing
-                          infrastructure facility under clause (i) of
-                          sub-section (4) of section 80-IA [See Notes 4 and 9
-                          below the Table]
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(8) (i)</td>
-                        <td className="border border-gray-300 p-2">
-                          Wooden parts used in artificial silk manufacturing
-                          machinery
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(ii)</td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          Cinematograph films-bulbs of studio lights
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(iii)</td>
-                        <td className="border border-gray-300 p-2">
-                          Match factories-Wooden match frames
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(iv)</td>
-                        <td className="border border-gray-300 p-2">
-                          Mines and quarries (a) Tubs, winding ropes, haulage
-                          rope and sand stowing pipes
-                          <br />
-                          (b) Safety lamps
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(v)</td>
-                        <td className="border border-gray-300 p-2">
-                          Salt works-Salt pans, reservoirs and condensers, etc.,
-                          made of earthy, sand or clayey material or any other
-                          similar material
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">100</td>
-                        <td className="border border-gray-300 p-2">100</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(vi)</td>
-                        <td className="border border-gray-300 p-2">
-                          Flour Mills-Rollers
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(vii)</td>
-                        <td className="border border-gray-300 p-2">
-                          Iron and Steel industry-Rolling mill rolls
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(viii)</td>
-                        <td className="border border-gray-300 p-2">
-                          Sugar Works-Rollers
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(ix)</td>
-                        <td className="border border-gray-300 p-2">
-                          Energy saving devices being-
-                        </td>
-                        <td className="border border-gray-300 p-2"> </td>
-                        <td className="border border-gray-300 p-2"></td>
-                        <td className="border border-gray-300 p-2"></td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">A.</td>
-                        <td className="border border-gray-300 p-2">
-                          Specialised boilers and furnaces; (a)
-                          Ignifluid/fluidized bed boilers <br />
-                          (b) Flameless furnaces and continuous pusher type
-                          furnaces <br />
-                          (c) Fluidized bed type hear treatment furnaces <br />
-                          (d) High efficiency boilers (thermal efficiency higher
-                          than 75 per cent in case of coal fired and 80 per cent
-                          in case of oil/gas fired boilers
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          {' '}
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
+        {/* Content */}
+        <div className="flex flex-col">
+          <div className="overflow-x-auto sm:-mx-6 lg:-mx-8 print-unclamp print-mx-0">
+            <div className="inline-block min-w-full py-2 sm:px-6 lg:px-8 print-block print-p-0">
+              <div className="overflow-x-auto print-unclamp">
+                <table
+                  className="min-w-full border border-blue-300 text-[12.5px]"
+                  id="depreciationtable"
+                >
+                  <thead>
+                    <tr className="bg-blue-200 text-blue-900">
+                      <th className="w-10 border border-blue-300 px-3 py-2 font-semibold"></th>
+                      <th className="border border-blue-300 px-3 py-2 text-left font-semibold">
+                        Block of Assets
+                      </th>
+                      <th className="border border-blue-300 px-3 py-2 font-semibold">
+                        Depreciation<br />allowance (%)
+                      </th>
+                      <th className="border border-blue-300 px-3 py-2 font-semibold">
+                        Depreciation<br />allowance (%)
+                      </th>
+                      <th className="border border-blue-300 px-3 py-2 font-semibold">
+                        Depreciation<br />allowance (%)
+                      </th>
+                    </tr>
+                  </thead>
 
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">B.</td>
-                        <td className="border border-gray-300 p-2">
-                          Instrumentation and monitoring system energy flows;
-                          (a) Automatic electrical load monitoring systems{' '}
-                          <br />
-                          (b) Digital heat loss meters <br />
-                          (c) Micro-processor based control systems <br />
-                          (d) Infra-red thermography <br />
-                          (e) Meters for measuring heat losses, furnace oil
-                          flow, stream flow, electric energy and power factor
-                          meters <br />
-                          (f) Maximum demand indicator and clamp on power meters{' '}
-                          <br />
-                          (g) Exhaust gases analyzer <br />
-                          (h) Fuel oil pump test bench
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">C.</td>
-                        <td className="border border-gray-300 p-2">
-                          Waste heat recovery equipments; (a) Economisers and
-                          feed water heaters <br />
-                          (b) Recuperators and air pre-heaters <br />
-                          (c) Head pumps <br />
-                          (d) Thermal energy wheel for high and low temperature
-                          waste heat recovery
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">D.</td>
-                        <td className="border border-gray-300 p-2">
-                          Co-Generation systems; (a) Back pressure pass out,
-                          controlled extraction, extraction-cum- condensing
-                          turbines for co-generation along with pressure boilers{' '}
-                          <br />
-                          (b) Vapour absorption refrigeration systems <br />
-                          (c) Organic rankine cycle power systems <br />
-                          (d) Low inlet pressure small steam turbines
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
+                  <tbody>
+                    {/* AY row */}
+                    <tr>
+                      <td className="border border-blue-300 px-3 py-2" colSpan={2}></td>
+                      <td className="border border-blue-300 px-3 py-2">A.Y 2018-19 onwards</td>
+                      <td className="border border-blue-300 px-3 py-2">A.Y. 2006-07 to 2017-18</td>
+                      <td className="border border-blue-300 px-3 py-2">A.Y. 2003-04 to 2005-06</td>
+                    </tr>
 
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">E.</td>
-                        <td className="border border-gray-300 p-2">
-                          Electrical equipments (a) Shunt capacitors and
-                          synchronous condenser systems <br />
-                          (b) Automatic power cut off devices (relays) mounted
-                          on individual motors <br />
-                          (c) Automatic voltage controller <br />
-                          (d) Power factor controller for AC Motors <br />
-                          (e) Solid state devices for controlling motor speeds{' '}
-                          <br />
-                          (f) Thermally energy-efficient stenters (which require
-                          800 or less kilocalories of heat to evaporate one
-                          kilogram of water) <br />
-                          (g) Series compensation equipment <br />
-                          (h) Flexible AC Transmission (FACT) devices- Thyristor
-                          controlled series compensation equipment <br />
-                          (i) Time of Day (TOD) energy meters <br />
-                          (j) Equipment to establish transmission highways for
-                          National Power Grid to facilitate transfer of surplus
-                          power of one region to the deficient region <br />
-                          (k) Remove terminal units/intelligent electronic
-                          devices, computer hardware/software, router/bridges,
-                          other required equipment and associated communication
-                          systems for supervisory control and data acquisition
-                          systems, energy management systems and distribution
-                          management systems for power transmission systems{' '}
-                          <br />
-                          (l) Special energy meters for Availability Based
-                          Tariff (ABT)
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
+                    {/* I. Buildings band */}
+                    <tr className="bg-blue-100">
+                      <th colSpan={2} className="border border-blue-300 px-3 py-2 text-left font-semibold">
+                        I. Buildings
+                        <div className="text-[11px] text-blue-700">[See Notes 1 to 4]</div>
+                      </th>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                    </tr>
 
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">F.</td>
-                        <td className="border border-gray-300 p-2">
-                          Burners; (a) 0 to 10 per cent excess air burners{' '}
-                          <br />
-                          (b) Emulsion burners <br />
-                          (c) Burners using air with high pre-heat temperature
-                          (above 300’ C)
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">G.</td>
-                        <td className="border border-gray-300 p-2">
-                          Other equipment; (a) Wet air oxidation equipment for
-                          recovery of chemicals and heat <br />
-                          (b) Mechanical vapour recompressors <br />
-                          (c) Thin film evaporators <br />
-                          (d) Automatic micro-processor based load demand
-                          controllers <br />
-                          (e) Coal based producer gas plants <br />
-                          (f) Fluid drives and fluid couplings <br />
-                          (g) Turbo Charges/super charges <br />
-                          (h) Sealed radiation sources for radiation processing
-                          plants
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(x)</td>
-                        <td className="border border-gray-300 p-2">
-                          Gas cylinders including valves and regulators
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">60</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(xi)</td>
-                        <td className="border border-gray-300 p-2">
-                          Glass manufacturing concerns – Direct fire glass
-                          melting furnaces
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">60</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(xii)</td>
-                        <td className="border border-gray-300 p-2">
-                          Mineral Oil concerns (a) Plant used in field
-                          operations (above ground), distribution-Returnable
-                          <br />
-                          (b) Plant used in field operations (below ground), but
-                          not including kerbside pumps including underground
-                          tanks and fitting used in field operations
-                          (distribution) by mineral oil concerns
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">60</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(xii)</td>
-                        <td className="border border-gray-300 p-2">
-                          Renewal energy devices being- (a) Flat plate solar
-                          collectors <br />
-                          (b) Concentrating and pipe type solar collectors{' '}
-                          <br />
-                          (c) Solar Cookers <br />
-                          (d) Solar water heaters and systems <br />
-                          (e) Air/gas fluid heating systems <br />
-                          (f) Solar crop driers and systems <br />
-                          (g) Solar refrigeration, cold storages and
-                          air-conditioning systems <br />
-                          (h) Solar power generating systems <br />
-                          (i) Solar power generating systems <br />
-                          (j) Solar pumps based on solar-thermal and solar
-                          photovoltaic conversion <br />
-                          (k) Solar photovoltaic modules and panels for water
-                          pumping and other applications <br />
-                          (l) Wind mills and any specially designed devices
-                          which run on wind mills <br />
-                          (m) Any special devices including electric generators
-                          and pumps running on wind energy <br />
-                          (n) Bio-gas plant and bio-gas engines <br />
-                          (o) Electrically operated vehicles including battery
-                          powered or fuel-cell powered vehicles <br />
-                          (p) Agricultural and municipal waste conversion
-                          devices producing energy <br />
-                          (q) Equipment for utilising ocean waste and thermal
-                          energy <br />
-                          (r) Machinery and plant used in the manufacture of any
-                          of the above sub-items
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">80</td>
-                        <td className="border border-gray-300 p-2">80</td>
-                      </tr>
-
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">9 (i)</td>
-                        <td className="border border-gray-300 p-2">
-                          Books owned by assessees carrying on a profession (a)
-                          Books, being annual publications <br />
-                          (b) Books, other than those covered by entry (a) above
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          <span className="text-danger">40</span>
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          100 <br />
-                          80
-                        </td>
-                        <td className="border border-gray-300 p-2">
-                          100 <br />
-                          80
-                        </td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <th colSpan={2}>IV. Ships</th>
-                        <td className="border border-gray-300 p-2"></td>
-                        <td className="border border-gray-300 p-2"></td>
-                        <td className="border border-gray-300 p-2"></td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(1)</td>
-                        <td className="border border-gray-300 p-2">
-                          Ocean-going ships including dredgers, tugs, barges,
-                          survey launches and other similar ships used mainly
-                          for dredging purposes and fishing vessels with wooden
-                          hull
-                        </td>
-                        <td className="border border-gray-300 p-2">20</td>
-                        <td className="border border-gray-300 p-2">20</td>
-                        <td className="border border-gray-300 p-2">25</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(2)</td>
-                        <td className="border border-gray-300 p-2">
-                          Vessels ordinarily operating on inland waters, not
-                          covered by sub-item (3) below
-                        </td>
-                        <td className="border border-gray-300 p-2">20</td>
-                        <td className="border border-gray-300 p-2">20</td>
-                        <td className="border border-gray-300 p-2">25</td>
-                      </tr>
-                      <tr className="h-10 text-left">
-                        <td className="border border-gray-300 p-2">(3)</td>
-                        <td className="border border-gray-300 p-2">
-                          Vessels ordinarily operating on inland waters being
-                          speed boats (see Note 10 below the Table)
-                        </td>
-                        <td className="border border-gray-300 p-2">20</td>
-                        <td className="border border-gray-300 p-2">20</td>
-                        <td className="border border-gray-300 p-2">25</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                  <h6 className="text-center">PART B</h6>
-                  <h3 className="text-center">INTANGIBLE ASSETS</h3>
-                  <table class="min-w-full">
-                    <tbody>
-                      <td className="border border-gray-300 p-2"></td>
-                      <td className="border border-gray-300 p-2">
-                        Know-how, patents, copyrights, trademarks, licences,
-                        franchises or any other business or commercial rights of
-                        similar nature
+                    <tr className="bg-blue-50">
+                      <td className="border border-blue-300 px-3 py-2 align-top">(1)</td>
+                      <td className="border border-blue-300 px-3 py-2">
+                        Buildings mainly for residential use<br />except hotels/boarding houses
                       </td>
-                      <td className="border border-gray-300 p-2">25</td>
-                      <td className="border border-gray-300 p-2">25</td>
-                      <td className="border border-gray-300 p-2">25</td>
-                    </tbody>
-                  </table>
-                  <h6>Note:-</h6>
-                  <ol className="border">
+                      <td className="border border-blue-300 px-3 py-2 text-center">5</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">5</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">5</td>
+                    </tr>
+
+                    <tr>
+                      <td className="border border-blue-300 px-3 py-2">(2)</td>
+                      <td className="border border-blue-300 px-3 py-2">
+                        Building other than those used mainly for residential purposes and not
+                        covered by sub-items (1) above and (3) below
+                      </td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">10</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">10</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">10</td>
+                    </tr>
+
+                    <tr className="bg-blue-50">
+                      <td className="border border-blue-300 px-3 py-2">(3)</td>
+                      <td className="border border-blue-300 px-3 py-2">
+                        Building acquired on or after 1 Sept 2002 for installing machinery and plant
+                        forming part of water supply project or water treatment system and used for
+                        business of providing infrastructure facilities under section 80-IA(4)(i)
+                      </td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">
+                        <span className="font-semibold text-red-600">40</span>
+                      </td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">100</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">100</td>
+                    </tr>
+
+                    <tr>
+                      <td className="border border-blue-300 px-3 py-2">(4)</td>
+                      <td className="border border-blue-300 px-3 py-2">Purely temporary erections such as wooden structures</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">
+                        <span className="font-semibold text-red-600">40</span>
+                      </td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">100</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">100</td>
+                    </tr>
+
+                    {/* II. Furniture & Fittings */}
+                    <tr className="bg-blue-100">
+                      <th colSpan={2} className="border border-blue-300 px-3 py-2 text-left font-semibold">
+                        II. Furniture and Fittings
+                      </th>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                    </tr>
+
+                    <tr>
+                      <td className="border border-blue-300 px-3 py-2">(1)</td>
+                      <td className="border border-blue-300 px-3 py-2">
+                        Furniture and fittings including electrical fittings
+                        <span className="text-[11px] text-blue-700"> [See Note 5]</span>
+                      </td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">10</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">10</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">15</td>
+                    </tr>
+
+                    {/* III. Machinery & Plant */}
+                    <tr className="bg-blue-100">
+                      <th colSpan={2} className="border border-blue-300 px-3 py-2 text-left font-semibold">
+                        III. Machinery and Plant
+                      </th>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                    </tr>
+
+                    <tr>
+                      <td className="border border-blue-300 px-3 py-2">(1)</td>
+                      <td className="border border-blue-300 px-3 py-2">
+                        Machinery and plant other than those covered by sub-items (2), (3) and (8) below
+                      </td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">15</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">15</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">25</td>
+                    </tr>
+
+                    {/* ===== PART B ===== */}
+                    <tr>
+                      <td colSpan={5} className="border border-blue-300 bg-blue-200 px-3 py-1 text-center font-semibold text-blue-900">
+                        PART B
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colSpan={5} className="border border-blue-300 px-3 py-1 text-center font-semibold text-blue-900">
+                        INTANGIBLE ASSETS
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="border border-blue-300 px-3 py-2"></td>
+                      <td className="border border-blue-300 px-3 py-2">
+                        Know-how, patents, copyrights, trademarks, licences, franchises or any
+                        other business or commercial rights of similar nature
+                      </td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">25</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">25</td>
+                      <td className="border border-blue-300 px-3 py-2 text-center">25</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                {/* Notes */}
+                <div className="mt-3 border-t border-blue-300 pt-1">
+                  <div className="text-sm font-semibold text-blue-900">Note:-</div>
+                  <ol className="mt-1 list-inside list-decimal space-y-1">
+                    <li>“Buildings” include roads, bridges, culverts, wells and tube-wells.</li>
                     <li>
-                      “Buildings” include roads, bridges, culverts, wells and
-                      tube-wells
+                      A building shall be deemed to be used mainly for residential purposes if
+                      the built-up floor area used for residential purposes is not less than
+                      sixty-six and two-third per cent of its total built-up floor area and shall
+                      include any such building in the factory premises.
                     </li>
                     <li>
-                      {' '}
-                      A building shall be deemed to be a building used mainly
-                      for residential purposes, if the built-up floor area
-                      thereof used for residential purposes is not less than
-                      sixty-six and two their per cent of its total built up
-                      floor area and shall include any such building in the
-                      factory premises.
+                      For any structure/work by way of renovation or improvement in or in relation to a
+                      building referred to in Explanation 1 of clause (ii) of sub-item (1) of section 32,
+                      apply the percentage specified against item I(1) or I(2) as appropriate. Where the
+                      structure/work is an extension, apply as a separate building.
                     </li>
+                    <li>Water treatment system includes desalinisation, demineralisation and purification.</li>
+                    <li>“Electrical fittings” include wiring, switches, sockets, other fittings and fans, etc.</li>
+                    <li>Vehicle definitions are as per the Motor Vehicles Act, 1988.</li>
+                    <li>“Computer software” means any program recorded on any storage device.</li>
+                    <li>“TUFS” means Technology Upgradation Fund Scheme (MoT, 31-3-1999).</li>
+                    <li>Pipes to/from plant/storage are included as machinery and plant.</li>
                     <li>
-                      {' '}
-                      In respect of any structure or work by way of renovation
-                      or improvement in or in relation to a building referred to
-                      in Explanation 1 of clause (ii) of sub-item (1) of section
-                      32, the percentage to be applied will be the percentage
-                      specified against sub-item (1) or (2) of item I as may be
-                      appropriate to the class of building in or in relation to
-                      which the renovation or improvement is effected. Where the
-                      structure is constructed or the work is done by way of
-                      extension of any such building, the percentage to be
-                      applied would be such percentage as would be appropriate,
-                      as if the structure or work constituted a separate
-                      building.
-                    </li>
-                    <li>
-                      {' '}
-                      Water treatment system includes system for desalinisation,
-                      demineralisation and purification of water.
-                    </li>
-                    <li>
-                      {' '}
-                      “Electrical fittings” include electrical wiring, switches,
-                      sockets, other fittings and fans, etc.
-                    </li>
-                    <li>
-                      {' '}
-                      “Commercial vehicle” means “heavy goods vehicle”, heavy
-                      passenger motor vehicle”, “light motor vehicle”, “Medium
-                      goods vehicle” and “medium passenger motor vehicle” but
-                      does not include “maxi-cab”, “motor-cab”, “tractor” and
-                      “road-roller”. The expressions “heavy goods vehicle”,
-                      “heavy passenger motor vehicle”, “light motor vehicle”,
-                      “medium passenger motor vehicle”, “maxi-cab”, “tractor”
-                      and “road-roller” shall have the meanings respectively as
-                      assigned to them in section 2 of the Motor Vehicles Act,
-                      1988]
-                    </li>
-                    <li>
-                      {' '}
-                      “Computer software” means any computer programme recorded
-                      on any disc, tape, perforated media or other information
-                      storage device.
-                    </li>
-                    <li>
-                      {' '}
-                      “TUFS” means Technology Upgradation Fund Scheme announced
-                      by the Government of India in the form of a Resolution of
-                      the Ministry of Textiles vide No. 28/1/99-CTI of
-                      31-3-1999.
-                    </li>
-                    <li>
-                      {' '}
-                      Machinery and plant includes pipes needed for delivery
-                      from the source of supply of raw water to the plant and
-                      from the plant to the storage facility.
-                    </li>
-                    <li>
-                      {' '}
-                      “Speed boat” means a motor boat driven by a high speed
-                      internal combustion engine capable of propelling the boat
-                      at a speed exceeding 24 kilometres per hour in still water
-                      and so designed that when running at a speed, it will rise
-                      from the water.
+                      “Speed boat” means a motor boat capable of a maximum speed of 24 km/h in still water
+                      and designed to rise from the water surface at such speed.
                     </li>
                   </ol>
+                </div>
+
+                <div className="mt-6 text-center text-blue-700">
+                  [As amended by Finance Act, 2022]
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <h6 className="text-secondary text-center">
-          [As amended by Finance Act, 2022]
-        </h6>
-      </div>
+      </div> {/* /print-area */}
     </>
   );
-};
-
-export default Depreciationtable;
+}

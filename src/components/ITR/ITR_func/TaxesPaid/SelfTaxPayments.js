@@ -9,6 +9,7 @@ export default function SelfTaxPayments() {
   const [state, dispatch] = useContext(StoreContext);
   const router = useRouter();
 
+
   const handleSubmit = (values) => {
     dispatch({
       type: Actions.ITR,
@@ -47,8 +48,14 @@ export default function SelfTaxPayments() {
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-8 md:px-0 w-full container">
-      <h3 className="border-b font-semibold mb-5">Taxes Paid</h3>
+    <div 
+    // className="mx-auto max-w-4xl px-8 md:px-0 w-full container"
+      className={InputStyles.section80Deduction}    >
+      <h3 
+      // className="border-b font-semibold mb-5"
+       className=
+       {InputStyles.tdstitle}
+      >Taxes Paid</h3>
       <form onSubmit={formik.handleSubmit}>
         <div className="grid sm:grid-cols-2 sm:gap-5 gap-2 gap-y-5">
           <div className="flex flex-col">
@@ -128,12 +135,15 @@ export default function SelfTaxPayments() {
             ) : null}
           </div>
         </div>
+             <div className="flex justify-center items-center mt-4">
         <button
           type="submit"
-          className="block bg-primary px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer mt-5 mx-auto"
-        >
+          // className="block bg-primary px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer mt-5 mx-auto"
+           className={InputStyles.selftaxbutton}
+       >
           Save
         </button>
+</div>
       </form>
     </div>
   );

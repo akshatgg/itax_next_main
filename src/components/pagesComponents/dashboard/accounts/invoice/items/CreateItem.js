@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import userAxios from "@/lib/userbackAxios"
 import { toast } from "react-toastify"
+import { InputStyles } from "@/app/styles/InputStyles"
 
 export default function CreateItem() {
   const defaultValues = {
@@ -269,26 +270,28 @@ export default function CreateItem() {
     }
   }
 
-  const formClassNames = {
-    label: "block mb-2 text-sm font-medium text-gray-950/90 dark:text-white",
-    input:
-      "bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
-    button:
-      "w-full text-center mt-4 focus:outline-none text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-4",
-    gridUL: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4",
-    formSectionTitle: "text-lg mt-4 font-semibold text-gray-600 dark:text-gray-300",
-  }
+  // const formClassNames = {
+  //   label: "block mb-2 text-sm font-medium text-gray-950/90 dark:text-white",
+  //   input:
+  //     "bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+  //   button:
+  //     "w-full text-center mt-4 focus:outline-none text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-4",
+  //   gridUL: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4",
+  //   formSectionTitle: "text-lg mt-4 font-semibold text-gray-600 dark:text-gray-300",
+  // }
 
   return (
     <>
-      <section className="p-4 max-w-6xl mx-auto text-slate-800">
+      <section 
+      className="p-4 max-w-6xl mx-auto text-slate-800"
+      >
         {isLoading && (
           <div className="flex justify-center items-center my-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
             <span className="ml-2">Loading...</span>
           </div>
         )}
-
+         <div className={InputStyles.section80Deduction}>
         <h1 className="text-4xl font-semibold my-4">{itemId ? "Update" : "Create"} Item</h1>
 
         {apiError && (
@@ -584,6 +587,8 @@ export default function CreateItem() {
             {isLoading ? "Processing..." : itemId ? "Update Item Name" : "Create Item"}
           </button>
         </form>
+
+        </div>
       </section>
     </>
   )

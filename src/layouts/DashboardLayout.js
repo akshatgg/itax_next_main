@@ -71,6 +71,8 @@ export default function DashboardLayout({ children }) {
         <BackButton />
         {children}
       </main>
+
+  
     </div>
   );
 }

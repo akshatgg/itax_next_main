@@ -1,5 +1,4 @@
 'use client';
-
 import { toast } from 'react-toastify';
 import { useForm } from 'react-hook-form';
 import userAxios from '@/lib/userbackAxios';
@@ -16,6 +15,9 @@ import { TAX_TYPES_BY_STATES, UT_STATE_CODES } from './staticData';
 import moment from 'moment';
 // import { Input_GSTIN } from '@/components/formComponents/Inputs';
 import { useCallback } from 'react';
+import { InputStyles } from '@/app/styles/InputStyles';
+import { getCookie } from 'cookies-next';
+
 export const formClassNames = {
   label: 'block  mb-1 text-sm font-medium text-gray-950/90 dark:text-white',
   input:
@@ -176,10 +178,14 @@ const onSubmit = async (formData) => {
   }
 };
 
+const token = getCookie("token");
+  console.log("Token from cookie:", token);
+
 const getParties = async () => {
   try {
     setIsLoading(true);
     const pariesResponse = await userAxios.get('/invoice/parties');
+    console.log("Parties response:", pariesResponse); // Debugging log
     setPartiesData(pariesResponse.data);
     console.log("Fetched parties response:", pariesResponse.data); // Proper logging
   } catch (error) {
@@ -370,7 +376,10 @@ const getParties = async () => {
 
   return (
     <>
-      <section className="p-2 rounded-md px-3 max-w-6xl mx-auto">
+      <section 
+      // className="p-2 rounded-md px-3 max-w-6xl mx-auto"
+      className={InputStyles.section80Deduction}
+      >
         <form onSubmit={handleSubmit(onSubmit)}>
           <ul className="mt-6 grid gap-4 md:grid-cols-4">
             <li>
@@ -470,7 +479,7 @@ const getParties = async () => {
               <select
                 name="stateOfSupply"
                 id="stateOfSupply"
-                disabled
+                // disabled
                 className={`${formClassNames.input} py-[10px]`}
                 {...register('stateOfSupply')}
               >
@@ -534,6 +543,7 @@ const getParties = async () => {
                 </div>
               </li>
             )}
+
             {/* <li>
               <div>
                 <label htmlFor="status" className={formClassNames.label}>
@@ -580,7 +590,6 @@ const getParties = async () => {
                 {errors.dueDate && errors.dueDate.message}
               </p>
             </li>
-
             <li>
               <div>
                 <label htmlFor="isInventory" className={formClassNames.label}>
@@ -611,7 +620,7 @@ const getParties = async () => {
                 value={taxType}
                 placeholder="Suppy type"
                 className={formClassNames.input}
-                disabled
+                // disabled
               />
             </li>
 
@@ -645,7 +654,7 @@ const getParties = async () => {
                     className={formClassNames.input}
                     placeholder="CGST Amount"
                     {...register('cgst')}
-                    disabled
+                    // disabled
                   />
                   <p className=" text-xs text-red-500 h-4 px-2">
                     {errors.cgst && errors.cgst.message}
@@ -662,7 +671,7 @@ const getParties = async () => {
                     className={formClassNames.input}
                     placeholder="SGST Amount"
                     {...register('sgst')}
-                    disabled
+                    // disabled
                   />
                   <p className=" text-xs text-red-500 h-4 px-2">
                     {errors.sgst && errors.sgst.message}
@@ -719,7 +728,7 @@ const getParties = async () => {
                 className={formClassNames.input}
                 placeholder="Total GST Amount"
                 {...register('totalGst')}
-                disabled
+                // disabled
               />
               <p className=" text-xs text-red-500 h-4 px-2">
                 {errors.totalGst && errors.totalGst.message}
@@ -736,7 +745,7 @@ const getParties = async () => {
                 className={formClassNames.input}
                 placeholder="0.00"
                 {...register('totalAmount')}
-                disabled
+                // disabled
               />
               <p className=" text-xs text-red-500 h-4 px-2">
                 {errors.totalAmount && errors.totalAmount.message}

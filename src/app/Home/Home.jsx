@@ -59,7 +59,7 @@ function Home() {
   const containerRef = useRef();
   const currentRef = useRef();
   const activeNav = useRef(null);
-
+ 
   // Image validation helper
   const checkImageLink = useCallback((url) => {
     if (url && typeof url === 'string' && url.includes('/')) {

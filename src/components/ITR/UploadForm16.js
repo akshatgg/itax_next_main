@@ -195,66 +195,78 @@ const UploadForm16 = () => {
         // className="flex flex-col md:px-16 px-2 md:flex-row [&>div]:w-full [&>form]:w-full"
         className="flex flex-col container mx-auto px-2 lg:flex-row [&>div]:w-full [&>form]:w-full"
         >
-          <form className="" onSubmit={handleSubmit}>
-            <div className="flex flex-col gap-8">
-              <h2 className="text-2xl font-semibold text-center py-5 border-b">
-                Upload Form 16
-              </h2>
-              <Card>
-                <Dropzone onDrop={(acceptedFiles) => handleFile(acceptedFiles)}>
-                  {({ getRootProps, getInputProps }) => (
-                    <div
-                      className="absolute w-full h-full flex justify-center items-center"
-                      {...getRootProps()}
-                    >
-                      <input
-                        {...getInputProps()}
-                        accept=".pdf, .jpeg, .jpg, .png "
-                      />
-                    </div>
-                  )}
-                </Dropzone>
+  <form
+    onSubmit={handleSubmit}
+    className="w-full max-w-lg bg-white bg-opacity-70 backdrop-blur-md rounded-3xl shadow-2xl p-6 border border-blue-200 transition-all duration-300"
+  >
+    <div className="flex flex-col gap-6">
+      <h2 className="text-2xl font-extrabold text-center text-blue-900 pb-3 border-b border-blue-300 tracking-wide">
+        Upload Form 16
+      </h2>
 
-                <UploadBox className="pointer-events-none">
-                  {image[0]?.loading || pdf[0]?.loading ? (
-                    <>
-                      <ProgressBox>Uploading</ProgressBox>
-                      <ProgressBar />
-                    </>
-                  ) : (
-                    <>
-                      <MdCloudUpload color="#0055d4" size={40} />
-                      <p>Browse files to Upload</p>
-                    </>
-                  )}
-                </UploadBox>
-                <NameSection>
-                  <div className="flex items-center gap-2">
-                    <AiFillFileImage color="#fff" />
-                    {fileName && fileName[0] ? fileName[0] : "No File selected"}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={(e) => removeFileHandler(e)}
-                    disabled={isLoading}
-                  >
-                    <MdDelete color="#fff" />
-                  </button>
-                </NameSection>
-              </Card>
-              <button
-                type="submit"
-                disabled={isLoadingPDF}
-                className="inline-block mx-auto bg-primary px-8 py-2 text-white rounded-md font-semibold cursor-pointer disabled:opacity-25"
-              >
-                {isLoading ? (
-                  <span className="inline-block w-4 h-4 border-white border-b-zinc-400 border-r-zinc-400 border-2 border-solid rounded-full animate-spin"></span>
-                ) : (
-                  "Upload"
-                )}
-              </button>
+      <Card className="relative border-2 border-dashed border-blue-400 rounded-xl bg-gradient-to-br from-blue-100 via-white to-blue-100 shadow-inner hover:shadow-blue-300 transition duration-300 ease-in-out">
+        <Dropzone onDrop={(acceptedFiles) => handleFile(acceptedFiles)}>
+          {({ getRootProps, getInputProps }) => (
+            <div
+              className="absolute w-full h-full flex justify-center items-center z-10 cursor-pointer"
+              {...getRootProps()}
+            >
+              <input {...getInputProps()} accept=".pdf,.jpeg,.jpg,.png" />
             </div>
-          </form>
+          )}
+        </Dropzone>
+
+        <UploadBox className="pointer-events-none flex flex-col items-center justify-center gap-4 py-12">
+          {image[0]?.loading || pdf[0]?.loading ? (
+            <>
+              <ProgressBox className="text-blue-800 font-medium text-sm">
+                Uploading...
+              </ProgressBox>
+              <ProgressBar />
+            </>
+          ) : (
+            <>
+              <MdCloudUpload size={60} className="text-blue-600 animate-bounce" />
+              <p className="text-blue-700 font-semibold text-center">
+                Click or drag file to upload
+              </p>
+              <span className="text-xs text-gray-500">
+                Accepted: .pdf, .jpg, .jpeg, .png
+              </span>
+            </>
+          )}
+        </UploadBox>
+
+        <NameSection className="bg-blue-600 text-white rounded-b-lg px-4 py-2 flex justify-between items-center text-sm">
+          <div className="flex items-center gap-2">
+            <AiFillFileImage />
+            {fileName && fileName[0] ? fileName[0] : "No file selected"}
+          </div>
+          <button
+            type="button"
+            onClick={removeFileHandler}
+            disabled={isLoading}
+            className="hover:text-red-400 transition"
+          >
+            <MdDelete />
+          </button>
+        </NameSection>
+      </Card>
+
+      <button
+        type="submit"
+        disabled={isLoadingPDF}
+        className="mx-auto w-full max-w-xs bg-gradient-to-r from-blue-500 to-blue-700 text-white py-2 px-4 sm:py-3 sm:px-6 rounded-lg font-semibold shadow-lg hover:shadow-2xl transition-transform transform hover:scale-105 disabled:opacity-50"
+      >
+        {isLoading ? (
+          <span className="inline-block w-5 h-5 border-2 border-white border-t-transparent border-r-transparent rounded-full animate-spin"></span>
+        ) : (
+          "Upload Form 16"
+        )}
+      </button>
+    </div>
+  </form>
+
           <div className="flex justify-center flex-col gap-3 md:px-8 items-center">
             {fileType === "image" && (
               <div className="max-w-sm text-center">

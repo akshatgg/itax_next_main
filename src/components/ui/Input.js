@@ -14,7 +14,7 @@ const Input = forwardRef((props, ref) => {
   } = props;
 
   const defaultClasses =
-    'bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 py-3 disabled:bg-gray-200 disabled:cursor-not-allowed';
+    'bg-gray-50 border border-gray-300 text-gray-900 text-[8px] rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full disabled:bg-gray-200 disabled:cursor-not-allowed';
 
   const inputTypes = {
     textarea: (
@@ -23,9 +23,7 @@ const Input = forwardRef((props, ref) => {
     select: (
       <ReactSelect
         ref={ref}
-        className={cn(
-          '[&>div]:py-1 [&>div]:px-1 [&>div]:rounded-md',
-          className,
+        className={cn(      className,
         )}
         {...rest}
       />

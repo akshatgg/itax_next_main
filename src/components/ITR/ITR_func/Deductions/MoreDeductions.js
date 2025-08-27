@@ -308,11 +308,13 @@ export default function MoreDeductions({ setSection }) {
 
   return (
     <form onSubmit={formik.handleSubmit}>
-      <div className="mx-auto max-w-4xl w-full px-4">
-        <h3 className="border-b font-semibold mb-5">
+      {/* <div className="mx-auto max-w-4xl w-full px-4"> */}
+       <div className={InputStyles.section80Deduction}>
+        <h3 className={InputStyles.section80Deductiontitle}>
           Section 80D: Deductions for Medical Insurance
         </h3>
-        <div className="md:grid md:grid-cols-3 flex flex-col gap-5">
+
+        {/* <div className="md:grid md:grid-cols-3 flex flex-col gap-5">
           <p></p>
           <p className="text-center">For Self and Family</p>
           <p className="text-center flex flex-col">
@@ -430,9 +432,128 @@ export default function MoreDeductions({ setSection }) {
             Health check-up expenses paid by you for Self, Spouse, Dependent
             Children and Parents.
           </p>
-        </div>
+        </div> */}
 
-        <h3 className="border-b font-semibold mb-5 mt-8">
+<div className="mx-auto w-full max-w-4xl bg-blue-50 p-6 rounded-xl shadow-md space-y-4">
+  <div className="grid md:grid-cols-3 gap-6 items-center">
+    <p></p>
+    <p className="font-medium text-blue-900 flex items-center">For Self and Family</p>
+    <div className="text-center">
+      <label className="block mb-1 text-sm font-medium text-blue-900">For Parents</label>
+      <select
+        className={`${InputStyles.selectInput} w-full`}
+        name="forParents"
+        id="forParents"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.forParents}
+      >
+        <option value="Non-Senior Citizen">Non-Senior Citizen</option>
+        <option value="Senior Citizen">Senior Citizen</option>
+      </select>
+      {formik.touched.forParents && formik.errors.forParents && (
+        <p className="text-red-600 text-xs mt-1">{formik.errors.forParents}</p>
+      )}
+    </div>
+  </div>
+
+  <div className="grid md:grid-cols-3 gap-6">
+    <label htmlFor="medicalInsurancePremium_forSelfAndFamily" className="font-medium text-blue-900 flex items-center">
+      Medical Insurance Premium
+    </label>
+
+    <div className="flex flex-col">
+      <input
+        type="number"
+        name="medicalInsurancePremium_forSelfAndFamily"
+        id="medicalInsurancePremium_forSelfAndFamily"
+        className={InputStyles.input}
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.medicalInsurancePremium_forSelfAndFamily}
+      />
+      {formik.touched.medicalInsurancePremium_forSelfAndFamily &&
+      formik.errors.medicalInsurancePremium_forSelfAndFamily && (
+        <p className="text-red-600 text-xs mt-1">
+          {formik.errors.medicalInsurancePremium_forSelfAndFamily}
+        </p>
+      )}
+      <small className="ml-auto text-gray-600">Max: ₹25,000</small>
+    </div>
+
+    <div className="flex flex-col">
+      <input
+        type="text"
+        name="medicalInsurancePremium_forParents"
+        id="medicalInsurancePremium_forParents"
+        className={InputStyles.input}
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.medicalInsurancePremium_forParents}
+      />
+      {formik.touched.medicalInsurancePremium_forParents &&
+      formik.errors.medicalInsurancePremium_forParents && (
+        <p className="text-red-600 text-xs mt-1">{formik.errors.medicalInsurancePremium_forParents}</p>
+      )}
+      <small className="ml-auto text-gray-600">
+        Max: ₹{formik.values.forParents === 'Non-Senior Citizen' ? '25,000' : '50,000'}
+      </small>
+    </div>
+  </div>
+
+  <p className={InputStyles.section80DeductionP}>
+    Medical insurance premium paid by you for Self, Spouse, Dependent Children and Parents.
+  </p>
+
+  <div className="grid md:grid-cols-3 gap-6">
+    <label htmlFor="preventiveHealthCheckUpFees_forSelfAndFamily" className="text-sm font-medium text-blue-900 flex items-center">
+      Preventive Health Check-Up Fees
+    </label>
+
+    <div className="flex flex-col">
+      <input
+        type="text"
+        name="preventiveHealthCheckUpFees_forSelfAndFamily"
+        className={InputStyles.input}
+        id="preventiveHealthCheckUpFees_forSelfAndFamily"
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.preventiveHealthCheckUpFees_forSelfAndFamily}
+      />
+      {formik.touched.preventiveHealthCheckUpFees_forSelfAndFamily &&
+      formik.errors.preventiveHealthCheckUpFees_forSelfAndFamily && (
+        <p className="text-red-600 text-xs mt-1">{formik.errors.preventiveHealthCheckUpFees_forSelfAndFamily}</p>
+      )}
+      <small className="ml-auto text-gray-600">Max: ₹25,000</small>
+    </div>
+
+    <div className="flex flex-col">
+      <input
+        type="text"
+        name="preventiveHealthCheckUpFees_forParents"
+        id="preventiveHealthCheckUpFees_forParents"
+        className={InputStyles.input}
+        onChange={formik.handleChange}
+        onBlur={formik.handleBlur}
+        value={formik.values.preventiveHealthCheckUpFees_forParents}
+      />
+      {formik.touched.preventiveHealthCheckUpFees_forParents &&
+      formik.errors.preventiveHealthCheckUpFees_forParents && (
+        <p className="text-red-600 text-xs mt-1">{formik.errors.preventiveHealthCheckUpFees_forParents}</p>
+      )}
+      <small className="ml-auto text-gray-600">
+        Max: ₹{formik.values.forParents === 'Non-Senior Citizen' ? '25,000' : '50,000'}
+      </small>
+    </div>
+  </div>
+
+  <p className={InputStyles.section80DeductionP}>
+    Health check-up expenses paid by you for Self, Spouse, Dependent Children and Parents.
+  </p>
+</div>
+
+
+        <h3 className={InputStyles.section80TTA}>
           Section 80E - Education Loan on higher studies (Graduate or
           PostGraduate)
         </h3>
@@ -875,7 +996,8 @@ export default function MoreDeductions({ setSection }) {
             10,000)
           </p>
         </div>
-        <h3 className="font-medium mb-5 mt-8">Details of Donee</h3>
+             <h3 className={InputStyles.section80details}>
+             Details of Donee</h3>
         <div className="mx-auto max-w-4xl w-full">
           <div className="md:grid md:grid-cols-2 flex flex-col gap-5">
             <div className="flex flex-col">
@@ -1005,7 +1127,8 @@ export default function MoreDeductions({ setSection }) {
             </div>
           </div>
 
-          <h3 className="font-medium mb-5 mt-8">Address of Donee</h3>
+               <h3 className={InputStyles.section80details}>
+               Address of Donee</h3>
           <div className="md:grid md:grid-cols-2 flex flex-col gap-5">
             <div className="flex flex-col">
               <label htmlFor="pincode" className={InputStyles.label}>
@@ -1084,12 +1207,11 @@ export default function MoreDeductions({ setSection }) {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="block bg-primary px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer mt-5 mx-auto"
-        >
-          Save
-        </button>
+       <div className="flex justify-center pt-4">
+      <button type="submit" className={InputStyles.submitBtn}>
+        Save
+      </button>
+    </div>
       </div>
     </form>
   );

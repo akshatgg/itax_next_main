@@ -1,5 +1,4 @@
 'use client';
-
 import Link from 'next/link.js';
 import { useContext, useEffect, useState, useCallback, useMemo, useTransition } from 'react';
 import useAuth from '@/hooks/useAuth.js';
@@ -12,7 +11,9 @@ import Image from 'next/image.js';
 import userbackAxios from '@/lib/userbackAxios';
 import { useRouter, usePathname } from 'next/navigation';
 
-// Menu configurations
+
+// Menu configurations 
+
 const MENUS = {
   ourProducts: [
     {
@@ -20,11 +21,13 @@ const MENUS = {
       menu: 'Easy ITR',
       upcoming: false,
     },
-    {
-      url: '/ourproducts/library',
-      menu: 'Easy E-Library',
-      upcoming: false,
-    },
+
+    // {
+    //   url: '/ourproducts/library',
+    //   menu: 'Easy E-Library',
+    //   upcoming: false,
+    // },
+    
   ],
 
   ourServices: [
@@ -470,7 +473,8 @@ export default function Navbar({ className = '' }) {
           >
             <Image
               width={56}
-              height={56}
+              // height={56}
+              height={60}
               src="/logo.svg"
               alt="logo"
               className="object-contain w-14"
@@ -576,3 +580,13 @@ export default function Navbar({ className = '' }) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+

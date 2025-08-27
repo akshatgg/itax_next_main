@@ -2,5 +2,6 @@ import Project_Report from "@/components/pagesComponents/dashboard/Project_Repor
 export default function projectReport() {
     return (
         <Project_Report/>
+        
     )
 }

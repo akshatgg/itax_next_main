@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import BackButton from '@/components/pagesComponents/dashboard/BackButton';

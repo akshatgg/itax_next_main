@@ -1,5 +1,4 @@
 'use client';
-
 import 'jspdf-autotable';
 import { jsPDF } from 'jspdf';
 

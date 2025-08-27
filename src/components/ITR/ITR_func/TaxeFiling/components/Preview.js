@@ -33,6 +33,7 @@ export default function Preview({personalInfo,itrObj}) {
                         <Link href="/dashboard/itr/itr-filling/deductions" className="text-blue-500 text-xs">Modify if Required</Link>
                     </div>
                 </div>
+
                 {/* <div className="flex justify-between ">
                     <div>
                         <h4 className="text-md font-medium tracking-tighter">Tax Payable</h4>
@@ -43,6 +44,7 @@ export default function Preview({personalInfo,itrObj}) {
                         <Link href="/dashboard/itr/itr-filling/tax-payable" className="text-blue-500 text-xs">Modify if Required</Link>
                     </div>
                 </div> */}
+                
                 <div className="flex justify-between ">
                     <div>
                         <h4 className="text-md font-medium tracking-tighter">Taxes Paid</h4>

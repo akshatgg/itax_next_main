@@ -3,5 +3,6 @@ import CreatePurchase from "@/components/pagesComponents/dashboard/accounts/invo
 export default function Create() {
     return (
         <CreatePurchase/>
+        
     )
 }

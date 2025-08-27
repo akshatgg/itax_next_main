@@ -75,8 +75,11 @@ export default function OtherDeductions() {
     >
       {({ values }) => (
         <Form>
-          <div className="mx-auto max-w-4xl w-full px-4 md:text-base text-sm">
-            <h3 className=" text-center border-b font-semibold mb-5 text-gray-500">
+          {/* <div className="mx-auto max-w-4xl w-full px-4 md:text-base text-sm"> */}
+          <div className={InputStyles.section80Deduction}>
+            {/* <h3 className=" text-center border-b font-semibold mb-5 text-gray-500"> */}
+            <h3 className={InputStyles.section80details}>
+
               Section 80DD - Disabled dependent deduction.
               (Spouse/Children/Parents)
             </h3>
@@ -107,7 +110,7 @@ export default function OtherDeductions() {
               </div>
             </div>
 
-            <h3 className=" text-center border-b font-semibold mb-5 mt-8 text-gray-500">
+     <h3 className={InputStyles.section80details}>
               Section 80U - Disability
             </h3>
             <div className="grid sm:grid-cols-2 sm:gap-5 gap-2 gap-y-5">
@@ -136,12 +139,11 @@ export default function OtherDeductions() {
                 </label>
               </div>
             </div>
-            <button
-              type="submit"
-              className="block bg-primary px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer mt-5 mx-auto"
-            >
-              Save
-            </button>
+                   <div className="flex justify-center pt-4">
+      <button type="submit" className={InputStyles.submitBtn}>
+        Save
+      </button>
+    </div>
           </div>
         </Form>
       )}

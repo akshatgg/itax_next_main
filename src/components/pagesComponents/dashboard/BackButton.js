@@ -5,7 +5,9 @@ function Crumb(props) {
     const { crumb, index, crumbs } = props;
     if (crumbs.length - 1 !== index) {
         return (
-            <li className="capitalize flex items-center text-xs text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 dark:focus:text-blue-500">
+            <li className=
+            "capitalize flex items-center text-xs text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 dark:focus:text-blue-500"
+            >
                 <span href={crumb.link}>{crumb.label}</span>
                 <Icon
                     className="text-lg"
@@ -15,7 +17,9 @@ function Crumb(props) {
         );
     }
     return (
-        <li className="capitalize inline-flex items-center text-xs font-bold text-blue-600 truncate dark:text-blue-200">
+        <li className=
+        "capitalize inline-flex items-center text-[12px] font-bold  text-blue-600 truncate dark:text-blue-200"
+        >
             {crumb.label}
         </li>
     );
@@ -40,7 +44,9 @@ export default function BackButton({ props }) {
     });
 
     return (
-        <div className="text-gray-800 dark:text-gray-200 font-semibold  flex items-center gap-2 p-2 border-y border-gray-200 dark:border-gray-700">
+        <div 
+        className="text-gray-800 dark:text-gray-200 font-semibold  flex items-center gap-2 p-2 border-y border-gray-200 dark:border-gray-700"
+        >
             <button onClick={() => router.back()} {...props}>
                 <Icon icon="ph:arrow-left-bold" className="w-6 h-6" />
             </button>

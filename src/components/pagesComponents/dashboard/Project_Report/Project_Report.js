@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
+import { InputStyles } from "@/app/styles/InputStyles";
 const Project_Report = () => {
     const [property, setProperty] = useState("");
     const [promotercon, setPromotercon] = useState(false);
@@ -59,7 +60,8 @@ const Project_Report = () => {
     };
     return (
         <>
-            <div className=" flex justify-center items-center">
+            <div 
+            className={InputStyles.Reportsection}>
                 <div className="p-5 mx-5">
                     <div className="flex justify-center items-center mb-8">
                         {formArray.map((v, i) => (
@@ -94,15 +96,15 @@ const Project_Report = () => {
                                 <div className="flex flex-col mb-2">
                                     <label
                                         htmlFor="batch"
-                                        className="capitalize"
+                                        // className="capitalize"
+                                        className={InputStyles.Reporttitle}
                                     >
                                         Business Name
-                                        <sup className="text-red-500 text-lg">
-                                            *
-                                        </sup>
+                                       
                                     </label>
                                 </div>
                                 <div className="col-span-2">
+                                    
                                     <select
                                         className="p-2 border border-slate-400 mt-1 outline-0 focus:border-blue-500 rounded-md"
                                         name="businessName"
@@ -181,6 +183,7 @@ const Project_Report = () => {
                                             Note Book Manufacturing
                                         </option>
                                     </select>
+
                                     {errors.businessName && (
                                         <span className="text-red-500">
                                             This field is required
@@ -188,7 +191,8 @@ const Project_Report = () => {
                                     )}
                                 </div>
                                 <div>
-                                    <label htmlFor="area">
+                                    <label htmlFor="area"
+                                    className={InputStyles.Reporttitle} >
                                         Area of property:
                                     </label>
                                 </div>
@@ -358,7 +362,7 @@ const Project_Report = () => {
                         {formNo === 2 && (
                             <div className="grid grid-cols-4 gap-2">
                                 <div className="flex flex-col mb-2 col-span-4 text-center">
-                                    <label className="font-bold text-lg">
+                                    <label className={InputStyles.Reporttitle}>
                                         Plant and Machinery
                                     </label>
                                 </div>
@@ -563,7 +567,7 @@ const Project_Report = () => {
                                     </label>
                                 </div>
                                 <div>
-                                    <label htmlFor="">
+                                    <label htmlFor=""className={InputStyles.Reporttitle}>
                                         Promoter&apos;s Contribution
                                     </label>
                                 </div>
@@ -671,7 +675,7 @@ const Project_Report = () => {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="">
+                                    <label htmlFor="" className={InputStyles.Reporttitle}>
                                         Expected Sale Turnover per Year
                                     </label>
                                 </div>

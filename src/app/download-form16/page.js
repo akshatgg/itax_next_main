@@ -1,4 +1,4 @@
-import Form16Form from "./components/Form16Form";
+import Form16Form from "./components/page";
 export default function page() {
     return (
         <div>

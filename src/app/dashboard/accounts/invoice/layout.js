@@ -1,5 +1,4 @@
 'use client';
-
 import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import BackButton from '@/components/pagesComponents/dashboard/BackButton';
@@ -8,6 +7,7 @@ import Loader from '@/components/partials/loading/Loader.js';
 import { usePathname } from 'next/navigation';
 
 const sidebarItems = [
+
   {
     upcoming: false,
     title: 'overview',
@@ -120,7 +120,9 @@ export default function AccountLayout({ children }) {
     <>
       {/* Global loader overlay */}
       {isNavigating && (
-        <div className="fixed inset-0 bg-white/60 z-50 flex items-center justify-center">
+        <div 
+        className="fixed inset-0 bg-white/60 z-50 flex items-center justify-center"
+        >
           <Loader />
         </div>
       )}
@@ -131,14 +133,12 @@ export default function AccountLayout({ children }) {
         setIsNavigating={setIsNavigating}
         topOffset={"3 rem"}
       />
-
       {/* Overlay for mobile when sidebar is open */}
       <div
         onClick={() => setIsSidebarOpen(false)}
         className={` ${isSidebarOpen ? 'lg:hidden fixed inset-0 z-30 bg-black bg-opacity-30' : 'hidden'}`}
       ></div>
-
-      <main className={`${isSidebarOpen ? 'lg:pl-[16rem]' : ''} pl-[4rem]`}>
+      <main className={`${isSidebarOpen ? 'lg:pl-[16rem]' : ''} pl-[4rem] relative`}>
         <BackButton />
         {children}
       </main>

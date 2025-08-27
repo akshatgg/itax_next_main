@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 export default function GridItem(props) {
 	const { children, className, href } = props;
 	if (href) {
@@ -12,9 +13,6 @@ export default function GridItem(props) {
                         flex
                         items-center
         
-        
-        
-        
                         shadow-md
                         shadow-blue-300
                         hover:shadow-xl
@@ -22,8 +20,6 @@ export default function GridItem(props) {
                         hover:shadow-blue-100
                         bg-neutral-50
                         text-neutral-600 
-
-
 
                         dark:shadow-sm
                         hover:dark:shadow-blue-900

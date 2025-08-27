@@ -11,6 +11,7 @@ import ResultComponent from "../Components/ResultComponent"
 import { useDispatch } from "react-redux"
 const PDF_DOC = "PDF_DOC"
 import Button from "@/components/ui/Button"
+import { InputStyles } from "@/app/styles/InputStyles"
 
 export default function Searchbygstin() {
   const { token } = useAuth()
@@ -184,7 +185,7 @@ export default function Searchbygstin() {
   })
 
   return (
-    <SearchResult_section title="Search by GSTIN">
+    <SearchResult_section title="Search by GSTIN" titleClassName="text-xl font-bold text-blue-600 mb-4">
       <li className="bg-white rounded-lg shadow-md p-4 transition-all duration-300">
         <FormComponent
           onSubmit={handleSubmit}
@@ -216,7 +217,7 @@ export default function Searchbygstin() {
           </div>
         )}
       </li>
-      <li className="lg:col-span-2 bg-gray-200 p-4 rounded-lg">
+      <li className={InputStyles.SearchGSTbase}>
         {loading && (
           <div className="bg-white p-6 rounded-lg shadow-md text-center">
             <div className="flex flex-col items-center justify-center">
@@ -237,7 +238,7 @@ export default function Searchbygstin() {
         ) : (
           !loading &&
           !showhide && (
-            <div className="bg-white mx-auto md:w-2/3 px-6 py-8 rounded-lg shadow-md transition-all duration-300">
+            <div className= "bg-white p-4 rounded-lg shadow-md transition-all duration-300" >
               <div className="text-center">
                 <div className="mb-4">
                   <svg
@@ -254,7 +255,7 @@ export default function Searchbygstin() {
                       d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     />
                   </svg>
-                  <h2 className="text-xl font-bold text-gray-800 mb-2">Welcome to the TaxPayer search page</h2>
+                  <h2 className={InputStyles.tdstitle}>Welcome to the TaxPayer search page</h2>
                 </div>
                 <p className="paragraph-md text-gray-600 mb-4">
                   Use the search bar to find information about taxpayers and their financial records.

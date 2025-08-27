@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { StoreContext } from "@/store/store-context";
 import showCurrency from "@/helper/showCurrency";
+import { InputStyles } from "@/app/styles/InputStyles";
 // import {
 //     Image,
 //     Document,
@@ -858,175 +859,236 @@ export default function TaxPayable() {
         }
     },[taxAbleIncome,itr_AY,Gender,taxPayerType])
     return (
-        <div>
-            <div>
-                <div
-                    className={`
-            mx-auto
-             sm:max-w-xl
-             md:max-w-2xl
-             lg:max-w-3xl
-            sm:px-8
-            px-4
-            md:text-base
-            text-sm
+        // <div className={InputStyles.section80Deduction}>
+        //     <div>
+        //         <div
+        //             className={`
+        //     mx-auto
+        //      sm:max-w-xl
+        //      md:max-w-2xl
+        //      lg:max-w-3xl
+        //     sm:px-8
+        //     px-4
+        //     md:text-base
+        //     text-sm
 
-            [&_div]:flex
-            [&_div]:px-3
-            [&_div]:justify-between
-            [&_div]:my-4
-        `}
-                >
-                    <h2 className="text-3xl text-center font-bold bg-primary text-white rounded-sm rounded-t-md p-2">
-                        Tax Payable
-                    </h2>
-                    <ul className="[&>li]:flex [&>li]:justify-between [&>li]:flex-wrap">
-                        <li className="mb-2 underline">
-                            Assessment Year: <span className="font-semibold text-gray-800">{itr_AY}</span>
-                        </li>
-                        <li className="mb-2 underline">
-                            Tax Payer Type: <span className="font-semibold text-gray-800">{taxPayerType==="General"?"Individual":taxPayerType}</span>
-                        </li>
-                    </ul>
-                    <div className="rounded-md font-bold bg-primary text-white py-3">
-                        <span>Gross Total Income</span>
-                        <span>{"Amount"}</span>
-                    </div>
-                    <div>
-                        <span>
-                            {" "}
-                            (1) Income Chargable Under the Head
-                            &quot;Salaries&quot;
-                        </span>
-                        <span>
-                            {incomeChargeableUnderTheHeadSalaries.toLocaleString()}
-                        </span>
-                    </div>
-                    <div>
-                        <span>
-                            {" "}
-                            (2) Income Chargable Under the Head House Property
-                        </span>
-                        <span>{headhouseProperty.toLocaleString()}</span>
-                    </div>
-                    <div>
-                        <span> (3) Income From Other Sources</span>
-                        <span>{incomeFromOtherSources.toLocaleString()}</span>
-                    </div>
-                    <div className="font-bold">
-                        <span>(A) Gross Total Income (1+2+3)</span>
-                        <span>
-                            {totalGrossIncome().toLocaleString(undefined, {
-                                maximumFractionDigits: 2,
-                            })}
-                        </span>
-                    </div>
-                    <div className="font-bold bg-primary py-3 text-white rounded-md">
-                        <span>Deductions And Taxable Income</span>
-                        <span>Amount</span>
-                    </div>
-                    <div>
-                        <span>Section 80C and others..</span>
-                        <span>{section80cDeduction.toLocaleString()}</span>
-                    </div>
-                    <div>
-                        <span>Section 80D and others..</span>
-                        <span>{section80dDeduction.toLocaleString()}</span>
-                    </div>
-                    <div>
-                        <span>Section 80DD and others..</span>
-                        <span>{section80ddDeduction.toLocaleString()}</span>
-                    </div>
-                    <div className="font-bold">
-                        <span>(B) Total Deductions:</span>
-                        <span>{totalDeduction().toLocaleString()}</span>
-                    </div>
-                    <div className="font-bold">
-                        <span>Total Income (A) - (B) :</span>
-                        <span>
-                            {totalIncome().toLocaleString(undefined, {
-                                maximumFractionDigits: 2,
-                            })}
-                        </span>
-                    </div>
-                    {/* <div className="font-bold">
-                        <span>Total Tax Liability (including cess):</span>
-                        <span>
-                            {calculateTax(taxAbleIncome).toLocaleString(
-                                undefined,
-                                {
-                                    maximumFractionDigits: 2,
-                                },
-                            )}
-                        </span>
-                    </div> */}
-                </div>
-            </div>
-            <ul className="mx-auto sm:max-w-xl md:max-w-2xl lg:max-w-3xl px-8 sm:px-8 space-y-4 bg-gray-200 p-2">
-                <li className="font-bold px-4 flex justify-between">
-                    Income Tax after relief u/s 87A: <span>{showCurrency(calculatedTax?.taxRate||0)}</span>
-                </li>
-                <li className="font-bold px-4 flex justify-between">
-                    Surcharge: <span>{showCurrency(calculatedTax?.surcharge||0)}</span>
-                </li>
-                <li className="font-bold px-4 flex justify-between">
-                    Cess : <span>{showCurrency(calculatedTax?.educationCess||0)}</span>
-                </li>
-                <li className="font-bold px-4 flex justify-between">
-                    Total Tax Liability (including cess): <span>{showCurrency(calculatedTax?.taxRate + calculatedTax?.surcharge + calculatedTax?.educationCess||0)}</span>
-                </li>
+        //     [&_div]:flex
+        //     [&_div]:px-3
+        //     [&_div]:justify-between
+        //     [&_div]:my-4
+        // `}
+        //         >
+        //             <h2 className="text-3xl text-center font-bold bg-primary text-white rounded-sm rounded-t-md p-2">
+        //                 Tax Payable
+        //             </h2>
+        //             <ul className="[&>li]:flex [&>li]:justify-between [&>li]:flex-wrap">
+        //                 <li className="mb-2 underline">
+        //                     Assessment Year: <span className="font-semibold text-gray-800">{itr_AY}</span>
+        //                 </li>
+        //                 <li className="mb-2 underline">
+        //                     Tax Payer Type: <span className="font-semibold text-gray-800">{taxPayerType==="General"?"Individual":taxPayerType}</span>
+        //                 </li>
+        //             </ul>
+        //             <div className="rounded-md font-bold bg-primary text-white py-3">
+        //                 <span>Gross Total Income</span>
+        //                 <span>{"Amount"}</span>
+        //             </div>
+        //             <div>
+        //                 <span>
+        //                     {" "}
+        //                     (1) Income Chargable Under the Head
+        //                     &quot;Salaries&quot;
+        //                 </span>
+        //                 <span>
+        //                     {incomeChargeableUnderTheHeadSalaries.toLocaleString()}
+        //                 </span>
+        //             </div>
+        //             <div>
+        //                 <span>
+        //                     {" "}
+        //                     (2) Income Chargable Under the Head House Property
+        //                 </span>
+        //                 <span>{headhouseProperty.toLocaleString()}</span>
+        //             </div>
+        //             <div>
+        //                 <span> (3) Income From Other Sources</span>
+        //                 <span>{incomeFromOtherSources.toLocaleString()}</span>
+        //             </div>
+        //             <div className="font-bold">
+        //                 <span>(A) Gross Total Income (1+2+3)</span>
+        //                 <span>
+        //                     {totalGrossIncome().toLocaleString(undefined, {
+        //                         maximumFractionDigits: 2,
+        //                     })}
+        //                 </span>
+        //             </div>
+        //             <div className="font-bold bg-primary py-3 text-white rounded-md">
+        //                 <span>Deductions And Taxable Income</span>
+        //                 <span>Amount</span>
+        //             </div>
+        //             <div>
+        //                 <span>Section 80C and others..</span>
+        //                 <span>{section80cDeduction.toLocaleString()}</span>
+        //             </div>
+        //             <div>
+        //                 <span>Section 80D and others..</span>
+        //                 <span>{section80dDeduction.toLocaleString()}</span>
+        //             </div>
+        //             <div>
+        //                 <span>Section 80DD and others..</span>
+        //                 <span>{section80ddDeduction.toLocaleString()}</span>
+        //             </div>
+        //             <div className="font-bold">
+        //                 <span>(B) Total Deductions:</span>
+        //                 <span>{totalDeduction().toLocaleString()}</span>
+        //             </div>
+        //             <div className="font-bold">
+        //                 <span>Total Income (A) - (B) :</span>
+        //                 <span>
+        //                     {totalIncome().toLocaleString(undefined, {
+        //                         maximumFractionDigits: 2,
+        //                     })}
+        //                 </span>
+        //             </div>
+        //             {/* <div className="font-bold">
+        //                 <span>Total Tax Liability (including cess):</span>
+        //                 <span>
+        //                     {calculateTax(taxAbleIncome).toLocaleString(
+        //                         undefined,
+        //                         {
+        //                             maximumFractionDigits: 2,
+        //                         },
+        //                     )}
+        //                 </span>
+        //             </div> */}
+        //         </div>
+        //     </div>
+        //     <ul className="mx-auto sm:max-w-xl md:max-w-2xl lg:max-w-3xl px-8 sm:px-8 space-y-4 bg-gray-200 p-2">
+        //         <li className="font-bold px-4 flex justify-between">
+        //             Income Tax after relief u/s 87A: <span>{showCurrency(calculatedTax?.taxRate||0)}</span>
+        //         </li>
+        //         <li className="font-bold px-4 flex justify-between">
+        //             Surcharge: <span>{showCurrency(calculatedTax?.surcharge||0)}</span>
+        //         </li>
+        //         <li className="font-bold px-4 flex justify-between">
+        //             Cess : <span>{showCurrency(calculatedTax?.educationCess||0)}</span>
+        //         </li>
+        //         <li className="font-bold px-4 flex justify-between">
+        //             Total Tax Liability (including cess): <span>{showCurrency(calculatedTax?.taxRate + calculatedTax?.surcharge + calculatedTax?.educationCess||0)}</span>
+        //         </li>
                 
-            </ul>
-            {/* <div className="flex gap-3 justify-center">
-                <button
-                    className="bg-primary px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer"
-                    onClick={() =>
-                        router.push("/dashboard/itr/itr-filling/taxes-paid")
-                    }
-                >
-                    Submit
-                </button>
-                <PDFDownloadLink
-                    document={<ITR1PDF />}
-                    fileName="itr-1"
-                    className="bg-primary w-max px-8 py-3 text-white rounded-md font-semibold text-sm cursor-pointer"
-                >
-                    {({ blob, url, loading, error }) =>
-                        loading ? "Loading document..." : "Download PDF"
-                    }
-                </PDFDownloadLink>
-            </div> */}
+        //     </ul>
+        // </div>
+
+
+<div className="bg-gradient-to-br from-blue-100 via-white to-blue-50 py-12 px-4 sm:px-8 lg:px-10 max-w-6xl mx-auto rounded-3xl shadow-2xl">
+  <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-blue-200 shadow-xl p-6 sm:p-10 space-y-8">
+    
+    {/* Heading */}
+    <div className="flex items-center justify-center gap-3">
+      <svg className="w-8 h-8 text-blue-600 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M13 7H7v6h6V7z" /><path fillRule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm10 12H5V5h10v10z" clipRule="evenodd" />
+      </svg>
+      <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-900 text-center tracking-wide">
+        Tax Payable 
+      </h2>
+    </div>
+
+    {/* Basic Info */}
+    <ul className="text-base text-gray-700 divide-y divide-gray-300 rounded-lg bg-gray-50 p-4 sm:p-6">
+      <li className="flex justify-between py-2">
+        <span className="font-medium">Assessment Year:</span>
+        <span className="font-semibold">{itr_AY}</span>
+      </li>
+      <li className="flex justify-between py-2">
+        <span className="font-medium">Tax Payer Type:</span>
+        <span className="font-semibold">{taxPayerType === "General" ? "Individual" : taxPayerType}</span>
+      </li>
+    </ul>
+
+    {/* Gross Total Income */}
+    <div className="bg-blue-50 border border-blue-300 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300">
+      <h3 className="text-xl font-semibold text-blue-800 mb-4">Gross Total Income</h3>
+      <div className="space-y-3">
+        <div className="flex justify-between">
+          <span>1. Income from Salaries</span>
+          <span className="font-semibold">{incomeChargeableUnderTheHeadSalaries.toLocaleString()}</span>
         </div>
+        <div className="flex justify-between">
+          <span>2. Income from House Property</span>
+          <span className="font-semibold">{headhouseProperty.toLocaleString()}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>3. Income from Other Sources</span>
+          <span className="font-semibold">{incomeFromOtherSources.toLocaleString()}</span>
+        </div>
+        <div className="flex justify-between font-bold text-blue-900 border-t border-blue-300 pt-3 mt-3">
+          <span>Total Gross Income (A)</span>
+          <span>{totalGrossIncome().toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Deductions */}
+    <div className="bg-green-50 border border-green-300 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300">
+      <h3 className="text-xl font-semibold text-green-800 mb-4">Deductions and Net Income</h3>
+      <div className="space-y-3">
+        <div className="flex justify-between">
+          <span>Section 80C and Others</span>
+          <span className="font-semibold">{section80cDeduction.toLocaleString()}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Section 80D and Others</span>
+          <span className="font-semibold">{section80dDeduction.toLocaleString()}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Section 80DD and Others</span>
+          <span className="font-semibold">{section80ddDeduction.toLocaleString()}</span>
+        </div>
+        <div className="flex justify-between font-bold text-green-900 border-t border-green-300 pt-3 mt-3">
+          <span>Total Deductions (B)</span>
+          <span>{totalDeduction().toLocaleString()}</span>
+        </div>
+        <div className="flex justify-between font-bold text-green-900">
+          <span>Net Taxable Income (A - B)</span>
+          <span>{totalIncome().toLocaleString(undefined, { maximumFractionDigits: 2 })}</span>
+        </div>
+      </div>
+    </div>
+
+    {/* Tax Breakdown */}
+    <div className="bg-yellow-50 border border-yellow-300 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300">
+      <h3 className="text-xl font-semibold text-yellow-900 mb-4">Tax Breakdown</h3>
+      <ul className="space-y-3">
+        <li className="flex justify-between font-medium">
+          <span>Income Tax after relief u/s 87A</span>
+          <span>{showCurrency(calculatedTax?.taxRate || 0)}</span>
+        </li>
+        <li className="flex justify-between font-medium">
+          <span>Surcharge</span>
+          <span>{showCurrency(calculatedTax?.surcharge || 0)}</span>
+        </li>
+        <li className="flex justify-between font-medium">
+          <span>Cess</span>
+          <span>{showCurrency(calculatedTax?.educationCess || 0)}</span>
+        </li>
+        <li className="flex justify-between font-bold text-yellow-900 border-t border-yellow-300 pt-3 mt-3">
+          <span>Total Tax Liability (incl. cess)</span>
+          <span>
+            {showCurrency(
+              (calculatedTax?.taxRate || 0) +
+              (calculatedTax?.surcharge || 0) +
+              (calculatedTax?.educationCess || 0)
+            )}
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
+
     );
 }
 
-// const ITR1PDF = () => {
-//     const styles = StyleSheet.create({
-//         viewer: {
-//             width: window.innerWidth,
-//             height: window.innerHeight,
-//         },
-//         page: {
-//             backgroundColor: "white",
-//             display: "flex",
-//             justifyContent: "center",
-//             alignItems: "center",
-//             color: "black",
-//             padding: "20px",
-//         },
-//         img: {
-//             objectFit: "cover",
-//         },
-//     });
-
-//     return (
-//         <Document>
-//             <Page>
-//                 <View>
-//                     <Text>www.itaxeasy.com</Text>
-//                     <Text>Email : info@itaxeasy.com</Text>
-//                 </View>
-//             </Page>
-//         </Document>
-//     );
-// };

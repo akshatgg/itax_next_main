@@ -1,6 +1,6 @@
 import Button from './Button';
-
 export default function GSTR_Supply() {
+    
   return (
     <>
       <div className="border rounded-tl-md rounded-bl-md w-2/6 [&>div]:min-h-12">

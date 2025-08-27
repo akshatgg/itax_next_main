@@ -22,6 +22,7 @@ export default function InvoiceDetails(props) {
             />
           </div>
         </li>
+        
         {/* <li>
 					<label className="label" htmlFor="stateOfSupply">
 						State Of Supply

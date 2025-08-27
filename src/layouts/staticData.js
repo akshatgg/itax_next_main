@@ -7,13 +7,15 @@ export const DashboardSidebarItemsData = {
       iconName: 'material-symbols:dashboard',
       subMenu: false,
     },
-    // {
-    //   upcoming: false,
-    //   title: 'Easy GST Return',
-    //   linkTo: '/dashboard/easy-gst-return',
-    //   iconName: 'carbon:finance',
-    //   subMenu: false,
-    // },
+    {
+      upcoming: false,
+      title: 'Easy GST Return',
+      linkTo: '/gst-dashboard',
+      iconName: 'carbon:finance',
+      subMenu: false,
+    },
+
+
     {
       upcoming: false,
       title: 'ITR',
@@ -26,6 +28,7 @@ export const DashboardSidebarItemsData = {
           title: 'Upload Form-16',
           iconName: 'lets-icons:subttasks-alt-fill',
         },
+        
         {
           upcoming: false,
           linkTo: '/dashboard/itr/manual-itr',
@@ -46,6 +49,49 @@ export const DashboardSidebarItemsData = {
         },
       ],
     },
+
+    // ITR-Filling  
+{
+      upcoming: false,
+      title: 'ITR-Filling',
+      iconName: 'fa6-solid:percent',
+      subMenu: true,
+      subMenuItems: [
+        {
+          upcoming: false,
+          linkTo: '/dashboard/itr-fill/DeductionsMicroservice',
+          title: 'DeductionsMicroservice',
+          iconName: 'lets-icons:subttasks-alt-fill',
+        },
+        {
+          upcoming: false,
+          linkTo: '/dashboard/itr-fill/Form16Microservice',
+          title: 'Form16Microservice',
+          iconName: 'lets-icons:subttasks-alt-fill',
+        },
+        {
+          upcoming: false,
+          linkTo: '/dashboard/itr-fill/IncomeSourcesMicroservice',
+          title: 'IncomeSourcesMicroservice',
+          iconName: 'lets-icons:subttasks-alt-fill',
+        },
+
+        {
+          upcoming: false,
+          linkTo: '/dashboard/itr-fill/PersonalInfoMicroservice',
+          title: 'PersonalInfoMicroservice',
+          iconName: 'lets-icons:subttasks-alt-fill',
+        },
+        {
+          upcoming: false,
+          linkTo: '/dashboard/itr-fill/TaxesFillingMicroservice',
+          title: 'TaxesFillingMicroservice',
+          iconName: 'lets-icons:subttasks-alt-fill',
+        },
+      ]
+      },
+
+
     {
       upcoming: false,
       title: 'Easy Investment',
@@ -212,13 +258,15 @@ export const DashboardSidebarItemsData = {
           upcoming: false,
           linkTo: '/profile',
         },
+
         {
           title: 'Business profile',
           iconName: 'lets-icons:subttasks-alt-fill',
-          linkTo: '/profile',
+          // linkTo: '/profile',
         },
       ],
     },
+
   ],
   admin: [
     {

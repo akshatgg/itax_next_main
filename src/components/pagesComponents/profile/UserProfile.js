@@ -1,5 +1,4 @@
 "use client"
-
 import Button from "@/components/ui/Button"
 import userAxios from "@/lib/userbackAxios"
 import { use, useCallback, useEffect, useState } from "react"
@@ -68,51 +67,45 @@ const UserProfile = () => {
 
   // UPDATES USER DETAILS
   const submitHandler = async (data) => {
-   
-  const BASE = process.env.NEXT_PUBLIC_BACK_URL
 
-  const formData = new FormData()
-  for (const key in data) {
-    if (key === "avatar" && data[key]?.[0]) {
-      formData.append(key, data[key][0])
-    } else if (data[key] !== undefined && data[key] !== null) {
-      formData.append(key, data[key])
+    const BASE = process.env.NEXT_PUBLIC_BACK_URL
+
+    const formData = new FormData()
+    for (const key in data) {
+      if (key === "avatar" && data[key]?.[0]) {
+        formData.append(key, data[key][0])
+      } else if (data[key] !== undefined && data[key] !== null) {
+        formData.append(key, data[key])
+      }
+    }
+
+    // ✅ Add this line to include isPanLinked if PAN is verified
+    const isPanChanged = data?.pan !== panCard;
+    formData.append("ispanlinked", JSON.stringify(isverify && !isPanChanged ? true : false));
+    try {
+      setIsSubmitting(true)
+      setIsLoading(true)
+      const response = await axios.put(`${BASE}/user/update`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      if (response.status === 200) {
+        setEditable(false)
+        getUserDetails()
+        toast.success("Profile updated successfully!")
+      } else {
+        toast.error("Failed to update profile!")
+      }
+    } catch (error) {
+      console.error("Update error:", error)
+      toast.error(error.response?.data?.message || "Error updating profile")
+    } finally {
+      setIsLoading(false)
+      setIsSubmitting(false)
     }
   }
-
-  // ✅ Add this line to include isPanLinked if PAN is verified
- const isPanChanged = data?.pan !== panCard;
-
-formData.append("ispanlinked", JSON.stringify(isverify && !isPanChanged ? true : false));
-
-
-  try {
-    setIsSubmitting(true)
-    setIsLoading(true)
-    const response = await axios.put(`${BASE}/user/update`, formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    })
-
-    if (response.status === 200) {
-      setEditable(false)
-      getUserDetails()
-      toast.success("Profile updated successfully!")
-    } else {
-      toast.error("Failed to update profile!")
-    }
-  } catch (error) {
-    console.error("Update error:", error)
-    toast.error(error.response?.data?.message || "Error updating profile")
-  } finally {
-    setIsLoading(false)
-    setIsSubmitting(false)
-  }
-}
-
-
   // FETCHES USER DETAILS
   const getUserDetails = useCallback(async () => {
     try {
@@ -135,11 +128,11 @@ formData.append("ispanlinked", JSON.stringify(isverify && !isPanChanged ? true :
   }, [reset])
 
 
-useEffect(() => {
-  if (panCard && data?.pan && panCard !== data.pan) {
-    setIsVerify(false)
-  }
-}, [panCard, data?.pan])
+  useEffect(() => {
+    if (panCard && data?.pan && panCard !== data.pan) {
+      setIsVerify(false)
+    }
+  }, [panCard, data?.pan])
 
 
   // FETCHES PAN DETAILS WITH USER INPUT
@@ -185,7 +178,7 @@ useEffect(() => {
           setValue("address", data.address || existingValues?.address)
           setValue("gender", data.gender || existingValues?.gender)
           setValue("pin", data.pin || existingValues?.pin)
-          
+
           // Close the verification modal
           setPanVerificationOpen(false)
         } else {
@@ -333,7 +326,7 @@ useEffect(() => {
                         </>
                       ) : (
                         <>
-                        
+
                           <CheckCircle size={18} className="mr-2" />
                           Verify
                         </>
@@ -370,18 +363,18 @@ useEffect(() => {
                           />
                         </svg>
                       )}
-           {data?.ispanlinked ? (
-  <div className="flex items-center text-green-600">
-    <CheckCircle size={16} className="mr-1" />
-    <span className="text-xs font-medium">Verified</span>
-  </div>
-) : (
-   (
-    <span className="text-xs text-red-500 font-medium italic ml-2">
-      Not Verified
-    </span>
-  )
-)}
+                      {data?.ispanlinked ? (
+                        <div className="flex items-center text-green-600">
+                          <CheckCircle size={16} className="mr-1" />
+                          <span className="text-xs font-medium">Verified</span>
+                        </div>
+                      ) : (
+                        (
+                          <span className="text-xs text-red-500 font-medium italic ml-2">
+                            Not Verified
+                          </span>
+                        )
+                      )}
 
 
                     </div>
@@ -389,11 +382,9 @@ useEffect(() => {
 
                   <div className="flex gap-2">
                     <input
-                      className={`appearance-none block w-full ${
-                        editable ? "bg-white" : "bg-gray-100"
-                      } text-gray-700 border ${
-                        errors.pan ? "border-red-500" : "border-gray-300"
-                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 uppercase placeholder:capitalize`}
+                      className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                        } text-gray-700 border ${errors.pan ? "border-red-500" : "border-gray-300"
+                        } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 uppercase placeholder:capitalize`}
                       id="pan"
                       type="text"
                       disabled={!editable}
@@ -418,11 +409,9 @@ useEffect(() => {
                 <div className="w-full">
                   <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Aadhaar</label>
                   <input
-                    className={`appearance-none block w-full ${
-                      editable ? "bg-white" : "bg-gray-100"
-                    } text-gray-700 border ${
-                      errors.aadhaar ? "border-red-500" : "border-gray-300"
-                    } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
+                    className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                      } text-gray-700 border ${errors.aadhaar ? "border-red-500" : "border-gray-300"
+                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
                     id="aadhaar"
                     type="text"
                     disabled={!editable}
@@ -437,11 +426,9 @@ useEffect(() => {
                     First Name
                   </label>
                   <input
-                    className={`appearance-none block w-full ${
-                      editable ? "bg-white" : "bg-gray-100"
-                    } text-gray-700 border ${
-                      errors.firstName ? "border-red-500" : "border-gray-300"
-                    } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
+                    className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                      } text-gray-700 border ${errors.firstName ? "border-red-500" : "border-gray-300"
+                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
                     id="firstName"
                     type="text"
                     placeholder={"Enter Your first name"}
@@ -456,11 +443,9 @@ useEffect(() => {
                     Middle Name (If Applicable)
                   </label>
                   <input
-                    className={`appearance-none block w-full ${
-                      editable ? "bg-white" : "bg-gray-100"
-                    } text-gray-700 border ${
-                      errors.middleName ? "border-red-500" : "border-gray-300"
-                    } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
+                    className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                      } text-gray-700 border ${errors.middleName ? "border-red-500" : "border-gray-300"
+                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
                     id="middleName"
                     type="text"
                     placeholder="Enter your middle name"
@@ -475,11 +460,9 @@ useEffect(() => {
                     Last Name
                   </label>
                   <input
-                    className={`appearance-none block w-full ${
-                      editable ? "bg-white" : "bg-gray-100"
-                    } text-gray-700 border ${
-                      errors.lastName ? "border-red-500" : "border-gray-300"
-                    } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
+                    className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                      } text-gray-700 border ${errors.lastName ? "border-red-500" : "border-gray-300"
+                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
                     {...register("lastName")}
                     id="lastName"
                     type="text"
@@ -492,11 +475,9 @@ useEffect(() => {
                 <div className="w-full">
                   <label className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">Email</label>
                   <input
-                    className={`appearance-none block w-full ${
-                      editable ? "bg-white" : "bg-gray-100"
-                    } text-gray-700 border ${
-                      errors.email ? "border-red-500" : "border-gray-300"
-                    } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
+                    className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                      } text-gray-700 border ${errors.email ? "border-red-500" : "border-gray-300"
+                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
                     id="email"
                     disabled={!editable}
                     type="email"
@@ -511,11 +492,9 @@ useEffect(() => {
                     Phone Number
                   </label>
                   <input
-                    className={`appearance-none block w-full ${
-                      editable ? "bg-white" : "bg-gray-100"
-                    } text-gray-700 border ${
-                      errors.phone ? "border-red-500" : "border-gray-300"
-                    } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
+                    className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                      } text-gray-700 border ${errors.phone ? "border-red-500" : "border-gray-300"
+                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
                     id="mobile"
                     type="text"
                     disabled={!editable}
@@ -531,11 +510,9 @@ useEffect(() => {
                     {...register("gender")}
                     id="gender"
                     disabled={!editable}
-                    className={`appearance-none capitalize block w-full ${
-                      editable ? "bg-white" : "bg-gray-100"
-                    } text-gray-700 border ${
-                      errors.gender ? "border-red-500" : "border-gray-300"
-                    } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200`}
+                    className={`appearance-none capitalize block w-full ${editable ? "bg-white" : "bg-gray-100"
+                      } text-gray-700 border ${errors.gender ? "border-red-500" : "border-gray-300"
+                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200`}
                   >
                     <option selected value="male">
                       Male
@@ -553,11 +530,9 @@ useEffect(() => {
                     Address
                   </label>
                   <input
-                    className={`appearance-none block w-full ${
-                      editable ? "bg-white" : "bg-gray-100"
-                    } text-gray-700 border ${
-                      errors.address ? "border-red-500" : "border-gray-300"
-                    } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
+                    className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                      } text-gray-700 border ${errors.address ? "border-red-500" : "border-gray-300"
+                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
                     id="address"
                     type="text"
                     placeholder="Enter your address"
@@ -576,34 +551,34 @@ useEffect(() => {
                     type="text"
                     placeholder="Enter your pin code"
                     disabled={!editable}
-                    className={`appearance-none block w-full ${
-                      editable ? "bg-white" : "bg-gray-100"
-                    } text-gray-700 border ${
-                      errors.pin ? "border-red-500" : "border-gray-300"
-                    } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
+                    className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                      } text-gray-700 border ${errors.pin ? "border-red-500" : "border-gray-300"
+                      } rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize`}
                     {...register("pin")}
                   />
                   {errors.pin && <p className="text-red-500 text-xs mt-1">{errors.pin.message}</p>}
                 </div>
 
-<div className="flex items-center mt-4">
-  <input
-    type="checkbox"
-    id="inventory"
-    {...register("inventory")}
-    checked={watch("inventory") || false}
-    onChange={(e) => setValue("inventory", e.target.checked)}
-    className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-    disabled={!editable} // <-- This line disables checkbox when not editable
-  />
-  <label htmlFor="inventory" className="text-sm text-gray-700">
-    Enable Inventory Access
-  </label>
-</div>
-  
+                <div className="flex items-center mt-4">
+                  <input
+                    type="checkbox"
+                    id="inventory"
+                    {...register("inventory")}
+                    checked={watch("inventory") || false}
+                    onChange={(e) => setValue("inventory", e.target.checked)}
+                    className="mr-2 h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    disabled={!editable} // <-- This line disables checkbox when not editable
+                  />
+                  <label htmlFor="inventory" className="text-sm text-gray-700">
+                    Enable Inventory Access
+                  </label>
+                </div>
 
 
-                 
+
+
+                {/* choose profile  */}
+
                 <div className="w-full">
                   <label
                     className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -614,9 +589,8 @@ useEffect(() => {
                   <div className={`relative ${!editable ? "opacity-70" : ""}`}>
                     <input
                       disabled={!editable}
-                      className={`appearance-none block w-full ${
-                        editable ? "bg-white" : "bg-gray-100"
-                      } text-gray-700 border border-gray-300 rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100`}
+                      className={`appearance-none block w-full ${editable ? "bg-white" : "bg-gray-100"
+                        } text-gray-700 border border-gray-300 rounded-md py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 placeholder:capitalize file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100`}
                       id="file_input"
                       type="file"
                       {...register("avatar")}
@@ -741,3 +715,4 @@ useEffect(() => {
 }
 
 export default UserProfile
+

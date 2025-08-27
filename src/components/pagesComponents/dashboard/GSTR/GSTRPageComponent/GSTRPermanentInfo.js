@@ -6,6 +6,7 @@ import CustomInput from '../GSTRHomeComponent/CustomInput';
 import CustomLabel from '../GSTRHomeComponent/CustomLabel';
 
 const GSTRPermanentInfo = () => {
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
