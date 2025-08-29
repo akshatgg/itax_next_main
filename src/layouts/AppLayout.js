@@ -13,10 +13,12 @@ export default function AppLayout({ children }) {
 
   if (
     authRouteRegex.test(pathname) ||
+    pathname.startsWith('/gst-dashboard') ||
     pathname.startsWith('/dashboard') ||
     pathname.startsWith('/profile')
   ) {
-    return <>{children}</>;
+    return <>
+      <Navbar />{children}</>;
   }
 
   return (
