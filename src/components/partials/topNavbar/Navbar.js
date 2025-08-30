@@ -21,7 +21,7 @@ const MENUS = {
       upcoming: false,
     },
     {
-      url: '/ourproducts/library',
+      url: 'https://elibrary.itaxeasy.com',
       menu: 'Easy E-Library',
       upcoming: false,
     },
