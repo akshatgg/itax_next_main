@@ -539,12 +539,13 @@ const toggleDisplay = (id) => {
 };
 
 export default function Navbar({ className = '' }) {
-  const { token, currentUser } = useAuth();
+  const { token, currentUser, authInitialized } = useAuth();
   const [hamburger, setHamburger] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [state] = useContext(StoreContext);
   const router = useRouter();
   const pathname = usePathname();
+  const [isAuthLoaded, setIsAuthLoaded] = useState(false);
 
   // Universal optimized navigation handler for all sections
   const handleNavigation = useCallback(
@@ -659,6 +660,14 @@ export default function Navbar({ className = '' }) {
       setCartCount(0);
     }
   }, [token, state.cartUpdateCount, fetchCartData]);
+  
+  // Track when authentication state is loaded
+  useEffect(() => {
+    if (authInitialized) {
+      // Mark auth as loaded when the useAuth hook confirms initialization
+      setIsAuthLoaded(true);
+    }
+  }, [authInitialized, token, currentUser]);
   
   // Smart prefetching system that adapts to user behavior
   useEffect(() => {
@@ -828,7 +837,10 @@ export default function Navbar({ className = '' }) {
 
         {/* User Actions */}
         <div className="flex ml-auto">
-          {token && currentUser ? (
+          {!isAuthLoaded ? (
+            // Show a loading placeholder while authentication state is determined
+            <div className="w-[100px] h-[38px] rounded bg-gray-200 animate-pulse"></div>
+          ) : token && Object.keys(currentUser).length > 0 ? (
             <div className="flex mx-3 md:mx-0">
               <StyledLink
                 href="/cart"
