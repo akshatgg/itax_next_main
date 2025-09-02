@@ -28,10 +28,60 @@ export default function useAuth() {
 
   // Function to handle logout and redirect
   const handleAutoLogout = () => {
+    // Clear cookies
     deleteCookie('currentUser');
     deleteCookie('token');
+    
+    // Set a temporary cookie to indicate logout has occurred
+    // This will help components determine auth state immediately
+    setCookie('auth_logout', 'true', { maxAge: 5 });  // Short-lived cookie, just for the transition
+    
+    // Update local state
     setToken(null);
     setCurrentUser({});
+    
+    // Reset any loading cursor state
+    if (typeof window !== 'undefined') {
+      document.body.style.cursor = 'default';
+    }
+    
+    // Dispatch logout event before navigation
+    if (typeof window !== 'undefined') {
+      const logoutEvent = new CustomEvent('auth-state-changed', { 
+        detail: { token: null, user: null, loggedIn: false, logout: true }
+      });
+      window.dispatchEvent(logoutEvent);
+      
+      // Also update localStorage for cross-tab sync
+      localStorage.setItem('auth_logout', Date.now().toString());
+      localStorage.removeItem('auth_timestamp');
+    }
+    
+    // Make sure cursor is reset before navigation
+    if (typeof window !== 'undefined') {
+      document.body.style.cursor = 'default';
+      
+      // Clear any loading classes that might be on the body
+      document.body.classList.remove('route-transition');
+      document.body.classList.remove('calculator-transition');
+      document.body.classList.remove('easyservice-transition');
+      document.body.classList.remove('blog-transition');
+      document.body.classList.remove('product-transition');
+      document.body.classList.remove('startup-transition');
+      document.body.classList.remove('api-transition');
+      document.body.classList.remove('download-transition');
+      
+      // Remove any loading indicators
+      const loadingIndicators = document.querySelectorAll('.loading-indicator');
+      loadingIndicators.forEach(indicator => {
+        if (indicator.parentNode) {
+          indicator.parentNode.removeChild(indicator);
+        }
+      });
+    }
+    
+    // Immediate navigation without delay to improve UX
+    router.refresh(); // Refresh current route data
     router.replace('/login');
   };
 
@@ -126,9 +176,15 @@ export default function useAuth() {
         setCookie('token', token);
         setCookie('currentUser', JSON.stringify(user));
         
-        // Dispatch a custom event to notify components about the auth state change
+        // Use a more specific event name and include the data for immediate access
         if (typeof window !== 'undefined') {
-          window.dispatchEvent(new Event('auth-state-changed'));
+          const authEvent = new CustomEvent('auth-state-changed', { 
+            detail: { token, user, loggedIn: true } 
+          });
+          window.dispatchEvent(authEvent);
+          
+          // Also dispatch a storage event for cross-tab synchronization
+          localStorage.setItem('auth_timestamp', Date.now().toString());
         }
       }
       
@@ -150,6 +206,17 @@ export default function useAuth() {
   };
 
   const handleLogOut = async () => {
+    // Reset cursor to default before logout process starts
+    if (typeof window !== 'undefined') {
+      document.body.style.cursor = 'default';
+    }
+    
+    // Clear React state first for immediate UI update
+    setToken(null);
+    setCurrentUser({});
+    setAuthInitialized(true);
+    
+    // Then call the full logout process
     handleAutoLogout();
   };
 

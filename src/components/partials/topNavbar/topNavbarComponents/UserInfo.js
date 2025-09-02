@@ -51,12 +51,13 @@ function UserInfoDashBoard__index(prop) {
   );
 }
 function UserMenu(prop) {
-  const { className, dataItem, logout, setIsNavigating } = prop;
+  const { className, dataItem, logout, setIsNavigating, onClose, setLocalUser } = prop;
   const [active, setActive] = useState(-1);
   const [isOpen, setIsOpen] = useState(false);
   const handleActive = (e) => {
     setActive(e);
     setIsOpen((prev) => !prev);
+    if (onClose) onClose();
   };
   return (
     <ul
@@ -90,6 +91,30 @@ function UserMenu(prop) {
       <li>
         <button
           onClick={() => {
+            // Reset cursor to default before any navigation
+            if (typeof window !== 'undefined') {
+              document.body.style.cursor = 'default';
+            }
+            
+            // Close dropdown menu
+            if (onClose) {
+              onClose();
+            }
+            
+            // Update local state if available
+            if (typeof setLocalUser === 'function') {
+              setLocalUser(null);
+            }
+            
+            // Create and dispatch logout event
+            if (typeof window !== 'undefined') {
+              const logoutEvent = new CustomEvent('auth-state-changed', { 
+                detail: { token: null, user: null, loggedIn: false, logout: true }
+              });
+              window.dispatchEvent(logoutEvent);
+            }
+            
+            // Then perform logout
             logout();
           }}
           className=" hover:bg-neutral-500 hover:text-neutral-50 rounded py-2 w-full font-semibold text-neutral-800 flex items-center justify-center gap-1"
@@ -106,6 +131,58 @@ import Button, { BTN_SIZES } from '@/components/ui/Button';
 export default function UserInfo({ setIsNavigating }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { handleLogOut, currentUser } = useAuth();
+  const [localUser, setLocalUser] = useState(currentUser || {});
+  
+  // Handle authentication state changes
+  useEffect(() => {
+    // Update local state whenever the auth user changes
+    setLocalUser(currentUser);
+    
+    // Listen for auth state changes from other components
+    const handleAuthChange = (event) => {
+      // Handle logout events
+      if (event.detail && event.detail.logout === true) {
+        setLocalUser(null);
+        return;
+      }
+      
+      // Handle login events
+      if (event.detail?.user) {
+        setLocalUser(event.detail.user);
+      }
+    };
+    
+    window.addEventListener('auth-state-changed', handleAuthChange);
+    
+    // Also listen for storage changes (cross-tab)
+    const handleStorageChange = (e) => {
+      if (e.key === 'auth_timestamp') {
+        // Force re-check the auth state
+        const userCookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('currentUser='));
+          
+        if (userCookie) {
+          try {
+            const userJson = decodeURIComponent(userCookie.split('=')[1]);
+            setLocalUser(JSON.parse(userJson));
+          } catch (e) {
+            console.error('Error parsing user cookie:', e);
+          }
+        }
+      } else if (e.key === 'auth_logout') {
+        // Handle logout from other tabs
+        setLocalUser(null);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('auth-state-changed', handleAuthChange);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [currentUser]);
   
   // Pre-fetch dashboard data when the menu is opened
   useEffect(() => {
@@ -127,14 +204,14 @@ export default function UserInfo({ setIsNavigating }) {
         className="text-gray-700 rounded-full"
         onClick={() => setIsMenuOpen((prev) => !prev)}
       >
-        {currentUser && currentUser.avatar ? (
+        {(localUser || currentUser) && (localUser?.avatar || currentUser?.avatar) ? (
           <Button className={`${BTN_SIZES['sm']} rounded-full p-0`}>
             <Image
               width={50}
               height={50}
               alt="User Profile"
               className="rounded-full cursor-pointer w-[45px] h-[45px]"
-              src={currentUser.avatar}
+              src={localUser?.avatar || currentUser.avatar}
             />
           </Button>
         ) : (
@@ -151,6 +228,8 @@ export default function UserInfo({ setIsNavigating }) {
           isMenuOpen ? '' : 'hidden'
         } dark:-bg--clr-neutral-900 z-50`}
         setIsNavigating={setIsNavigating}
+        onClose={() => setIsMenuOpen(false)}
+        setLocalUser={setLocalUser}
       />
       <div
         onClick={() => setIsMenuOpen((prev) => !prev)}

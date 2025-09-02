@@ -540,6 +540,8 @@ const toggleDisplay = (id) => {
 
 export default function Navbar({ className = '' }) {
   const { token, currentUser, authInitialized } = useAuth();
+  const [localToken, setLocalToken] = useState(token);
+  const [localUser, setLocalUser] = useState(currentUser);
   const [hamburger, setHamburger] = useState(false);
   const [cartCount, setCartCount] = useState(0);
   const [state] = useContext(StoreContext);
@@ -633,36 +635,101 @@ export default function Navbar({ className = '' }) {
 
   // Optimized cart fetch with debouncing
   const fetchCartData = useCallback(async () => {
-    if (!token) return;
+    // Check if either token is available
+    if (!token && !localToken) {
+      setCartCount(0);
+      return;
+    }
 
     try {
+      // Set a loading state for better UX
+      const loadingCount = cartCount > 0 ? cartCount : '...';
+      setCartCount(loadingCount);
+      
       const [serviceResponse, startupResponse] = await Promise.all([
-        userbackAxios.get('/cart/').catch(() => ({ data: { services: [] } })),
-        userbackAxios.get('/cartStartup/').catch(() => ({ data: { itemCount: 0 } })),
+        userbackAxios.get('/cart/', {
+          headers: {
+            // Use available token
+            Authorization: `Bearer ${token || localToken}`
+          }
+        }).catch(() => ({ data: { services: [] } })),
+        
+        userbackAxios.get('/cartStartup/', {
+          headers: {
+            Authorization: `Bearer ${token || localToken}`
+          }
+        }).catch(() => ({ data: { itemCount: 0 } })),
       ]);
 
+      // Calculate total count from both responses
       const serviceCount = serviceResponse.data?.services?.length || 0;
       const startupCount = startupResponse.data?.itemCount || 0;
       const totalCount = serviceCount + startupCount;
 
+      // Update count in state
       setCartCount(totalCount);
+      
+      // Also update the store context if needed
+      if (state && state.cartUpdateCount !== undefined) {
+        // Store the cart count in localStorage for persistence
+        localStorage.setItem('cart_count', totalCount.toString());
+      }
     } catch (error) {
       console.error('Error fetching cart data:', error);
+      // Try to get count from localStorage as fallback
+      const savedCount = localStorage.getItem('cart_count');
+      if (savedCount) {
+        setCartCount(parseInt(savedCount, 10));
+      }
     }
-  }, [token]);
+  }, [token, localToken, state, cartCount]);
 
-  // Debounced cart fetch
+  // Debounced cart fetch with improved responsiveness
   useEffect(() => {
-    if (token) {
-      const timeoutId = setTimeout(fetchCartData, 100);
-      return () => clearTimeout(timeoutId);
+    // Check both token sources
+    if (token || localToken) {
+      // Immediate fetch for better UX when state changes
+      fetchCartData();
+      
+      // Also set up a periodic refresh for cart data
+      const intervalId = setInterval(() => {
+        fetchCartData();
+      }, 30000); // Check every 30 seconds for changes
+      
+      return () => {
+        clearInterval(intervalId);
+      };
     } else {
       setCartCount(0);
     }
-  }, [token, state.cartUpdateCount, fetchCartData]);
+  }, [token, localToken, state.cartUpdateCount, fetchCartData]);
+  
+  // Special effect to handle cart updates from events
+  useEffect(() => {
+    // Listen for cart update events from other components
+    const handleCartUpdate = () => {
+      fetchCartData();
+    };
+    
+    window.addEventListener('cart-update', handleCartUpdate);
+    
+    // Load initial cart count from localStorage if available
+    const savedCount = localStorage.getItem('cart_count');
+    if (savedCount && (token || localToken)) {
+      setCartCount(parseInt(savedCount, 10));
+    }
+    
+    return () => {
+      window.removeEventListener('cart-update', handleCartUpdate);
+    };
+  }, [fetchCartData, token, localToken]);
   
   // Track when authentication state is loaded
   useEffect(() => {
+    // Update local state whenever auth state changes from hook
+    setLocalToken(token);
+    setLocalUser(currentUser);
+    
     // Mark auth as loaded when the useAuth hook confirms initialization
     if (authInitialized) {
       setIsAuthLoaded(true);
@@ -674,18 +741,123 @@ export default function Navbar({ className = '' }) {
     }
     
     // Listen for auth state changes
-    const handleAuthStateChange = () => {
-      // Force an immediate re-check of auth state
-      setIsAuthLoaded(true);
-      fetchCartData();
+    const handleAuthStateChange = (event) => {
+      // Check for logout event
+      if (event.detail && event.detail.logout === true) {
+        // Handle logout - clear local state
+        setLocalToken(null);
+        setLocalUser(null);
+        setIsAuthLoaded(true);
+        setCartCount(0);
+        localStorage.removeItem('cart_count'); // Clear stored cart count
+        return;
+      }
+      
+      // Check if we have detailed auth data for login
+      if (event.detail && event.detail.token && event.detail.user) {
+        // Update local state with the event data for immediate UI update
+        setLocalToken(event.detail.token);
+        setLocalUser(event.detail.user);
+        setIsAuthLoaded(true);
+        
+        // Immediately update cart count - don't wait for fetchCartData
+        // This solves the issue of cart not showing until reload
+        setTimeout(() => {
+          fetchCartData();
+          
+          // Try to read from localStorage first for immediate display
+          const savedCount = localStorage.getItem('cart_count');
+          if (savedCount) {
+            setCartCount(parseInt(savedCount, 10));
+          }
+          
+          // Dispatch cart update event
+          window.dispatchEvent(new Event('cart-update'));
+        }, 10);
+      } else {
+        // Force an immediate re-check of auth state
+        setIsAuthLoaded(true);
+        
+        // If we appear to be logged in, update cart count
+        const isLoggedIn = token || localToken || document.cookie.includes('token=');
+        if (isLoggedIn) {
+          fetchCartData();
+          
+          // Try localStorage as a fallback for immediate display
+          const savedCount = localStorage.getItem('cart_count');
+          if (savedCount) {
+            setCartCount(parseInt(savedCount, 10));
+          }
+        }
+      }
+    };
+    
+    // Handle changes from other tabs
+    const handleStorageChange = (e) => {
+      if (e.key === 'auth_timestamp') {
+        // Force re-check the auth state by reading cookies directly
+        const tokenCookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('token='));
+          
+        const userCookie = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('currentUser='));
+          
+        if (tokenCookie && userCookie) {
+          try {
+            const tokenValue = decodeURIComponent(tokenCookie.split('=')[1]);
+            const userJson = decodeURIComponent(userCookie.split('=')[1]);
+            setLocalToken(tokenValue);
+            setLocalUser(JSON.parse(userJson));
+            setIsAuthLoaded(true);
+            fetchCartData();
+          } catch (e) {
+            console.error('Error parsing auth cookies:', e);
+          }
+        }
+      } else if (e.key === 'auth_logout') {
+        // Handle logout from other tabs
+        setLocalToken(null);
+        setLocalUser(null);
+        setIsAuthLoaded(true);
+        setCartCount(0);
+      }
     };
     
     window.addEventListener('auth-state-changed', handleAuthStateChange);
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also check cookies on mount
+    const checkCookies = () => {
+      const tokenCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='));
+        
+      const userCookie = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('currentUser='));
+        
+      if (tokenCookie && userCookie) {
+        try {
+          const tokenValue = decodeURIComponent(tokenCookie.split('=')[1]);
+          const userJson = decodeURIComponent(userCookie.split('=')[1]);
+          setLocalToken(tokenValue);
+          setLocalUser(JSON.parse(userJson));
+          setIsAuthLoaded(true);
+        } catch (e) {
+          console.error('Error parsing auth cookies:', e);
+        }
+      }
+    };
+    
+    checkCookies();
     
     return () => {
       window.removeEventListener('auth-state-changed', handleAuthStateChange);
+      window.removeEventListener('storage', handleStorageChange);
     };
-  }, [authInitialized, token, currentUser, fetchCartData]);
+  }, [authInitialized, token, currentUser, localToken, fetchCartData]);
   
   // Smart prefetching system that adapts to user behavior
   useEffect(() => {
@@ -858,7 +1030,12 @@ export default function Navbar({ className = '' }) {
           {!isAuthLoaded ? (
             // Show a loading placeholder while authentication state is determined
             <div className="w-[100px] h-[38px] rounded bg-gray-200 animate-pulse"></div>
-          ) : token && Object.keys(currentUser).length > 0 ? (
+          ) : (localToken || token) && 
+               (
+                 (localUser && Object.keys(localUser).length > 0) || 
+                 (currentUser && Object.keys(currentUser).length > 0)
+               ) && 
+               !document.cookie.includes('auth_logout') ? (
             <div className="flex mx-3 md:mx-0">
               <StyledLink
                 href="/cart"
@@ -871,7 +1048,12 @@ export default function Navbar({ className = '' }) {
                   </span>
                 )}
               </StyledLink>
-              <UserInfo />
+              <UserInfo setIsNavigating={(isNavigating) => {
+                if (isNavigating) {
+                  // Add immediate visual feedback for navigation
+                  document.body.style.cursor = 'wait';
+                }
+              }} />
             </div>
           ) : (
             <Link href="/login" className="btn-primary transition-all duration-200 hover:shadow-lg">

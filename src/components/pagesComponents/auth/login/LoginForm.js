@@ -41,15 +41,55 @@ export default function LoginForm() {
 
         if (response.status === 200 && data?.data?.token) {
           // Set cookies (already done in the authLogin function, but doing again for redundancy)
-          setCookie('token', data.data.token);
-          setCookie('currentUser', JSON.stringify(data.data.user));
+          const token = data.data.token;
+          const user = data.data.user;
+          
+          setCookie('token', token);
+          setCookie('currentUser', JSON.stringify(user));
           toast.success('Login successful');
 
-          // Dispatch auth change event before navigation
-          window.dispatchEvent(new Event('auth-state-changed'));
+          // Use a more specific CustomEvent with user data for immediate access
+          const authEvent = new CustomEvent('auth-state-changed', { 
+            detail: { token, user, loggedIn: true } 
+          });
+          window.dispatchEvent(authEvent);
+          
+          // Also dispatch a cart update event
+          window.dispatchEvent(new Event('cart-update'));
+          
+          // Update localStorage to force refresh across tabs
+          localStorage.setItem('auth_timestamp', Date.now().toString());
+          
+          // Pre-fetch cart data
+          try {
+            // Try to pre-fetch cart data silently
+            Promise.all([
+              userbackAxios.get('/cart/'),
+              userbackAxios.get('/cartStartup/')
+            ]).then(([serviceResponse, startupResponse]) => {
+              const serviceCount = serviceResponse.data?.services?.length || 0;
+              const startupCount = startupResponse.data?.itemCount || 0;
+              const totalCount = serviceCount + startupCount;
+              
+              // Store cart count in localStorage for immediate access
+              localStorage.setItem('cart_count', totalCount.toString());
+              
+              // Dispatch another cart update event with the actual count
+              const cartEvent = new CustomEvent('cart-count-update', { 
+                detail: { count: totalCount } 
+              });
+              window.dispatchEvent(cartEvent);
+            }).catch(() => {
+              // Silent catch - don't disrupt the login flow
+            });
+          } catch (e) {
+            // Ignore errors here - don't disrupt login flow
+          }
           
           // Small delay to ensure state is updated before navigation
           setTimeout(() => {
+            // Force a state update before navigation
+            router.refresh(); // Refresh the current route's data
             router.push('/');
           }, 100);
         } else {
