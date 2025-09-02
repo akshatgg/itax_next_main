@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import userbackAxios from '@/lib/userbackAxios';
+import useAuth from '@/hooks/useAuth.js';
 
 const formClassName = {
   Label: 'text-sm font-medium',
@@ -20,11 +21,18 @@ export default function LoginForm() {
   const { register, handleSubmit } = useForm();
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { token, currentUser, handleLogin: authLogin } = useAuth();
 
   const onLogin = async ({ email, password }) => {
     try {
       if (email && password) {
         setLoading(true);
+        
+        // First use the shared auth hook's login function to update the global auth state
+        const formData = { email, password };
+        const authResponse = await authLogin(formData);
+        
+        // Then proceed with normal login flow
         const response = await userbackAxios.post('/user/login', {
           email,
           password,
@@ -32,11 +40,18 @@ export default function LoginForm() {
         const { data } = response; // Extract data separately
 
         if (response.status === 200 && data?.data?.token) {
+          // Set cookies (already done in the authLogin function, but doing again for redundancy)
           setCookie('token', data.data.token);
-          setCookie('currentUser', data.data.user);
+          setCookie('currentUser', JSON.stringify(data.data.user));
           toast.success('Login successful');
 
-          router.push('/');
+          // Dispatch auth change event before navigation
+          window.dispatchEvent(new Event('auth-state-changed'));
+          
+          // Small delay to ensure state is updated before navigation
+          setTimeout(() => {
+            router.push('/');
+          }, 100);
         } else {
           toast.error(data.message);
         }
@@ -58,8 +73,6 @@ export default function LoginForm() {
       }
     } finally {
       setLoading(false);
-
-
     }
   };
 

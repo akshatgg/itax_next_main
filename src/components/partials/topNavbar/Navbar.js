@@ -663,11 +663,29 @@ export default function Navbar({ className = '' }) {
   
   // Track when authentication state is loaded
   useEffect(() => {
+    // Mark auth as loaded when the useAuth hook confirms initialization
     if (authInitialized) {
-      // Mark auth as loaded when the useAuth hook confirms initialization
       setIsAuthLoaded(true);
     }
-  }, [authInitialized, token, currentUser]);
+    
+    // Force immediate update whenever token or currentUser changes
+    if (token && Object.keys(currentUser || {}).length > 0) {
+      setIsAuthLoaded(true);
+    }
+    
+    // Listen for auth state changes
+    const handleAuthStateChange = () => {
+      // Force an immediate re-check of auth state
+      setIsAuthLoaded(true);
+      fetchCartData();
+    };
+    
+    window.addEventListener('auth-state-changed', handleAuthStateChange);
+    
+    return () => {
+      window.removeEventListener('auth-state-changed', handleAuthStateChange);
+    };
+  }, [authInitialized, token, currentUser, fetchCartData]);
   
   // Smart prefetching system that adapts to user behavior
   useEffect(() => {

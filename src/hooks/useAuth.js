@@ -2,8 +2,9 @@
 
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { getCookie, deleteCookie } from 'cookies-next';
+import { getCookie, deleteCookie, setCookie } from 'cookies-next';
 import { useState, useEffect } from 'react';
+import userbackAxios from '@/lib/userbackAxios';
 
 export default function useAuth() {
 
@@ -105,16 +106,30 @@ export default function useAuth() {
 
   const handleLogin = async (formData) => {
     try {
-      const response = await axios.post('/users/login', {
+      const response = await userbackAxios.post('/user/login', {
         email: formData.email,
         password: formData.password,
       });
       
       // Immediately update auth state when login succeeds
-      if (response.data?.token) {
-        setToken(response.data.token);
-        setCurrentUser(response.data.user || {});
+      if (response.status === 200 && response.data?.data?.token) {
+        // Get the correct token and user from the nested data structure
+        const token = response.data.data.token;
+        const user = response.data.data.user;
+        
+        // Update the auth state immediately
+        setToken(token);
+        setCurrentUser(user || {});
         setAuthInitialized(true);
+        
+        // Also update cookies for persistence
+        setCookie('token', token);
+        setCookie('currentUser', JSON.stringify(user));
+        
+        // Dispatch a custom event to notify components about the auth state change
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('auth-state-changed'));
+        }
       }
       
       return response;
