@@ -306,14 +306,16 @@ export default function InvoiceDashboardIndex({ businessProfile, einvoice }) {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center min-h-[75vh]">
+      <div className="flex justify-center items-center">
         <Loader />
       </div>
     );
   }
 
   return (
-    <div className="py-4 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-white via-blue-50 to-slate-100 min-h-screen">
+    <div 
+    className="py-2 px-2 sm:px-6 lg:px-8 bg-gradient-to-b from-blue-100 to-slate-100 min-h-screen flex"
+    >
       <Modal
         isOpen={modal}
         className="lg:min-w-[1000px]"

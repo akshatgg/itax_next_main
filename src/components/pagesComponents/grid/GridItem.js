@@ -7,7 +7,7 @@ export default function GridItem(props) {
 			<Link
 				{...props}
 				className={`
-                        p-4
+                        p-2
                         h-full
                         rounded-md
                         flex

@@ -6,7 +6,7 @@ function Crumb(props) {
     if (crumbs.length - 1 !== index) {
         return (
             <li className=
-            "capitalize flex items-center text-xs text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 dark:focus:text-blue-500"
+            "capitalize flex items-center text-[16px] text-gray-500 hover:text-blue-600 focus:outline-none focus:text-blue-600 dark:focus:text-blue-500"
             >
                 <span href={crumb.link}>{crumb.label}</span>
                 <Icon
@@ -16,9 +16,10 @@ function Crumb(props) {
             </li>
         );
     }
+    
     return (
         <li className=
-        "capitalize inline-flex items-center text-[12px] font-bold  text-blue-600 truncate dark:text-blue-200"
+        "capitalize inline-flex items-center text-[16px] font-bold text-blue-600 truncate dark:text-blue-200"
         >
             {crumb.label}
         </li>

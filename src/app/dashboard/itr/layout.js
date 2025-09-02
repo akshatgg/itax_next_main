@@ -66,16 +66,16 @@ function ItrNavbar() {
     // };
     // console.log(state)
     return (
-        <div className="mt-4 px-2 mx-auto max-w-7xl space-y-2">
+        <div className="mt-2 px-2 mx-auto max-w-7xl space-y-2">
   <div className="relative w-fit">
   <select
     onChange={(e) => handleFormChange(e.target.value)}
     name="itr1"
     value={form_type}
     id="itr1"
-    className="appearance-none px-5 py-2.5 pr-10 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 font-medium rounded-lg border border-blue-300 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition duration-300 ease-in-out hover:shadow-md cursor-pointer"
+    className="appearance-none px-5 py-1 text-sm pr-6 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 font-medium rounded-lg border border-blue-300 shadow-md focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition duration-300 ease-in-out hover:shadow-md cursor-pointer"
   >
-    <option value="without-form-16" className="text-gray-800 font-medium">
+    <option value="without-form-16" className="text-gray-800 ">
       🚫 Without Form 16
     </option>
     <option value="form-16" className="text-gray-800 font-medium">
@@ -97,7 +97,7 @@ function ItrNavbar() {
   </div>
 </div>
 
-<div className="w-full px-4 py-3 overflow-x-auto sm:overflow-x-visible scrollbar-thin sm:scrollbar-none scrollbar-thumb-blue-300 scrollbar-track-blue-50">
+<div className="w-full px-4 overflow-x-auto sm:overflow-x-visible scrollbar-thin sm:scrollbar-none scrollbar-thumb-blue-300 scrollbar-track-blue-50">
   <ul className="flex flex-nowrap sm:flex-wrap items-stretch gap-2 sm:gap-3">
     {menu.map((items) => {
       const isActive = pathnames === items.link;
@@ -111,18 +111,18 @@ function ItrNavbar() {
       return (
         <li
           key={items.label}
-          className="flex-shrink-0 sm:flex-shrink sm:flex-grow shadow-md rounded-lg"
+          className="flex-shrink-0 sm:flex-shrink sm:flex-grow shadow-md mb-4 rounded-lg"
         >
           <Link
             href={items.link}
-            className={`flex items-center justify-between gap-1 sm:gap-2 px-3 sm:px-4 py-2 rounded-lg border-t-4 transition-all duration-300 ease-in-out
+            className={`flex items-center justify-between gap-1 sm:gap-2 px-3 sm:px-4 py-1  rounded-lg border-t-4 transition-all duration-300 ease-in-out
               ${
                 isActive
                   ? "border-t-blue-600 bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 font-semibold"
                   : "border-t-zinc-200 hover:border-t-blue-400 hover:bg-blue-50 text-zinc-700"
               }`}
           >
-            <span className="text-sm sm:text-base whitespace-nowrap">{items.label}</span>
+            <span className="text-sm  whitespace-nowrap">{items.label}</span>
             <Icon
               className={`text-lg sm:text-xl transition-colors duration-300 ${
                 isActive ? "text-blue-600" : "text-zinc-400"
@@ -147,7 +147,7 @@ export default function ItrLayout({ children }) {
       
         <div className="max-w-7xl mx-auto">
             <ItrNavbar/>
-            <section className="w-full py-10">
+            <section className="w-full">
                 {children}
             </section>
         </div>

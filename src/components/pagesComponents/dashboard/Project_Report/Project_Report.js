@@ -100,10 +100,10 @@ const Project_Report = () => {
                                         className={InputStyles.Reporttitle}
                                     >
                                         Business Name
-                                       
+                                          
                                     </label>
                                 </div>
-                                <div className="col-span-2">
+                                <div className="flex flex-col mb-2 col-span-2">
                                     
                                     <select
                                         className="p-2 border border-slate-400 mt-1 outline-0 focus:border-blue-500 rounded-md"
@@ -588,6 +588,7 @@ const Project_Report = () => {
                                     )}
                                 </div>
                                 <div className="flex items-center mb-4 col-span-3 justify-end ">
+                                 
                                     {/* <input
                                         id="haveLoan"
                                         type="checkbox"
@@ -605,7 +606,7 @@ const Project_Report = () => {
                                     >
                                         Do You Have Any Loan
                                     </label> */}
-
+ 
                                     <label className="inline-flex items-center cursor-pointer">
                                         <input
                                             onChange={handlePromotercon}

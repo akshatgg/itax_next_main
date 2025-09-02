@@ -159,12 +159,13 @@ export default function Sales(props) {
   if (error?.isError) return <div className="py-6 text-center">{error?.response?.data?.message || 'Something went wrong'}</div>;
 
   return (
+    
     <DashSection
       title={
         <span className="text-lg font-bold text-blue-600 pl-2">
           Sales Invoices
         </span>}
-      titleRight={
+        titleRight={
         <div className="flex items-center gap-2 mb-2">
           <Button
             accessKey="n"

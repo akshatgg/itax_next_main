@@ -13,6 +13,7 @@ export default async function page() {
         return (
             <ITRPresonalInfo userProfile={response?.data?.user}/>
         );
+        
     } catch (error) {
         console.log(error)
         return (

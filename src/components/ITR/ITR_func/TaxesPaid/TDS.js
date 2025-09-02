@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import NonSalaryTDS from "./TDS/NonSalaryTDS";
 import TDSonSale from "./TDS/TDSonSale";
@@ -20,16 +19,14 @@ export default function TDS() {
         <TCS setSection={setSection} />
       ) : (
         <div className={InputStyles.section80Deduction}>
-          <h2 
+          <h6 
         //   className="text-2xl font-bold text-blue-900 mb-6 text-center border-b pb-2"
-          className={InputStyles.tdstitle}
-          >
+          className={InputStyles.tdstitle}>
             TDS & TCS Information
-          </h2>
-
+          </h6>
           {/* Salary Table */}
           <div className={InputStyles.table}>
-            <table className="min-w-full text-sm text-left">
+            <table className="text-sm text-left mt-1">
               <thead className={InputStyles.tableHeader}>
                 <tr>
                   <th className="px-4 py-2 border">Status</th>

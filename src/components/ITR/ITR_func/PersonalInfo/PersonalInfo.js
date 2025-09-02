@@ -133,8 +133,6 @@ export default function PresonalInfo({ setSection,userProfile }) {
       
 <form onSubmit={formik.handleSubmit} >
   <div className={InputStyles.formWrapper}>
-    <h2 className={InputStyles.title}>Personal Information</h2>
-
     <div className={InputStyles.gridLayout}>
       {/* PAN */}
       <div className="flex flex-col">
@@ -171,7 +169,6 @@ export default function PresonalInfo({ setSection,userProfile }) {
           <span className={InputStyles.error_msg}>{formik.errors.aadhaar}</span>
         )}
       </div>
-
       {/* First Name */}
       <div className="flex flex-col">
         <label htmlFor="firstName" className={InputStyles.label}>First Name</label>
@@ -189,7 +186,6 @@ export default function PresonalInfo({ setSection,userProfile }) {
           <span className={InputStyles.error_msg}>{formik.errors.firstName}</span>
         )}
       </div>
-
       {/* Middle Name */}
       <div className="flex flex-col">
         <label htmlFor="middleName" className={InputStyles.label}>Middle Name (Optional)</label>
@@ -204,7 +200,6 @@ export default function PresonalInfo({ setSection,userProfile }) {
           }`}
         />
       </div>
-
       {/* Last Name */}
       <div className="flex flex-col">
         <label htmlFor="lastName" className={InputStyles.label}>Last Name</label>
@@ -222,7 +217,6 @@ export default function PresonalInfo({ setSection,userProfile }) {
           <span className={InputStyles.error_msg}>{formik.errors.lastName}</span>
         )}
       </div>
-
       {/* Gender */}
       <div className="flex flex-col">
         <label htmlFor="gender" className={InputStyles.label}>Gender</label>

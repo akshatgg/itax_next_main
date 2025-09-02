@@ -1,5 +1,4 @@
 "use client"
-
 import { useForm } from "react-hook-form"
 import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -41,8 +40,8 @@ export default function CreateItem() {
   const [backendLimitation, setBackendLimitation] = useState(false)
   const router = useRouter()
   const searchParams = useSearchParams()
-  const itemId = searchParams.get("id") // Get the item ID from the query parameter
-  const formValues = watch() // Watch all form values
+  const itemId = searchParams.get("id") 
+  const formValues = watch() 
   const originalItemRef = useRef(null)
 
   useEffect(() => {
@@ -91,6 +90,7 @@ export default function CreateItem() {
             setApiError("Item data not found")
             toast.error("Item data not found")
           }
+
           setIsLoading(false)
         } catch (error) {
           console.error("Error fetching item details:", error)
@@ -99,11 +99,10 @@ export default function CreateItem() {
           setIsLoading(false)
         }
       }
-
       fetchItemDetails()
     }
-  }, [itemId, reset])
 
+  }, [itemId, reset])
   const onCreateOrUpdateItem = async (formData) => {
     try {
       console.log("Form data received:", formData)
@@ -111,13 +110,11 @@ export default function CreateItem() {
       setApiError(null)
 
       if (itemId) {
-        // For update, only send itemName as that's all the backend supports
         const updateData = {
           itemName: formData.itemName,
         }
 
         console.log("Sending only itemName for update:", updateData)
-
         const apiUrl = `/invoice/items/${itemId}`
         const response = await userAxios.put(apiUrl, updateData, {
           headers: {
@@ -126,12 +123,8 @@ export default function CreateItem() {
         })
 
         console.log("Update response:", response)
-
         if (response.data.success || response.data.sucess) {
-          // Handle both spellings
           toast.success("Item name updated successfully")
-          // toast.info("Note: Only the item name can be updated due to backend limitations")
-
           setTimeout(() => {
             router.push("/dashboard/accounts/invoice/items")
           }, 1500)
@@ -141,7 +134,6 @@ export default function CreateItem() {
           toast.error(errorMsg)
         }
       } else {
-        // For create, send all fields
         const JsonData = {
           itemName: formData.itemName,
           hsnCode: formData.hsnCode,
@@ -157,21 +149,16 @@ export default function CreateItem() {
           unit: formData.unit,
           description: formData.description,
         }
-
         console.log("Creating new item with data:", JsonData)
-
         const apiUrl = "/invoice/items"
         const response = await userAxios.post(apiUrl, JsonData, {
           headers: {
             "Content-Type": "application/json",
           },
         })
-
         console.log("Create response:", response)
-
         if (response.data.success || response.data.sucess) {
           toast.success("Item created successfully")
-
           setTimeout(() => {
             router.push("/dashboard/accounts/invoice/items")
           }, 1500)
@@ -181,7 +168,6 @@ export default function CreateItem() {
           toast.error(errorMsg)
         }
       }
-
       setIsLoading(false)
     } catch (error) {
       setIsLoading(false)
@@ -192,18 +178,14 @@ export default function CreateItem() {
       toast.error(errorMsg)
     }
   }
-
-  // Function to create a completely new item with the updated data and delete the old one
   const createNewAndDeleteOld = async () => {
     try {
       setIsLoading(true)
       setApiError(null)
-
       const formData = getValues()
       console.log("Creating new item with updated data:", formData)
 
-      // Prepare data for new item
-      const JsonData = {
+       const JsonData = {
         itemName: formData.itemName,
         hsnCode: formData.hsnCode,
         taxExempted: formData.taxExempted,
@@ -270,15 +252,15 @@ export default function CreateItem() {
     }
   }
 
-  // const formClassNames = {
-  //   label: "block mb-2 text-sm font-medium text-gray-950/90 dark:text-white",
-  //   input:
-  //     "bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
-  //   button:
-  //     "w-full text-center mt-4 focus:outline-none text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-4",
-  //   gridUL: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4",
-  //   formSectionTitle: "text-lg mt-4 font-semibold text-gray-600 dark:text-gray-300",
-  // }
+  const formClassNames = {
+    label: "block mb-2 text-sm font-medium text-gray-950/90 dark:text-white",
+    input:
+      "bg-neutral-50 border border-neutral-300 text-neutral-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2 dark:bg-neutral-700 dark:border-neutral-600 dark:placeholder-neutral-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500",
+    button:
+      "w-full text-center mt-4 focus:outline-none text-white bg-blue-600 hover:bg-blue-700 focus:ring-blue-300 font-medium rounded-lg text-sm px-10 py-4",
+    gridUL: "grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4",
+    formSectionTitle: "text-lg mt-4 font-semibold text-gray-600 dark:text-gray-300",
+  }
 
   return (
     <>

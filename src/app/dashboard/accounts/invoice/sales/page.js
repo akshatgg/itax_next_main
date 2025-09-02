@@ -37,6 +37,7 @@ export default function Page() {
   }, []);
 
   return (
+
     <Sales salesInvoices={respAllInvoice} loading={loading} error={error} />
   );
 }

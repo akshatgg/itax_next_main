@@ -6,12 +6,12 @@ export default function MoreInfo() {
   //  className="mx-auto px-6 py-6 bg-white rounded-2xl shadow-md max-w-4xl w-full"
   className={InputStyles.section80Deduction}
    >
-  <h3 
+  <h6
   // className="text-lg sm:text-xl font-semibold text-gray-800 border-b border-gray-300 pb-2 mb-4"
    className={InputStyles.section80Deductiontitle}
  >
     [Optional] Advanced Info — Only Required in a Few Cases
-  </h3>
+  </h6>
   <p className="text-sm text-gray-700 mb-2">
     These sections are not required in most cases.
   </p>

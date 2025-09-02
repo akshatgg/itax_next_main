@@ -981,21 +981,21 @@ export default function TaxPayable() {
         // </div>
 
 
-<div className="bg-gradient-to-br from-blue-100 via-white to-blue-50 py-12 px-4 sm:px-8 lg:px-10 max-w-6xl mx-auto rounded-3xl shadow-2xl">
-  <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-blue-200 shadow-xl p-6 sm:p-10 space-y-8">
+<div className="max-w-6xl mx-auto">
+  <div className="bg-white/90 backdrop-blur-md rounded-2xl border border-blue-200 shadow-xl pb-4 px-6 space-y-4">
     
     {/* Heading */}
-    <div className="flex items-center justify-center gap-3">
-      <svg className="w-8 h-8 text-blue-600 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
+    <div className="flex items-center justify-center gap-1">
+      {/* <svg className="w-8 h-8 text-blue-600 animate-bounce" fill="currentColor" viewBox="0 0 20 20">
         <path d="M13 7H7v6h6V7z" /><path fillRule="evenodd" d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm10 12H5V5h10v10z" clipRule="evenodd" />
-      </svg>
-      <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-900 text-center tracking-wide">
+      </svg> */}
+      {/* <h2 className="text-3xl sm:text-4xl font-extrabold text-blue-900 text-center tracking-wide">
         Tax Payable 
-      </h2>
+      </h2> */}
     </div>
 
     {/* Basic Info */}
-    <ul className="text-base text-gray-700 divide-y divide-gray-300 rounded-lg bg-gray-50 p-4 sm:p-6">
+    {/* <ul className="text-base text-gray-700 divide-y divide-gray-300 rounded-lg bg-gray-50 p-4 sm:p-6">
       <li className="flex justify-between py-2">
         <span className="font-medium">Assessment Year:</span>
         <span className="font-semibold">{itr_AY}</span>
@@ -1004,12 +1004,12 @@ export default function TaxPayable() {
         <span className="font-medium">Tax Payer Type:</span>
         <span className="font-semibold">{taxPayerType === "General" ? "Individual" : taxPayerType}</span>
       </li>
-    </ul>
+    </ul> */}
 
     {/* Gross Total Income */}
-    <div className="bg-blue-50 border border-blue-300 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300">
-      <h3 className="text-xl font-semibold text-blue-800 mb-4">Gross Total Income</h3>
-      <div className="space-y-3">
+    <div className="bg-blue-50 border border-blue-300 rounded-xl p-2 px-4  shadow-md hover:shadow-lg transition-all duration-300">
+      <h3 className="text-xl font-semibold text-blue-800 mb-2">Gross Total Income</h3>
+      <div className="space-y-1">
         <div className="flex justify-between">
           <span>1. Income from Salaries</span>
           <span className="font-semibold">{incomeChargeableUnderTheHeadSalaries.toLocaleString()}</span>
@@ -1030,9 +1030,9 @@ export default function TaxPayable() {
     </div>
 
     {/* Deductions */}
-    <div className="bg-green-50 border border-green-300 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300">
-      <h3 className="text-xl font-semibold text-green-800 mb-4">Deductions and Net Income</h3>
-      <div className="space-y-3">
+    <div className="bg-green-50 border border-green-300 rounded-xl p-2 px-4 shadow-md hover:shadow-lg transition-all duration-300">
+      <h3 className="text-xl font-semibold text-green-800 mb-2">Deductions and Net Income</h3>
+      <div className="space-y-1">
         <div className="flex justify-between">
           <span>Section 80C and Others</span>
           <span className="font-semibold">{section80cDeduction.toLocaleString()}</span>
@@ -1057,9 +1057,9 @@ export default function TaxPayable() {
     </div>
 
     {/* Tax Breakdown */}
-    <div className="bg-yellow-50 border border-yellow-300 rounded-xl p-5 shadow-md hover:shadow-lg transition-all duration-300">
-      <h3 className="text-xl font-semibold text-yellow-900 mb-4">Tax Breakdown</h3>
-      <ul className="space-y-3">
+    <div className="bg-yellow-50 border border-yellow-300 rounded-xl p-2 px-4 shadow-md hover:shadow-lg transition-all duration-300">
+      <h3 className="text-xl font-semibold text-yellow-900 mb-2">Tax Breakdown</h3>
+      <ul className="space-y-1">
         <li className="flex justify-between font-medium">
           <span>Income Tax after relief u/s 87A</span>
           <span>{showCurrency(calculatedTax?.taxRate || 0)}</span>

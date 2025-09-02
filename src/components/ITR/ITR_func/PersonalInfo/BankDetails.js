@@ -433,7 +433,7 @@ export default function BankInfo({ setSection }) {
         return (
           <Form>
             <div className={InputStyles.formWrapper}>
-              <h2 className={InputStyles.title}>🏦 Bank Details</h2>
+              {/* <h2 className={InputStyles.title}>🏦 Bank Details</h2> */}
 
               {/* Primary Bank Info */}
               <div className={InputStyles.gridLayout}>

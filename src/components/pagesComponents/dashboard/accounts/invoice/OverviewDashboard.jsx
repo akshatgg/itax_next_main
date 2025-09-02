@@ -72,11 +72,11 @@ function OverviewDashboard({ invoiceOverview }) {
   
   return (
     <DashSection
-      className="mt-4 px-6"
+      className="mt-2 px-4"
       title={<span className={InputStyles.sectionTitle}>Overview</span>}
       titleRight={<span className={InputStyles.sectionTitleRight}>{new Date().getFullYear()}</span>}
     >
-      <ul className="grid gap-4 p-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+      <ul className="grid gap-4 p-2 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, idx) => (
           <li
             key={idx}

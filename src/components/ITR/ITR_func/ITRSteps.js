@@ -1,7 +1,7 @@
 export default function ITRSteps({ steps, active, setSection }) {
     return (
-        <div className="relative max-w-4xl w-full  mx-auto mb-10">
-            <ol className=" text-sm font-medium text-center text-gray-500 border-b border-gray-200  dark:border-gray-400">
+        <div className="relative mx-auto mb-2">
+            <ol className=" text-sm font-medium text-center text-gray-500">
                 {steps.map((item, index) => (
                     <li
                         key={item+index}

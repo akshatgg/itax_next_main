@@ -23,7 +23,7 @@ const Invoice_DashboardData = [
 export default function Invoice_Dashboard() {
     return (
         <div>
-        <div className=" container 2xl:max-w-7xl mx-auto mt-12 p-4">
+        <div className=" container 2xl:max-w-7xl mx-auto mt-8 p-2">
             <H6>Invoice</H6>
             <GridContainer className=" capitalize">
                 {Invoice_DashboardData.map((item, index) => (
