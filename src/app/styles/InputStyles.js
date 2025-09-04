@@ -3,9 +3,19 @@ const InputStyles = {
 
   container: `w-full `,
 
-  formWrapper: `
-    max-w-4xl w-full mx-auto bg-white/70 backdrop-blur-lg shadow-2xl 
-    rounded-2xl py-4 sm:px-10 space-y-2 transition-all duration-300`,
+  // formWrapper: `
+  //   max-w-4xl w-full mx-auto bg-white/70 backdrop-blur-lg shadow-2xl 
+  //   rounded-2xl py-4 sm:px-10 space-y-2 transition-all duration-300`,
+
+formWrapper: `
+  max-w-4xl w-full mx-auto 
+  bg-gradient-to-r from-blue-100/30 via-white-100/30 to-blue-400/30
+  backdrop-blur-xl shadow-2xl rounded-2xl 
+  py-4 sm:px-10 space-y-2 
+  border border-white/20
+  transition-all duration-300
+`
+,
 
   title: `
      text-[14px] sm:text-[14px] font-bold text-center text-blue-900`,

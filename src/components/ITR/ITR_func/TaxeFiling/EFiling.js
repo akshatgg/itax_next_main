@@ -714,268 +714,519 @@ export default function EFiling() {
         }
     },[])
     // console.log(taxCalculated)
-    return (
-    <>
-        <h1 className="mx-auto max-w-6xl p-2 font-semibold text-center" >Summary of your ITR filing.</h1>
-        <div className="mx-auto max-w-6xl p-2">
-            <div className="[&>div]:p-2 divide-y-2 border border-gray-400 rounded-md">
-                <div className="flex justify-between ">
-                    <div>
-                        <h4 className="text-md font-medium tracking-tighter">Personal Information</h4>
-                        <p className="text-sm tracking-tighter text-neutral-700">Includes your, InformationBank and DetailsAddress</p>
-                    </div>
-                    <div className="grid grid-rows-2">
-                        <span>{personalInfo.panNumber}</span>
-                    </div>
-                </div>
-                <div className="flex justify-between ">
-                    <div>
-                        <h4 className="text-md font-medium tracking-tighter">Gross Total Income</h4>
-                        <p className="text-sm tracking-tighter text-neutral-700">Includes your, SalaryHouse, PropertyOther, IncomeBusiness and ProfessionCapital Gain</p>
-                    </div>
-                    <div>
-                        <div>&#x20B9; {itrObj?.ITR1_IncomeDeductions?.GrossTotIncome}</div>
-                    </div>
-                </div>
-                <div className="flex justify-between ">
-                    <div>
-                        <h4 className="text-md font-medium tracking-tighter">Deductions</h4>
-                        <p className="text-sm tracking-tighter text-neutral-700">Includes your,Section 80, DeductionsMore, DeductionsOther, Deduction, </p>
-                    </div>
-                    <div>
-                        <div>&#x20B9;0</div>
-                    </div>
-                </div>
-                {/* <div className="flex justify-between ">
-                    <div>
-                        <h4 className="text-md font-medium tracking-tighter">Tax Payable</h4>
-                        <p className="text-sm tracking-tighter text-neutral-700">Includes your, Gross Total Income, Deductions And Taxable Income</p>
-                    </div>
-                    <div>
-                        <div>&#x20B9;0</div>
-                    </div>
-                </div> */}
-                <div className="flex justify-between ">
-                    <div>
-                        <h4 className="text-md font-medium tracking-tighter">Taxes Paid</h4>
-                        <p className="text-sm tracking-tighter text-neutral-700">TDS, Self Tax Payments</p>
-                    </div>
-                    <div>
-                        <div>&#8377; {itrObj?.TaxPaid?.TaxesPaid.TotalTaxesPaid || ""}</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div className="mx-auto max-w-6xl p-2 space-y-2">
-            <div className="border border-gray-400 rounded-md p-2">
-                <h2 className="flex items-center gap-2 p-2">
-                    <Icon className="bg-blue-600/10 text-blue-600 rounded-md p-1 w-8 h-8" icon="solar:user-circle-bold"/>
-                    Personal Information
-                </h2>
-                <Link href="/dashboard/itr/itr-filling/taxes-paid" className="text-blue-500 text-sm tracking-tighter flex gap-2 items-center justify-end">
-                    Modify if Required
-                    <Icon icon="bx:edit"/>
-                </Link>
-                <ul 
-                    className="
-                    text-sm tracking-tighter p-2 divide-y 
-                    [&>li]:flex [&>li]:justify-between [&>li]:p-1 
-                    [&>li>div]:font-medium
+    // return (
+    // <>
+    //     <h1 className="mx-auto max-w-6xl p-2 font-semibold text-center" >Summary of your ITR filing.</h1>
+    //     <div className="mx-auto max-w-6xl p-2">
+    //         <div className="[&>div]:p-2 divide-y-2 border border-gray-400 rounded-md">
+    //             <div className="flex justify-between ">
+    //                 <div>
+    //                     <h4 className="text-md font-medium tracking-tighter">Personal Information</h4>
+    //                     <p className="text-sm tracking-tighter text-neutral-700">Includes your, InformationBank and DetailsAddress</p>
+    //                 </div>
+    //                 <div className="grid grid-rows-2">
+    //                     <span>{personalInfo.panNumber}</span>
+    //                 </div>
+    //             </div>
+    //             <div className="flex justify-between ">
+    //                 <div>
+    //                     <h4 className="text-md font-medium tracking-tighter">Gross Total Income</h4>
+    //                     <p className="text-sm tracking-tighter text-neutral-700">Includes your, SalaryHouse, PropertyOther, IncomeBusiness and ProfessionCapital Gain</p>
+    //                 </div>
+    //                 <div>
+    //                     <div>&#x20B9; {itrObj?.ITR1_IncomeDeductions?.GrossTotIncome}</div>
+    //                 </div>
+    //             </div>
+    //             <div className="flex justify-between ">
+    //                 <div>
+    //                     <h4 className="text-md font-medium tracking-tighter">Deductions</h4>
+    //                     <p className="text-sm tracking-tighter text-neutral-700">Includes your,Section 80, DeductionsMore, DeductionsOther, Deduction, </p>
+    //                 </div>
+    //                 <div>
+    //                     <div>&#x20B9;0</div>
+    //                 </div>
+    //             </div>
+    //             {/* <div className="flex justify-between ">
+    //                 <div>
+    //                     <h4 className="text-md font-medium tracking-tighter">Tax Payable</h4>
+    //                     <p className="text-sm tracking-tighter text-neutral-700">Includes your, Gross Total Income, Deductions And Taxable Income</p>
+    //                 </div>
+    //                 <div>
+    //                     <div>&#x20B9;0</div>
+    //                 </div>
+    //             </div> */}
+    //             <div className="flex justify-between ">
+    //                 <div>
+    //                     <h4 className="text-md font-medium tracking-tighter">Taxes Paid</h4>
+    //                     <p className="text-sm tracking-tighter text-neutral-700">TDS, Self Tax Payments</p>
+    //                 </div>
+    //                 <div>
+    //                     <div>&#8377; {itrObj?.TaxPaid?.TaxesPaid.TotalTaxesPaid || ""}</div>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //     </div>
+    //     <div className="mx-auto max-w-6xl p-2 space-y-2">
+    //         <div className="border border-gray-400 rounded-md p-2">
+    //             <h2 className="flex items-center gap-2 p-2">
+    //                 <Icon className="bg-blue-600/10 text-blue-600 rounded-md p-1 w-8 h-8" icon="solar:user-circle-bold"/>
+    //                 Personal Information
+    //             </h2>
+    //             <Link href="/dashboard/itr/itr-filling/taxes-paid" className="text-blue-500 text-sm tracking-tighter flex gap-2 items-center justify-end">
+    //                 Modify if Required
+    //                 <Icon icon="bx:edit"/>
+    //             </Link>
+    //             <ul 
+    //                 className="
+    //                 text-sm tracking-tighter p-2 divide-y 
+    //                 [&>li]:flex [&>li]:justify-between [&>li]:p-1 
+    //                 [&>li>div]:font-medium
                     
-                    "
-                    >
-                    <li>
-                        <div>Name</div>
-                        <span>{`${personalInfo?.firstName} ${personalInfo?.middleName} ${personalInfo?.lastName}`}</span>
-                    </li>
-                    <li>
-                        <div>Date of birth</div>
-                        <span>{new Date(personalInfo?.dob)?.toLocaleDateString("en-GB")}</span>
-                    </li>
-                    <li>
-                        <div>PAN</div>
-                        <span>{personalInfo?.panNumber}</span>
-                    </li>
-                    <li>
-                        <div>Gender</div>
-                        <span>{personalInfo?.gender}</span>
-                    </li>
-                    <li>
-                        <div>Assessment Year</div>
-                        <span>{itrObj?.Form_ITR1.AssessmentYear}</span>
-                    </li>
-                    <li>
-                        <div>Residential Status</div>
-                        <span>-</span>
-                    </li>
-                </ul>
-            </div>
-            <div className="border border-gray-400 rounded-md p-2">
-                <div className="flex items-center gap-2 p-2">
-                    <Icon className="bg-red-600/10 text-red-600 rounded-md p-1 w-8 h-8" icon="game-icons:pay-money"/>
-                    <h2>Income Sources</h2>
-                </div>
-                <Link href="/dashboard/itr/itr-filling/taxes-paid" className="text-blue-500 text-sm tracking-tighter flex gap-2 items-center justify-end">
-                    Modify if Required
-                    <Icon icon="bx:edit"/>
-                </Link>
-                <div className="p-2 flex justify-between text-sm tracking-tighter">
-                    <div className="font-medium">Gross Total Income</div>
-                    <div>&#8377; {itrObj?.ITR1_IncomeDeductions?.GrossTotIncome}</div>
-                </div>
-            </div>
-            <div className="border border-gray-400 rounded-md p-2">
-                <div className="flex items-center gap-2 p-2">
-                    <Icon className="bg-green-600/10 text-green-600 rounded-md p-1 w-8 h-8" icon="solar:wallet-money-line-duotone"/>
-                    <h2>Tax Savings (Deductions)</h2>
-                </div>
-                <Link href="/dashboard/itr/itr-filling/deductions" className="text-blue-500 text-sm tracking-tighter flex gap-2 items-center justify-end">
-                    Modify if Required
-                    <Icon icon="bx:edit"/>
-                </Link>
-                <div className="text-sm tracking-tighter p-2">
-                    <ul
-                    className="
-                        text-sm tracking-tighter p-2 divide-y 
-                        [&>li]:flex [&>li]:justify-between [&>li]:p-1 
-                        [&>li>div]:font-medium
-                    ">
-                        <li>
-                            <div>Section 80C</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80C}</span>
-                        </li>
-                        <li>
-                            <div>Section 80CCC</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCC}</span>
-                        </li>
-                        <li>
-                            <div>Section 80CCD(1B)</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCD1B}</span>
-                        </li>
-                        <li>
-                            <div>Section 80CCD (EmployeeOrSE)</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCDEmployeeOrSE}</span>
-                        </li>
-                        <li>
-                            <div>Section 80CCD (Employer)</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCDEmployer}</span>
-                        </li>
-                        <li>
-                            <div>Section 80D</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80D}</span>
-                        </li>
-                        <li>
-                            <div>Section 80DD</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80DD}</span>
-                        </li>
-                        <li>
-                            <div>Section 80DDB</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80DDB}</span>
-                        </li>
-                        <li>
-                            <div>Section 80E</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80E}</span>
-                        </li>
-                        <li>
-                            <div>Section 80EE</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80EE}</span>
-                        </li>
-                        <li>
-                            <div>Section 80EEA</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80EEA}</span>
-                        </li>
-                        <li>
-                            <div>Section 80EEB</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80EEB}</span>
-                        </li>
-                        <li>
-                            <div>Section 80G</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80G}</span>
-                        </li>
-                        <li>
-                            <div>Section 80GG</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80GG}</span>
-                        </li>
-                        <li>
-                            <div>Section 80GGA</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80GGA}</span>
-                        </li>
-                        <li>
-                            <div>Section 80GGC</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80GGC}</span>
-                        </li>
-                        <li>
-                            <div>Section 80TTA</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80TTA}</span>
-                        </li>
-                        <li>
-                            <div>Section 80TTB</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80TTB}</span>
-                        </li>
-                        <li>
-                            <div>Section 80U</div>
-                            <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80U}</span>
-                        </li>
-                    </ul>
-                    <div className="bg-blue-500/10 rounded-md p-1 flex justify-between">
-                        <div>Total Deduction</div>
-                        <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.TotalChapVIADeductions}</span>
-                    </div>
-                </div>
-            </div>
-            <div className="border border-gray-400 rounded-md p-2">
-                <div className="flex items-center gap-2 p-2">
-                    <Icon className="bg-fuchsia-600/10  text-fuchsia-600 rounded-md p-1 w-8 h-8" icon="material-symbols-light:source-notes-rounded"/>
-                    <h2>Tax Payable</h2>
-                </div>
-                <ul className="text-sm tracking-tighter divide-y p-2">
-                    <li className="p-2 grid grid-flow-col justify-between">
-                        <span>Total Taxable Income (Gross Total Income - Total Deductions)</span>
-                        <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.GrossTotIncome}</span>
-                    </li>
-                    <li className="p-2 grid grid-flow-col justify-between">
-                        <span>Income Tax at normal rates</span>
-                        <span>&#8377; {taxCalculated?.incomeTax}</span>
-                    </li>
-                    <li className="p-2 grid grid-flow-col justify-between">
-                        <span>Surcharge</span>
-                        <span>&#8377; {taxCalculated?.surcharge}</span>
-                    </li>
-                    <li className="p-2 grid grid-flow-col justify-between">
-                        <span>Health and Education Cess</span>
-                        <span>&#8377; {taxCalculated?.healthAndEducationCess}</span>
-                    </li>
-                    <li className="p-2 grid grid-flow-col justify-between">
-                        <span>Total Tax Liability</span>
-                        <span>&#8377; {taxCalculated?.totalTaxLiability}</span>
-                    </li>
-                </ul>
-                <div className="bg-blue-500/10 rounded-md p-1 flex justify-between">
-                    <div>Total Tax Payable(Total Tax + Total Interest Due)</div>
-                     &#8377; {itrObj?.ITR1_TaxComputation?.TotalTaxPayable}
-                </div>
-            </div>
-            <div className="border border-gray-400 rounded-md p-2">
-                <div className="flex items-center gap-2 p-2">
-                    <Icon className="bg-orange-600/10 text-orange-600 rounded-md p-1 w-8 h-8" icon="material-symbols:paid"/>
-                    <h2>Tax Paid</h2>
-                </div>
-                <Link href="/dashboard/itr/itr-filling/taxes-paid" className="text-blue-500 text-sm tracking-tighter flex gap-2 items-center justify-end">
-                    Modify if Required
-                    <Icon icon="bx:edit"/>
-                </Link>
-                <div className="p-2 flex justify-between text-sm tracking-tighter">
-                    <div className="font-medium">Total Tax Paid</div>
-                    <div>&#8377; {itrObj?.TaxPaid?.TaxesPaid.TotalTaxesPaid}</div>
-                </div>
-            </div>
+    //                 "
+    //                 >
+    //                 <li>
+    //                     <div>Name</div>
+    //                     <span>{`${personalInfo?.firstName} ${personalInfo?.middleName} ${personalInfo?.lastName}`}</span>
+    //                 </li>
+    //                 <li>
+    //                     <div>Date of birth</div>
+    //                     <span>{new Date(personalInfo?.dob)?.toLocaleDateString("en-GB")}</span>
+    //                 </li>
+    //                 <li>
+    //                     <div>PAN</div>
+    //                     <span>{personalInfo?.panNumber}</span>
+    //                 </li>
+    //                 <li>
+    //                     <div>Gender</div>
+    //                     <span>{personalInfo?.gender}</span>
+    //                 </li>
+    //                 <li>
+    //                     <div>Assessment Year</div>
+    //                     <span>{itrObj?.Form_ITR1.AssessmentYear}</span>
+    //                 </li>
+    //                 <li>
+    //                     <div>Residential Status</div>
+    //                     <span>-</span>
+    //                 </li>
+    //             </ul>
+    //         </div>
+    //         <div className="border border-gray-400 rounded-md p-2">
+    //             <div className="flex items-center gap-2 p-2">
+    //                 <Icon className="bg-red-600/10 text-red-600 rounded-md p-1 w-8 h-8" icon="game-icons:pay-money"/>
+    //                 <h2>Income Sources</h2>
+    //             </div>
+    //             <Link href="/dashboard/itr/itr-filling/taxes-paid" className="text-blue-500 text-sm tracking-tighter flex gap-2 items-center justify-end">
+    //                 Modify if Required
+    //                 <Icon icon="bx:edit"/>
+    //             </Link>
+    //             <div className="p-2 flex justify-between text-sm tracking-tighter">
+    //                 <div className="font-medium">Gross Total Income</div>
+    //                 <div>&#8377; {itrObj?.ITR1_IncomeDeductions?.GrossTotIncome}</div>
+    //             </div>
+    //         </div>
+    //         <div className="border border-gray-400 rounded-md p-2">
+    //             <div className="flex items-center gap-2 p-2">
+    //                 <Icon className="bg-green-600/10 text-green-600 rounded-md p-1 w-8 h-8" icon="solar:wallet-money-line-duotone"/>
+    //                 <h2>Tax Savings (Deductions)</h2>
+    //             </div>
+    //             <Link href="/dashboard/itr/itr-filling/deductions" className="text-blue-500 text-sm tracking-tighter flex gap-2 items-center justify-end">
+    //                 Modify if Required
+    //                 <Icon icon="bx:edit"/>
+    //             </Link>
+    //             <div className="text-sm tracking-tighter p-2">
+    //                 <ul
+    //                 className="
+    //                     text-sm tracking-tighter p-2 divide-y 
+    //                     [&>li]:flex [&>li]:justify-between [&>li]:p-1 
+    //                     [&>li>div]:font-medium
+    //                 ">
+    //                     <li>
+    //                         <div>Section 80C</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80C}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80CCC</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCC}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80CCD(1B)</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCD1B}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80CCD (EmployeeOrSE)</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCDEmployeeOrSE}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80CCD (Employer)</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCDEmployer}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80D</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80D}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80DD</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80DD}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80DDB</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80DDB}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80E</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80E}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80EE</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80EE}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80EEA</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80EEA}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80EEB</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80EEB}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80G</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80G}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80GG</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80GG}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80GGA</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80GGA}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80GGC</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80GGC}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80TTA</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80TTA}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80TTB</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80TTB}</span>
+    //                     </li>
+    //                     <li>
+    //                         <div>Section 80U</div>
+    //                         <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80U}</span>
+    //                     </li>
+    //                 </ul>
+    //                 <div className="bg-blue-500/10 rounded-md p-1 flex justify-between">
+    //                     <div>Total Deduction</div>
+    //                     <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.TotalChapVIADeductions}</span>
+    //                 </div>
+    //             </div>
+    //         </div>
+    //         <div className="border border-gray-400 rounded-md p-2">
+    //             <div className="flex items-center gap-2 p-2">
+    //                 <Icon className="bg-fuchsia-600/10  text-fuchsia-600 rounded-md p-1 w-8 h-8" icon="material-symbols-light:source-notes-rounded"/>
+    //                 <h2>Tax Payable</h2>
+    //             </div>
+    //             <ul className="text-sm tracking-tighter divide-y p-2">
+    //                 <li className="p-2 grid grid-flow-col justify-between">
+    //                     <span>Total Taxable Income (Gross Total Income - Total Deductions)</span>
+    //                     <span>&#8377; {itrObj?.ITR1_IncomeDeductions?.GrossTotIncome}</span>
+    //                 </li>
+    //                 <li className="p-2 grid grid-flow-col justify-between">
+    //                     <span>Income Tax at normal rates</span>
+    //                     <span>&#8377; {taxCalculated?.incomeTax}</span>
+    //                 </li>
+    //                 <li className="p-2 grid grid-flow-col justify-between">
+    //                     <span>Surcharge</span>
+    //                     <span>&#8377; {taxCalculated?.surcharge}</span>
+    //                 </li>
+    //                 <li className="p-2 grid grid-flow-col justify-between">
+    //                     <span>Health and Education Cess</span>
+    //                     <span>&#8377; {taxCalculated?.healthAndEducationCess}</span>
+    //                 </li>
+    //                 <li className="p-2 grid grid-flow-col justify-between">
+    //                     <span>Total Tax Liability</span>
+    //                     <span>&#8377; {taxCalculated?.totalTaxLiability}</span>
+    //                 </li>
+    //             </ul>
+    //             <div className="bg-blue-500/10 rounded-md p-1 flex justify-between">
+    //                 <div>Total Tax Payable(Total Tax + Total Interest Due)</div>
+    //                  &#8377; {itrObj?.ITR1_TaxComputation?.TotalTaxPayable}
+    //             </div>
+    //         </div>
+    //         <div className="border border-gray-400 rounded-md p-2">
+    //             <div className="flex items-center gap-2 p-2">
+    //                 <Icon className="bg-orange-600/10 text-orange-600 rounded-md p-1 w-8 h-8" icon="material-symbols:paid"/>
+    //                 <h2>Tax Paid</h2>
+    //             </div>
+    //             <Link href="/dashboard/itr/itr-filling/taxes-paid" className="text-blue-500 text-sm tracking-tighter flex gap-2 items-center justify-end">
+    //                 Modify if Required
+    //                 <Icon icon="bx:edit"/>
+    //             </Link>
+    //             <div className="p-2 flex justify-between text-sm tracking-tighter">
+    //                 <div className="font-medium">Total Tax Paid</div>
+    //                 <div>&#8377; {itrObj?.TaxPaid?.TaxesPaid.TotalTaxesPaid}</div>
+    //             </div>
+    //         </div>
 
-            <div className="flex justify-end">
-                <button onClick={() => {downloadJSON();}} className=" bg-primary px-8 py-3 my-6 text-white rounded-md font-semibold text-sm cursor-pointer col-span-2 mx-auto">
-                    Download JSON
-                </button>
+    //         <div className="flex justify-end">
+    //             <button onClick={() => {downloadJSON();}} className=" bg-primary px-8 py-3 my-6 text-white rounded-md font-semibold text-sm cursor-pointer col-span-2 mx-auto">
+    //                 Download JSON
+    //             </button>
+    //         </div>
+    //     </div>
+    // </>
+    // );
+
+
+return (
+  <>
+    <div className="relative mx-auto w-[92%] max-w-3xl">
+      {/* subtle decorative blobs */}
+      <div className="pointer-events-none absolute -top-16 -left-16 h-40 w-40 rounded-full bg-blue-500/15 blur-2xl" />
+      <div className="pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-fuchsia-500/15 blur-2xl" />
+
+      {/* <h1 className="p-2 text-center text-base sm:text-lg font-semibold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-700 to-indigo-700">
+        Summary of your ITR filing.
+      </h1> */}
+
+      {/* quick recap */}
+      <div className="mx-auto mt-1 rounded-xl border border-white/30 bg-white/70 backdrop-blur-md shadow-lg">
+        <div className="divide-y">
+          <div className="flex items-start justify-between p-2">
+            <div>
+              <h4 className="text-sm font-medium tracking-tight text-blue-400">Personal Information</h4>
+              <p className="text-[11px] tracking-tight text-neutral-600">
+                Includes your Information, Bank & Address
+              </p>
             </div>
+            <div className="grid text-right text-xs">
+              <span className="font-medium">{personalInfo?.panNumber}</span>
+            </div>
+          </div>
+
+          <div className="flex items-start justify-between p-2">
+            <div>
+              <h4 className="text-sm font-medium tracking-tight">Gross Total Income</h4>
+              <p className="text-[11px] tracking-tight text-neutral-600">
+                Salary, House Property, Other Income, Business/Profession, Capital Gain
+              </p>
+            </div>
+            <div className="text-sm font-semibold">
+              ₹ {itrObj?.ITR1_IncomeDeductions?.GrossTotIncome}
+            </div>
+          </div>
+
+          <div className="flex items-start justify-between p-2">
+            <div>
+              <h4 className="text-sm font-medium tracking-tight">Deductions</h4>
+              <p className="text-[11px] tracking-tight text-neutral-600">Chapter VI-A</p>
+            </div>
+            <div className="text-sm font-semibold">₹ 0</div>
+          </div>
+
+          <div className="flex items-start justify-between p-2">
+            <div>
+              <h4 className="text-sm font-medium tracking-tight">Taxes Paid</h4>
+              <p className="text-[11px] tracking-tight text-neutral-600">TDS & Self-Assessment</p>
+            </div>
+            <div className="text-sm font-semibold">
+              ₹ {itrObj?.TaxPaid?.TaxesPaid?.TotalTaxesPaid || 0}
+            </div>
+          </div>
         </div>
-    </>
-    );
+      </div>
+
+      {/* detail cards */}
+      <div className="mx-auto mt-3 space-y-3">
+        {/* Personal Info */}
+        <div className="rounded-xl border border-white/30 bg-white/70 backdrop-blur-md shadow-lg">
+          <div className="flex items-center justify-between p-2">
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-blue-400">
+              <Icon className="rounded-md bg-blue-600/10 p-1 w-7 h-7 text-blue-600" icon="solar:user-circle-bold" />
+              Personal Information
+            </h2>
+            <Link
+              href="/dashboard/itr/itr-filling/taxes-paid"
+              className="inline-flex items-center gap-1 text-[12px] font-medium text-blue-600 hover:underline"
+            >
+              Modify if Required <Icon icon="bx:edit" />
+            </Link>
+          </div>
+
+          <ul
+            className="divide-y p-2 text-[12px] tracking-tight
+                       [&>li]:flex [&>li]:justify-between [&>li]:py-1 [&>li>div]:font-medium"
+          >
+            <li>
+              <div>Name</div>
+              <span>{`${personalInfo?.firstName} ${personalInfo?.middleName} ${personalInfo?.lastName}`}</span>
+            </li>
+            <li>
+              <div>Date of birth</div>
+              <span>{new Date(personalInfo?.dob)?.toLocaleDateString("en-GB")}</span>
+            </li>
+            <li>
+              <div>PAN</div>
+              <span>{personalInfo?.panNumber}</span>
+            </li>
+            <li>
+              <div>Gender</div>
+              <span>{personalInfo?.gender}</span>
+            </li>
+            <li>
+              <div>Assessment Year</div>
+              <span>{itrObj?.Form_ITR1?.AssessmentYear}</span>
+            </li>
+            <li>
+              <div>Residential Status</div>
+              <span>-</span>
+            </li>
+          </ul>
+        </div>
+
+        {/* Income Sources */}
+        <div className="rounded-xl border border-white/30 bg-white/70 backdrop-blur-md shadow-lg">
+          <div className="flex items-center justify-between p-2">
+            <div className="flex items-center gap-2">
+              <Icon className="rounded-md bg-red-600/10 p-1 w-7 h-7 text-red-600" icon="game-icons:pay-money" />
+              <h2 className="text-sm font-semibold text-blue-400">Income Sources</h2>
+            </div>
+            <Link
+              href="/dashboard/itr/itr-filling/taxes-paid"
+              className="inline-flex items-center gap-1 text-[12px] font-medium text-blue-600 hover:underline"
+            >
+              Modify if Required <Icon icon="bx:edit" />
+            </Link>
+          </div>
+          <div className="flex justify-between p-2 text-[12px] tracking-tight">
+            <div className="font-medium">Gross Total Income</div>
+            <div className="font-semibold">₹ {itrObj?.ITR1_IncomeDeductions?.GrossTotIncome}</div>
+          </div>
+        </div>
+
+        {/* Deductions */}
+        <div className="rounded-xl border border-white/30 bg-white/70 backdrop-blur-md shadow-lg">
+          <div className="flex items-center justify-between p-2">
+            <div className="flex items-center gap-2">
+              <Icon className="rounded-md bg-green-600/10 p-1 w-7 h-7 text-green-600" icon="solar:wallet-money-line-duotone" />
+              <h2 className="text-sm font-semibold text-blue-400">Tax Savings (Deductions)</h2>
+            </div>
+            <Link
+              href="/dashboard/itr/itr-filling/deductions"
+              className="inline-flex items-center gap-1 text-[12px] font-medium text-blue-600 hover:underline"
+            >
+              Modify if Required <Icon icon="bx:edit" />
+            </Link>
+          </div>
+
+          <div className="p-2">
+            <ul
+              className="divide-y text-[12px] tracking-tight
+                         [&>li]:flex [&>li]:justify-between [&>li]:py-1 [&>li>div]:font-medium"
+            >
+              <li><div>Section 80C</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80C}</span></li>
+              <li><div>Section 80CCC</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCC}</span></li>
+              <li><div>Section 80CCD(1B)</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCD1B}</span></li>
+              <li><div>Section 80CCD (EmployeeOrSE)</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCDEmployeeOrSE}</span></li>
+              <li><div>Section 80CCD (Employer)</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80CCDEmployer}</span></li>
+              <li><div>Section 80D</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80D}</span></li>
+              <li><div>Section 80DD</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80DD}</span></li>
+              <li><div>Section 80DDB</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80DDB}</span></li>
+              <li><div>Section 80E</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80E}</span></li>
+              <li><div>Section 80EE</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80EE}</span></li>
+              <li><div>Section 80EEA</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80EEA}</span></li>
+              <li><div>Section 80EEB</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80EEB}</span></li>
+              <li><div>Section 80G</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80G}</span></li>
+              <li><div>Section 80GG</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80GG}</span></li>
+              <li><div>Section 80GGA</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80GGA}</span></li>
+              <li><div>Section 80GGC</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80GGC}</span></li>
+              <li><div>Section 80TTA</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80TTA}</span></li>
+              <li><div>Section 80TTB</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80TTB}</span></li>
+              <li><div>Section 80U</div><span>₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.Section80U}</span></li>
+            </ul>
+
+            <div className="mt-2 flex items-center justify-between rounded-md bg-blue-500/10 p-2 text-[12px]">
+              <div className="font-medium">Total Deduction</div>
+              <span className="font-semibold">
+                ₹ {itrObj?.ITR1_IncomeDeductions?.DeductUndChapVIA?.TotalChapVIADeductions}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Tax Payable */}
+        <div className="rounded-xl border border-white/30 bg-white/70 backdrop-blur-md shadow-lg">
+          <div className="flex items-center gap-2 p-2">
+            <Icon className="rounded-md bg-fuchsia-600/10 p-1 w-7 h-7 text-fuchsia-600" icon="material-symbols-light:source-notes-rounded" />
+            <h2 className="text-sm font-semibold text-blue-400">Tax Payable</h2>
+          </div>
+
+          <ul className="divide-y p-2 text-[12px] tracking-tight">
+            <li className="grid grid-flow-col justify-between py-1">
+              <span>Total Taxable Income (GTI − Deductions)</span>
+              <span className="font-semibold">₹ {itrObj?.ITR1_IncomeDeductions?.GrossTotIncome}</span>
+            </li>
+            <li className="grid grid-flow-col justify-between py-1">
+              <span>Income Tax at normal rates</span>
+              <span className="font-semibold">₹ {taxCalculated?.incomeTax}</span>
+            </li>
+            <li className="grid grid-flow-col justify-between py-1">
+              <span>Surcharge</span>
+              <span className="font-semibold">₹ {taxCalculated?.surcharge}</span>
+            </li>
+            <li className="grid grid-flow-col justify-between py-1">
+              <span>Health and Education Cess</span>
+              <span className="font-semibold">₹ {taxCalculated?.healthAndEducationCess}</span>
+            </li>
+            <li className="grid grid-flow-col justify-between py-1">
+              <span>Total Tax Liability</span>
+              <span className="font-semibold">₹ {taxCalculated?.totalTaxLiability}</span>
+            </li>
+          </ul>
+
+          <div className="mx-2 mb-2 flex items-center justify-between rounded-md bg-blue-500/10 p-2 text-[12px]">
+            <div className="font-medium">Total Tax Payable (Tax + Interest)</div>
+            <span className="font-semibold">₹ {itrObj?.ITR1_TaxComputation?.TotalTaxPayable}</span>
+          </div>
+        </div>
+
+        {/* Tax Paid */}
+        <div className="rounded-xl border border-white/30 bg-white/70 backdrop-blur-md shadow-lg">
+          <div className="flex items-center justify-between p-2">
+            <div className="flex items-center gap-2">
+              <Icon className="rounded-md bg-orange-600/10 p-1 w-7 h-7 text-orange-600" icon="material-symbols:paid" />
+              <h2 className="text-sm font-semibold text-blue-400">Tax Paid</h2>
+            </div>
+            <Link
+              href="/dashboard/itr/itr-filling/taxes-paid"
+              className="inline-flex items-center gap-1 text-[12px] font-medium text-blue-600 hover:underline"
+            >
+              Modify if Required <Icon icon="bx:edit" />
+            </Link>
+          </div>
+
+          <div className="flex justify-between p-2 text-[12px] tracking-tight">
+            <div className="font-medium">Total Tax Paid</div>
+            <div className="font-semibold">₹ {itrObj?.TaxPaid?.TaxesPaid?.TotalTaxesPaid}</div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => { downloadJSON(); }}
+            className="my-4 inline-flex items-center justify-center rounded-lg bg-primary px-6 py-2 text-[12px] font-semibold text-white shadow-md shadow-primary/25 transition hover:scale-[1.01] hover:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-[0.99]"
+          >
+            Download JSON
+          </button>
+        </div>
+      </div>
+    </div>
+  </>
+);
+
+
+
 }

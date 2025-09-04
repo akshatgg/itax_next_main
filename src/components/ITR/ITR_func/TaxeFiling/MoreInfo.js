@@ -1,6 +1,7 @@
 import { InputStyles } from "@/app/styles/InputStyles";
 
 export default function MoreInfo() {
+
   return (
   <div
   //  className="mx-auto px-6 py-6 bg-white rounded-2xl shadow-md max-w-4xl w-full"

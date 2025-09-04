@@ -129,13 +129,14 @@ export default function PresonalInfo({ setSection,userProfile }) {
         }
     }, [formik.values.aadhaar]);
 
+    
     return (
       
 <form onSubmit={formik.handleSubmit} >
   <div className={InputStyles.formWrapper}>
     <div className={InputStyles.gridLayout}>
       {/* PAN */}
-      <div className="flex flex-col">
+      <div className="">
         <label htmlFor="pan" className={InputStyles.label}>PAN Number</label>
         <input
           type="text"
