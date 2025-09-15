@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useForm } from "react-hook-form";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 const Project_Report = () => {
     const [property, setProperty] = useState("");
     const [promotercon, setPromotercon] = useState(false);
@@ -12,6 +14,7 @@ const Project_Report = () => {
     const {
         register,
         handleSubmit,
+        getValues,
         formState: { errors },
     } = useForm();
     const next = () => {
@@ -54,6 +57,169 @@ const Project_Report = () => {
         newArray.splice(index, 1);
         setInputs(newArray);
     };
+
+    const handleChange = (event, index) => {
+        const { name, value } = event.target;
+        const newInputs = [...inputs];
+        newInputs[index] = { ...newInputs[index], [name]: value };
+        setInputs(newInputs);
+    };
+    const generatePDF = () => {
+        const formData = getValues(); // Get current form data
+
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.width;
+        const margin = 20;
+        let yPosition = 30;
+
+        // Add title
+        doc.setFontSize(20);
+        doc.setFont(undefined, 'bold');
+        doc.text('Project Report', pageWidth / 2, yPosition, { align: 'center' });
+        yPosition += 20;
+
+        // Business Information Section
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.text('Business Information', margin, yPosition);
+        yPosition += 10;
+
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'normal');
+
+        if (formData.businessName) {
+            doc.text(`Business Name: ${formData.businessName}`, margin, yPosition);
+            yPosition += 8;
+        }
+
+        if (formData.area) {
+            doc.text(`Area of Property: ${formData.area}`, margin, yPosition);
+            yPosition += 8;
+        }
+
+        if (formData.propertyType) {
+            doc.text(`Property Type: ${formData.propertyType === 'rent' ? 'Rental' : 'Owned'}`, margin, yPosition);
+            yPosition += 8;
+        }
+
+        // Property specific details
+        if (formData.propertyType === 'rent') {
+            if (formData.securityDeposit) {
+                doc.text(`Security Deposit: ₹${formData.securityDeposit}`, margin, yPosition);
+                yPosition += 8;
+            }
+            if (formData['monthly rent']) {
+                doc.text(`Monthly Rent: ₹${formData['monthly rent']}`, margin, yPosition);
+                yPosition += 8;
+            }
+        } else if (formData.propertyType === 'own') {
+            if (formData.value) {
+                doc.text(`Value of Land/Building: ₹${formData.value}`, margin, yPosition);
+                yPosition += 8;
+            }
+            if (formData.depreciationRate) {
+                doc.text(`Depreciation Rate: ${formData.depreciationRate}%`, margin, yPosition);
+                yPosition += 8;
+            }
+        }
+
+        yPosition += 10;
+
+        // Plant and Machinery Section
+        if (formData.plantAndMachinery && Object.keys(formData.plantAndMachinery).length > 0) {
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('Plant and Machinery', margin, yPosition);
+            yPosition += 10;
+
+            // Create table data for plant and machinery
+            const plantData = [];
+            Object.values(formData.plantAndMachinery).forEach((item, index) => {
+                if (item.name || item.price || item.depreciationRate) {
+                    plantData.push([
+                        item.name || '',
+                        item.price ? `₹${item.price}` : '',
+                        item.depreciationRate ? `${item.depreciationRate}%` : ''
+                    ]);
+                }
+            });
+
+            if (plantData.length > 0) {
+                doc.autoTable({
+                    head: [['Name', 'Price', 'Depreciation Rate']],
+                    body: plantData,
+                    startY: yPosition,
+                    margin: { left: margin, right: margin },
+                    theme: 'grid'
+                });
+                yPosition = doc.lastAutoTable.finalY + 10;
+            }
+        }
+
+        // Working Capital Section
+        if (formData.workingCapital) {
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.text('Working Capital', margin, yPosition);
+            yPosition += 10;
+
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'normal');
+
+            if (formData.workingCapital.rawMaterial) {
+                doc.text(`Raw Material: ₹${formData.workingCapital.rawMaterial}`, margin, yPosition);
+                yPosition += 8;
+            }
+            if (formData.workingCapital.wages) {
+                doc.text(`Wages: ₹${formData.workingCapital.wages}`, margin, yPosition);
+                yPosition += 8;
+            }
+            if (formData.workingCapital.electricityCharges) {
+                doc.text(`Electricity Charges: ₹${formData.workingCapital.electricityCharges}`, margin, yPosition);
+                yPosition += 8;
+            }
+            if (formData.workingCapital.otherCharges) {
+                doc.text(`Other Charges: ₹${formData.workingCapital.otherCharges}`, margin, yPosition);
+                yPosition += 8;
+            }
+            yPosition += 10;
+        }
+
+        // Finance Section
+        doc.setFontSize(16);
+        doc.setFont(undefined, 'bold');
+        doc.text('Finance', margin, yPosition);
+        yPosition += 10;
+
+        doc.setFontSize(12);
+        doc.setFont(undefined, 'normal');
+
+        if (formData.promoterContribution) {
+            doc.text(`Promoter's Contribution: ₹${formData.promoterContribution}`, margin, yPosition);
+            yPosition += 8;
+        }
+
+        if (formData.haveLoan && formData.loanAmount) {
+            doc.text(`Loan Amount: ₹${formData.loanAmount}`, margin, yPosition);
+            yPosition += 8;
+            if (formData.loanInterest) {
+                doc.text(`Interest Rate: ${formData.loanInterest}%`, margin, yPosition);
+                yPosition += 8;
+            }
+        }
+
+        if (formData.turnover) {
+            doc.text(`Expected Sale Turnover per Year: ₹${formData.turnover}`, margin, yPosition);
+            yPosition += 8;
+        }
+
+        // Save the PDF
+        const fileName = `Project_Report_${formData.businessName || 'Business'}_${new Date().toISOString().split('T')[0]}.pdf`;
+        doc.save(fileName);
+
+        toast.success('PDF generated successfully!');
+    };
+
     const submitHandler = (formData) => {
         console.log(formData);
     };
@@ -372,7 +538,7 @@ const Project_Report = () => {
                                             <p>{item.lable}</p>
                                             <input
                                                 className="p-2 border border-slate-400 mt-1 outline-0 focus:border-blue-500 rounded-md"
-                                                name="firstName"
+                                                name="Nameinput"
                                                 type="text"
                                                 onChange={(event) =>
                                                     handleChange(event, index)
@@ -392,7 +558,7 @@ const Project_Report = () => {
                                             <p>{item.pricelable}</p>
                                             <input
                                                 className="p-2 border border-slate-400 mt-1 outline-0 focus:border-blue-500 rounded-md"
-                                                name="firstName"
+                                                name="Price"
                                                 type="text"
                                                 onChange={(event) =>
                                                     handleChange(event, index)
@@ -412,7 +578,7 @@ const Project_Report = () => {
                                             <p>{item.DepreciationRatelable}</p>
                                             <input
                                                 className="p-2 border border-slate-400 mt-1 outline-0 focus:border-blue-500 rounded-md"
-                                                name="firstName"
+                                                name="DepreciationRate"
                                                 type="text"
                                                 onChange={(event) =>
                                                     handleChange(event, index)
@@ -693,12 +859,16 @@ const Project_Report = () => {
                                 </div>
 
                                 <div className="mt-4 flex gap-2 justify-center items-center col-span-3">
-                                    <button className="px-3 py-2 text-lg rounded-md w-full text-white bg-blue-500">
+                                    <button
+                                        type="button"
+                                        onClick={generatePDF}
+                                        className="px-3 py-2 text-lg rounded-md w-full text-white bg-blue-500 hover:bg-blue-600 transition-colors"
+                                    >
                                         Generate PDF
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-3 py-2 text-lg rounded-md w-full text-white bg-blue-500"
+                                        className="px-3 py-2 text-lg rounded-md w-full text-white bg-blue-500 hover:bg-blue-600 transition-colors"
                                     >
                                         Submit
                                     </button>
