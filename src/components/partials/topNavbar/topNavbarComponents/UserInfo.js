@@ -31,6 +31,15 @@ function UserInfoDashBoard__index(prop) {
             if (setIsNavigating) {
               // Show loading immediately for better UX
               setIsNavigating(true);
+
+              // Add failsafe cursor resets
+              setTimeout(() => {
+                if (document.body) document.body.style.cursor = 'default';
+              }, 1000);
+
+              setTimeout(() => {
+                if (document.body) document.body.style.cursor = 'default';
+              }, 2000);
             }
             handleActive(index);
           }}
@@ -196,6 +205,32 @@ export default function UserInfo({ setIsNavigating }) {
         document.head.removeChild(link);
       };
     }
+  }, [isMenuOpen]);
+
+  // Global cursor reset effect for UserInfo component
+  useEffect(() => {
+    // Reset cursor when component mounts or when menu closes
+    const resetCursor = () => {
+      if (document.body) {
+        document.body.style.cursor = 'default';
+      }
+    };
+
+    // Reset cursor on mount
+    resetCursor();
+
+    // Reset cursor when menu closes
+    if (!isMenuOpen) {
+      resetCursor();
+    }
+
+    // Emergency cursor reset interval
+    const cursorInterval = setInterval(resetCursor, 3000);
+
+    return () => {
+      clearInterval(cursorInterval);
+      resetCursor();
+    };
   }, [isMenuOpen]);
 
   return (

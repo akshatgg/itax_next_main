@@ -560,21 +560,46 @@ export default function Navbar({ className = '' }) {
       const isRegisterStartup = path.includes('/register-startup');
       const isAPI = path.includes('/apis');
       const isDownload = path.includes('/downloads');
-      
+
       // All these sections need optimization
-      const needsOptimization = isCalculator || isEasyService || isBlog || 
+      const needsOptimization = isCalculator || isEasyService || isBlog ||
                                isProduct || isRegisterStartup || isAPI || isDownload;
-      
+
+      // Function to reset cursor and clean up
+      const resetCursor = () => {
+        if (document.body) {
+          document.body.style.cursor = 'default';
+        }
+      };
+
+      // Function to clean up loading state
+      const cleanupLoadingState = () => {
+        resetCursor();
+        document.body?.classList.remove('route-transition');
+        document.body?.classList.remove('calculator-transition');
+        document.body?.classList.remove('easyservice-transition');
+        document.body?.classList.remove('blog-transition');
+        document.body?.classList.remove('product-transition');
+        document.body?.classList.remove('startup-transition');
+        document.body?.classList.remove('api-transition');
+        document.body?.classList.remove('download-transition');
+
+        const loadingIndicator = document.getElementById('nav-loading-indicator');
+        if (loadingIndicator && loadingIndicator.parentNode) {
+          loadingIndicator.parentNode.removeChild(loadingIndicator);
+        }
+      };
+
       // Add immediate visual feedback
       document.body.style.cursor = 'wait';
-      
+
       // For routes that need optimization, use an enhanced approach
       if (needsOptimization) {
         // Show a small loading indicator in the corner
         const loadingIndicator = document.createElement('div');
         loadingIndicator.id = 'nav-loading-indicator';
         loadingIndicator.style.cssText = 'position:fixed;top:1rem;right:1rem;width:1.5rem;height:1.5rem;border:2px solid #f3f3f3;border-top:2px solid #3498db;border-radius:50%;animation:spin 1s linear infinite;z-index:9999;';
-        
+
         // Add animation keyframes if they don't already exist
         if (!document.getElementById('nav-loading-style')) {
           const style = document.createElement('style');
@@ -582,15 +607,15 @@ export default function Navbar({ className = '' }) {
           style.textContent = '@keyframes spin {0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);}}';
           document.head.appendChild(style);
         }
-        
+
         document.body.appendChild(loadingIndicator);
-        
+
         // Use prefetch for optimized routes
         router.prefetch(path);
-        
+
         // Set page-specific optimizations
         document.body.classList.add('route-transition');
-        
+
         // Set section-specific class for targeted optimizations
         if (isCalculator) document.body.classList.add('calculator-transition');
         if (isEasyService) document.body.classList.add('easyservice-transition');
@@ -599,36 +624,43 @@ export default function Navbar({ className = '' }) {
         if (isRegisterStartup) document.body.classList.add('startup-transition');
         if (isAPI) document.body.classList.add('api-transition');
         if (isDownload) document.body.classList.add('download-transition');
-        
-        // Navigate
-        router.push(path);
-        setHamburger(false);
-        
-        // Remove the loading indicator and transition classes after navigation
-        setTimeout(() => {
-          document.body.style.cursor = 'default';
-          document.body.classList.remove('route-transition');
-          document.body.classList.remove('calculator-transition');
-          document.body.classList.remove('easyservice-transition');
-          document.body.classList.remove('blog-transition');
-          document.body.classList.remove('product-transition');
-          document.body.classList.remove('startup-transition');
-          document.body.classList.remove('api-transition');
-          document.body.classList.remove('download-transition');
-          
-          if (loadingIndicator.parentNode) {
-            loadingIndicator.parentNode.removeChild(loadingIndicator);
-          }
-        }, 300);
+
+        // Navigate with error handling
+        try {
+          router.push(path);
+          setHamburger(false);
+
+          // Clean up after navigation with multiple fallbacks
+          setTimeout(cleanupLoadingState, 300);
+
+          // Additional failsafe cleanup
+          setTimeout(resetCursor, 1000);
+
+        } catch (error) {
+          console.error('Navigation error:', error);
+          // Immediately clean up on error
+          cleanupLoadingState();
+        }
       } else {
-        // Standard navigation for other routes
-        router.push(path);
-        setHamburger(false);
-        
-        setTimeout(() => {
-          document.body.style.cursor = 'default';
-        }, 100);
+        // Standard navigation for other routes with error handling
+        try {
+          router.push(path);
+          setHamburger(false);
+
+          // Reset cursor for standard navigation
+          setTimeout(resetCursor, 100);
+
+          // Additional failsafe
+          setTimeout(resetCursor, 500);
+
+        } catch (error) {
+          console.error('Navigation error:', error);
+          resetCursor();
+        }
       }
+
+      // Emergency fallback to reset cursor after a longer delay
+      setTimeout(resetCursor, 2000);
     },
     [router],
   );
@@ -724,6 +756,48 @@ export default function Navbar({ className = '' }) {
     };
   }, [fetchCartData, token, localToken]);
   
+  // Global cursor reset utility effect
+  useEffect(() => {
+    // Function to reset cursor to default
+    const resetCursorGlobally = () => {
+      if (document.body) {
+        document.body.style.cursor = 'default';
+      }
+    };
+
+    // Reset cursor when the component mounts
+    resetCursorGlobally();
+
+    // Reset cursor when page visibility changes (user switches tabs)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        resetCursorGlobally();
+      }
+    };
+
+    // Reset cursor on page load/DOMContentLoaded
+    const handlePageLoad = () => {
+      resetCursorGlobally();
+    };
+
+    // Add event listeners
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    document.addEventListener('DOMContentLoaded', handlePageLoad);
+    window.addEventListener('load', handlePageLoad);
+
+    // Also reset cursor periodically as a failsafe
+    const cursorResetInterval = setInterval(resetCursorGlobally, 5000); // Every 5 seconds
+
+    // Cleanup function
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('DOMContentLoaded', handlePageLoad);
+      window.removeEventListener('load', handlePageLoad);
+      clearInterval(cursorResetInterval);
+      resetCursorGlobally();
+    };
+  }, []);
+
   // Track when authentication state is loaded
   useEffect(() => {
     // Update local state whenever auth state changes from hook
@@ -1052,6 +1126,26 @@ export default function Navbar({ className = '' }) {
                 if (isNavigating) {
                   // Add immediate visual feedback for navigation
                   document.body.style.cursor = 'wait';
+
+                  // Add multiple failsafe timeouts to reset cursor
+                  setTimeout(() => {
+                    if (document.body) {
+                      document.body.style.cursor = 'default';
+                    }
+                  }, 500);
+
+                  setTimeout(() => {
+                    if (document.body) {
+                      document.body.style.cursor = 'default';
+                    }
+                  }, 1500);
+
+                  // Emergency reset after 3 seconds
+                  setTimeout(() => {
+                    if (document.body) {
+                      document.body.style.cursor = 'default';
+                    }
+                  }, 3000);
                 }
               }} />
             </div>
