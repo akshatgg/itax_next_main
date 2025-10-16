@@ -1,185 +1,328 @@
-# Front End
-To install this repo on vs code
+# iTax Easy - Frontend Application
 
-step:-
+A comprehensive tax management and accounting platform built with Next.js 14, providing features for GST returns, ITR filing, invoice management, financial calculators, and more.
 
-1. Install vs. code community version.
+> This is the frontend application. The backend API is maintained in a separate repository.
 
-2. Select "Node Js"
+## Table of Contents
 
-3. Clone the repository
+- [Features](#features)
+- [Tech Stack](#tech-stack)
+- [Prerequisites](#prerequisites)
+- [Getting Started](#getting-started)
+  - [Manual Setup](#manual-setup)
+  - [Docker Setup](#docker-setup)
+- [Environment Variables](#environment-variables)
+- [Available Scripts](#available-scripts)
+- [Project Structure](#project-structure)
+- [Key Features](#key-features)
+- [Deployment](#deployment)
+
+## Features
+
+### Public Features
+- E-Library with legal documents and case laws
+- Easy Services (GST Links, Income Tax Links, Bank Links, MCA, Aadhaar Links)
+- Financial Calculators (Bank, Income Tax, GST, Investment, Loan, Insurance)
+- Blog and Articles
+- Startup Registration Services
+- API Documentation
+
+### Dashboard Features
+- GST Return Filing (GSTR-1, multiple forms)
+- Income Tax Return (ITR) Filing
+- Invoice Management (Sales, Purchase, Returns)
+- Accounts & Ledger Management
+- Loan Applications
+- Insurance Management
+- Payment Processing (Razorpay Integration)
+- Project Reports & Analytics
+- Bill Payments (Electricity, Mobile, Gas)
+- User & Business Profile Management
+
+## Tech Stack
+
+- **Framework**: Next.js 14 (App Router)
+- **UI Library**: React 18
+- **State Management**: Redux Toolkit
+- **Styling**: Tailwind CSS, Styled Components
+- **Forms**: React Hook Form, Formik, Yup/Zod validation
+- **Database ORM**: Prisma (PostgreSQL)
+- **PDF Generation**: jsPDF, @react-pdf/renderer, pdf-lib
+- **Charts**: Chart.js, Recharts
+- **Payment Gateway**: Razorpay
+- **Excel Operations**: ExcelJS, xlsx-js-style
+- **Animations**: Framer Motion
+- **Other Libraries**: Axios, Moment.js, React Icons, React Toastify
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- **Node.js**: v16.x or v18.x (recommended)
+- **npm**: v8.x or higher (comes with Node.js)
+- **Git**: For cloning the repository
+- **Docker** (optional): For containerized deployment
+- **PostgreSQL**: v12 or higher (for local development)
+
+## Getting Started
+
+### Manual Setup
+
+#### 1. Clone the Repository
 
 ```bash
-
-git clone git@github.com:itax-easy/itax-easy-next.git
-
+git clone <repository-url>
+cd itax_next_main
 ```
 
-  
-
-5. Install packages
+#### 2. Install Dependencies
 
 ```bash
-# Using npm
 npm install
-
-# Using yarn
-yarn install
-
-# Using pnpm
-pnpm install
-
-# Using bun
-bun install
 ```
-Dependencies
+
+If you encounter peer dependency issues:
 
 ```bash
-       "@react-pdf/renderer": "^3.3.8",
-        "ag-grid-community": "^31.0.1",
-        "axios": "^1.6.5",
-        "chart.js": "^4.4.1",
-        "cookies-next": "^4.1.0",
-        "events": "^3.3.0",
-        "exceljs": "^4.4.0",
-        "formik": "^2.2.9",
-        "framer-motion": "^10.16.5",
-        "gst-states": "^2.1.0",
-        "html-to-image": "^1.11.11",
-        "image-to-pdf": "^2.0.0",
-        "jspdf": "^2.5.1",
-        "lodash": "^4.17.21",
-        "next": "14.0.4",
-        "pdf-lib": "^1.17.1",
-        "pspdfkit": "^2023.1.4",
-        "react": "^18",
-        "react-chartjs-2": "^5.2.0",
-        "react-dom": "^18",
-        "react-dropzone": "^14.2.3",
-        "react-fast-marquee": "^1.6.2",
-        "react-hook-form": "^7.49.3",
-        "react-icons": "^4.12.0",
-        "react-intersection-observer": "^9.4.3",
-        "react-markdown": "^8.0.7",
-        "react-razorpay": "^1.2.0",
-        "react-select": "^5.8.0",
-        "react-to-print": "^2.14.15",
-        "react-toastify": "^9.1.3",
-        "react-uuid": "^2.0.0",
-        "styled-components": "^6.1.8",
-        "swiper": "^9.1.0",
-        "tailwindcss-scoped-groups": "^2.0.0",
-        "typewriter-effect": "^2.21.0",
-        "uid": "^2.0.2",
-        "uuid": "^9.0.1",
-        "yarn": "^1.22.19",
-        "yup": "^1.1.1"
+npm install --legacy-peer-deps
 ```
 
-6. run the development server
+#### 3. Configure Environment Variables
+
+Create a `.env` file in the root directory:
+
+```bash
+cp .env.example .env
+```
+
+Edit the `.env` file with your configuration. See [Environment Variables](#environment-variables) section for details.
+
+#### 4. Setup Database
+
+Ensure PostgreSQL is running and update the `DATABASE_URL` in your `.env` file:
+
+```env
+DATABASE_URL="postgresql://username:password@localhost:5432/itax_db"
+```
+
+Generate Prisma client and push database schema:
+
+```bash
+npm run generate  # Generate Prisma Client
+npm run db        # Push database schema
+```
+
+#### 5. Run Development Server
 
 ```bash
 npm run dev
-
-# or
-
-yarn dev
-
-# or
-
-pnpm dev
-
-# or
-
-bun de
 ```
 
-  
+The application will be available at [http://localhost:3001](http://localhost:3001)
 
-7. Open [http://localhost:3001](http://localhost:3001) with your browser to see the result.
+#### 6. Build for Production
 
-  
+```bash
+npm run build
+npm start
+```
 
-### Completed Tasks in Front
+### Docker Setup
 
-  
+#### 1. Using Docker Compose (Recommended)
 
-- [x] 1 Our Products
-    - [x] E-Library
+Create a `.env` file with your configuration:
 
-- [x] 2 Easy Services
-    - [x] Easy GST Links
-    - [x] Easy IncomeTax Links
-    - [x] Easy Bank Links
-    - [x] Easy MCA
-    - [x] Easy Aadhaar Links
-    - [x] Easy Converter
-    - [x] Post Office  
+```bash
+cp .env.example .env
+```
 
-- [x] 3  Financial Calculators
-	- [x] Bank Calculators
-	- [x] Income Tax Calculators
-	- [x] GST Calculators
-	- [x] Investment Calculators
-	- [x] Loan Calculators
-	- [x] Insurance Calculators
+Build and run the container:
 
-- [x] 4  Blog
+```bash
+docker-compose up -d
+```
 
-- [x] 5  Register a Startup
+The application will be available at [http://localhost:3001](http://localhost:3001)
 
-- [x] 6  APIs
+Stop the container:
 
-- [x] 7  Downloads
+```bash
+docker-compose down
+```
 
-### Completed Tasks in Dashboard ( normal & admin user )
+#### 2. Using Dockerfile Only
 
-- [ ] Dashboard
-- [ ] Easy GST Return
-- [ ] ITR
-    - [ ] Upload Form-16
-    - [ ] File Manually
-- [ ] Easy Investment 
-    - [ ] Insurance
-- [ ] Accounts
-    - [ ] Accounts
-    - [x] Invoice
-- [ ] Finance
-    - [ ] Loan
-    - [ ] Payment
-    - [ ] Working Capital
-- [ ] Transactions
-- [ ] Reports
-    - [ ] Project Report
-- [ ] Bill Payment
-    - [ ] Electricity Bill
-    - [ ] Mobile Recharge
-    - [ ] Gas Bill
-- [ ] Settings
-    - [ ] User Account
-    - [ ] Business profile
+Build the Docker image:
 
-### Completed Tasks in Dashboard ( Super Admin )
+```bash
+docker build \
+  --build-arg NEXT_PUBLIC_BASE_URL=http://localhost:8000 \
+  --build-arg NEXT_PUBLIC_BACKEND_URL=http://localhost:8000 \
+  --build-arg NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key \
+  -t itax-next-app .
+```
 
-- [ ] Dashboard
-- [ ] users/admins
-- [ ] Easy GST Return
-- [ ] Easy ITR
-- [ ] Easy Investment
-- [ ] Invoice
-- [ ] Accounts
-- [ ] Finance
-- [ ] Transactions
-- [ ] Reports
-- [ ] Bill Payment
-- [ ] Settings
+Run the container:
 
+```bash
+docker run -p 3001:3001 \
+  -e DATABASE_URL="your_database_url" \
+  itax-next-app
+```
 
+## Environment Variables
 
+Create a `.env` file in the root directory with the following variables:
 
-# Backend
-- Nodejs Typescript [api.itaxeasy.com](api.itaxeasy.com)
+```env
+# Application Port
+APP_PORT=3001
 
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/itax_db"
 
-### hosted on 
- 1 GoDaddy 
+# Backend API URLs
+NEXT_PUBLIC_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_URL=http://localhost:8000
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+NEXT_PUBLIC_BACK_URL=http://localhost:8000
+NEXT_PUBLIC_PAY_URL=http://localhost:8000
+NEXT_PUBLIC_BLAZ_URL=
+NEXT_PUBLIC_MOM_ITAX_URL=
+NEXT_PUBLIC_LARAVEL_ITAX_URL=
+
+# Google Maps API
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_api_key
+
+# Razorpay Payment Gateway
+NEXT_PUBLIC_RAZORPAY_KEY_ID=your_razorpay_key_id
+RAZORPAY_KEY_SECRET=your_razorpay_secret
+
+# JWT Secret
+NEXT_PUBLIC_WEB_TOKEN=your_jwt_secret_key
+JWT_SECRET=your_secret_key
+```
+
+### Important Notes:
+
+- `NEXT_PUBLIC_*` variables are exposed to the browser
+- All backend URLs should point to your backend API server
+- Razorpay keys are required for payment functionality
+- Database URL must be a valid PostgreSQL connection string
+
+## Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server on port 3001 |
+| `npm run build` | Build the application for production |
+| `npm start` | Start production server on port 3001 |
+| `npm run lint` | Run ESLint to check code quality |
+| `npm run format` | Check code formatting with Prettier |
+| `npm run format:fix` | Fix code formatting issues |
+| `npm run generate` | Generate Prisma Client |
+| `npm run db` | Push Prisma schema to database |
+
+## Project Structure
+
+```
+itax_next_main/
+├── app/                    # Next.js app directory (App Router)
+├── public/                 # Static assets
+├── prisma/                 # Prisma schema and migrations
+│   └── schema.prisma      # Database schema
+├── src/                    # Source code (if applicable)
+│   ├── components/        # React components
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Utility libraries
+│   └── redux/            # Redux store and slices
+├── .env.example           # Environment variables template
+├── .dockerignore          # Docker ignore file
+├── docker-compose.yml     # Docker Compose configuration
+├── Dockerfile             # Docker configuration
+├── next.config.js         # Next.js configuration
+├── tailwind.config.js     # Tailwind CSS configuration
+├── package.json           # Dependencies and scripts
+└── README.md             # This file
+```
+
+## Key Features
+
+### Authentication & Authorization
+- User registration and login
+- Role-based access control (Normal, Admin, Super Admin, Agent)
+- JWT-based authentication
+- OTP verification
+
+### Invoice & Billing
+- Create and manage invoices (Sales/Purchase)
+- Invoice items with GST calculation
+- Party/Customer management
+- Payment tracking
+
+### GST Management
+- Multiple GSTR-1 forms (4A, 5A, 6A, 7B, 8ABCD, 9B, 11A, 11B, 12HSN)
+- State-wise GST calculations
+- HSN code management
+
+### Financial Management
+- Ledger accounts
+- Journal entries
+- Transaction tracking
+- Accounts receivable/payable
+
+### Loan Management
+- Multiple loan types (Personal, Education, Home, Business, Car, Property)
+- Document upload and verification
+- Application tracking
+- Agent assignment
+
+### Reports & Analytics
+- Project reports
+- Business analytics
+- Financial statements
+- Export to PDF/Excel
+
+### Payment Integration
+- Razorpay payment gateway
+- Subscription management
+- Order tracking
+
+## Deployment
+
+### Production Deployment
+
+1. Set all environment variables in your hosting platform
+2. Build the application:
+   ```bash
+   npm run build
+   ```
+3. Start the production server:
+   ```bash
+   npm start
+   ```
+
+### Docker Deployment
+
+1. Build the Docker image with production environment variables
+2. Deploy to your container orchestration platform (Kubernetes, ECS, etc.)
+
+### Current Hosting
+- Platform: GoDaddy
+- Domain: itaxeasy.com
+
+## Backend Repository
+
+The backend API for this application is maintained separately. Contact the development team for access.
+
+Backend URL: [api.itaxeasy.com](https://api.itaxeasy.com)
+
+## Support
+
+For issues, questions, or contributions, please contact the development team.
+
+## License
+
+Private - All rights reserved
