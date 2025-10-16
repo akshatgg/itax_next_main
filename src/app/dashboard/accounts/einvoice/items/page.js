@@ -3,8 +3,9 @@ import { nodeAxios } from '@/lib/axios';
 import userbackAxios from '@/lib/userbackAxios';
 export const dynamic = 'force-dynamic';
 
-export default function page() {
-  return <Items />;
+export default async function page() {
+  const itemsData = await getInvoiceItems();
+  return <Items itemsData={itemsData} />;
 }
 
 export async function getInvoiceItems() {
@@ -13,7 +14,7 @@ export async function getInvoiceItems() {
       `/invoice/items`,
     );
     console.log("hi");
-    
+
     console.log('🚀 ~ getInvoiceItems ~ response:', response);
     const itemsData = response.data;
     return itemsData;

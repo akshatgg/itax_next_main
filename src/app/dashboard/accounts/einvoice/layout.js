@@ -1,12 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Icon } from '@iconify/react';
 import BackButton from '@/components/pagesComponents/dashboard/BackButton';
 import SideBar from '@/components/pagesComponents/dashboard/sidebar/SideBar';
 import Loader from '@/components/partials/loading/Loader.js';
 import { usePathname } from 'next/navigation';
-import Navbar from '@/components/partials/topNavbar/Navbar.js';
 
 const sidebarItems = [
   {
@@ -105,7 +103,6 @@ export default function AccountLayout({ children }) {
         setIsNavigating={setIsNavigating}
         topOffset={"3 rem"}
       />
-      <Navbar handleSidebar={() => setIsSidebarOpen((prev) => !prev)} isSidebarOpen={isSidebarOpen} />
 
       {/* Overlay for mobile when sidebar is open */}
       <div

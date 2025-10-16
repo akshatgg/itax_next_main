@@ -68,7 +68,6 @@
 
 import Link from "next/link";
 import DashSection from "@/components/pagesComponents/pageLayout/DashSection";
-import { getInvoiceItems } from "@/app/dashboard/accounts/invoice/items/page";
 import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import Button from "@/components/ui/Button";
@@ -78,8 +77,7 @@ const ItemsTable = dynamic(() => import("./ItemsTable"), { suspense: true });
 const ItemsFilters = dynamic(() => import("./ItemsFilters"), { suspense: true });
 const Loader = dynamic(() => import("@/components/partials/loading/Loader"));
 
-export default async function Items() {
-  const itemsData = await getInvoiceItems(); // Server-side fetch
+export default async function Items({ itemsData }) {
   const linkToCreateItem = "/dashboard/accounts/invoice/items/create-item";
 
   return (

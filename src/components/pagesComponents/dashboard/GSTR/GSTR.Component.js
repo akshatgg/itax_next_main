@@ -1,3 +1,5 @@
+"use client";
+
 import { NavigationBar } from './GSTRHomeComponent/GSTRNavigation';
 import MyComponent from './GSTRHomeComponent/GSTRSecondNavigation';
 import GSTLedgerComponent from './GSTRHomeComponent/GSTRLedgerComponent';

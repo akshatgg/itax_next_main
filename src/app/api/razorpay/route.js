@@ -1,13 +1,14 @@
 import Razorpay from 'razorpay';
 import { NextResponse } from 'next/server';
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
 export async function POST(req) {
   try {
+    // Initialize Razorpay instance at runtime, not at build time
+    const razorpay = new Razorpay({
+      key_id: process.env.RAZORPAY_KEY_ID,
+      key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
     const data = await req.json();
     const { amount } = data;
 
@@ -25,4 +26,4 @@ export async function POST(req) {
       { status: 500 }
     );
   }
-} 
+}
